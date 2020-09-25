@@ -5,14 +5,17 @@ INCLUDES = \
 
 SOURCES = \
 		src/*.c \
-		src/System/*.c
+		src/System/*.c \
+		src/Scenes/*.c
 
 FILENAME = ACE
 
 all:
+	clear
 	gcc -o $(FILENAME) $(SOURCES) $(INCLUDES) $$(sdl2-config --cflags --libs) -lSDL2_image -lSDL2_mixer
 
 legacy:
+	clear
 	gcc -D SDL -o $(FILENAME) $(SOURCES) $(INCLUDES) -lSDL -lSDL_image -lSDL_mixer
 
 dependencies:

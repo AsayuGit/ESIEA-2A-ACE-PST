@@ -17,11 +17,23 @@
 #define SDLMIXER <SDL2/SDL_mixer.h>
 #endif
 
+#ifdef _XBOX
+#define ROOT "D:\\"
+#define SL "\\"
+#else // Linux
+#define ROOT "./"
+#define SL "/"
+#endif
+
 #include SDLMAIN
 #include SDLIMAGE
 #include SDLMIXER
 
 #include "Types.h"
 #include "System.h"
+#include "Load.h"
+
+#define TEXTURES "Assets" SL "Textures" SL
+#define TEX_EXT ".bmp"
 
 #endif

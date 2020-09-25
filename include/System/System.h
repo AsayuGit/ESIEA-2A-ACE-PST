@@ -1,10 +1,10 @@
 #ifndef _SYSTEM
 #define _SYSTEM
 
-#include "inlcude.h"
+#include "include.h"
 
 void InitSDL();
-DisplayDevice* CreateDisplayDevice(Vector2i* Resolution, char* Title);
-
+InputDevice* InitInputs(bool JoyEnabled);
+DisplayDevice* CreateDisplayDevice(int ScreenWidth, int ScreenHeight, char* Title);
 
 #endif

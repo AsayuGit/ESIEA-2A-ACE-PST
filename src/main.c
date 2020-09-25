@@ -1,18 +1,19 @@
-#include "inlcude.h"
+#include "include.h"
+#include "Scenes.h"
 
 int main(int argc, char* argv){
 
     DisplayDevice* DisplayDevice;
-    Vector2i Resolution = {640, 480};
+    InputDevice* InputDevice;
+
+    CourtroomContext* CourtroomContext;
+    CourtroomContext = NULL;
 
     InitSDL();
-    DisplayDevice = CreateDisplayDevice(&Resolution, "Ace YAY");
-
-    while (1){
-        SDL_RenderClear(DisplayDevice->Renderer);
-        // Stuff
-        SDL_RenderPresent(DisplayDevice->Renderer);
-    }
+    DisplayDevice = CreateDisplayDevice(256, 192, "Ace YAY");
+    InputDevice = InitInputs(false);
+    // We start the courtroom Scene
+    Scene_Courtroom(DisplayDevice, InputDevice, CourtroomContext);
 
     free(DisplayDevice);
 
