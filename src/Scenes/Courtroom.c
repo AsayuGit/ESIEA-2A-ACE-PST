@@ -1,5 +1,6 @@
 #include "Courtroom.h"
 #include "SceneCommon.h"
+#include "Characters.h"
 
 int Scene_Courtroom(DisplayDevice* DisplayDevice, InputDevice* InputDevice, CourtroomContext* Context){
     // Declaration
@@ -7,6 +8,7 @@ int Scene_Courtroom(DisplayDevice* DisplayDevice, InputDevice* InputDevice, Cour
 
     Surface* Courtroom = NULL;
     SDL_Rect ScreenTile = {0, 0, DisplayDevice->ScreenResolution.x, DisplayDevice->ScreenResolution.y};
+
     Vector2i ScreenCoordinates = {0, 1};
 
     // Initialisation
@@ -15,9 +17,10 @@ int Scene_Courtroom(DisplayDevice* DisplayDevice, InputDevice* InputDevice, Cour
         // Default values
     }
 
-    Courtroom = LoadSurface(ROOT""TEXTURES"Places"SL"Courtroom"TEX_EXT, DisplayDevice);
+    Courtroom = LoadSurface(ROOT""TEXTURES"Places"SL"Courtroom"TEX_EXT, DisplayDevice, NULL);
+    CSurfaces[Mia_Fey] = LoadSurface(ROOT""TEXTURES"Characters"SL"Mia_Fey"TEX_EXT, DisplayDevice, &CColorKey[Mia_Fey]);
 
-    MoveTile(&ScreenTile, &ScreenCoordinates);
+    MoveTile(&ScreenTile, &ScreenCoordinates); // Default Screen postion
     
     // Main Loop
     while (1){
@@ -34,7 +37,7 @@ int Scene_Courtroom(DisplayDevice* DisplayDevice, InputDevice* InputDevice, Cour
         }
         // Keyboard Inputs
         if (InputDevice->KeyStates[SDL_SCANCODE_SPACE]){
-            ScreenCoordinates.x = 1;
+            ScreenCoordinates.x = 2;
             MoveTile(&ScreenTile, &ScreenCoordinates);
         }
 
@@ -45,7 +48,8 @@ int Scene_Courtroom(DisplayDevice* DisplayDevice, InputDevice* InputDevice, Cour
 
         // Rendering
         SDL_RenderClear(DisplayDevice->Renderer);
-        SDL_RenderCopy(DisplayDevice->Renderer, Courtroom, &ScreenTile, NULL);
+        SDL_RenderCopy(DisplayDevice->Renderer, Courtroom, &ScreenTile, NULL); // Background
+        SDL_RenderCopy(DisplayDevice->Renderer, CSurfaces[Mia_Fey], &CSrcRects[Mia_Fey], &CDstRects[Mia_Fey]); // Curent Character on screen
         SDL_RenderPresent(DisplayDevice->Renderer);
     }
 Exit:

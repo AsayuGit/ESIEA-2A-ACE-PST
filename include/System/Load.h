@@ -3,6 +3,6 @@
 
 #include "include.h"
 
-Surface* LoadSurface(char FilePath[], DisplayDevice* Device);
+Surface* LoadSurface(char FilePath[], DisplayDevice* Device, Uint32* ColorKey);
 
 #endif

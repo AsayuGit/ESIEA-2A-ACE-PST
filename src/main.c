@@ -15,6 +15,8 @@ int main(int argc, char* argv){
     // We start the courtroom Scene
     Scene_Courtroom(DisplayDevice, InputDevice, CourtroomContext);
 
+    free(CourtroomContext);
+
     free(DisplayDevice);
 
     return 0;

@@ -1,12 +1,14 @@
 INCLUDES = \
 		-I include/ \
 		-I include/System/ \
-		-I include/Scenes/
+		-I include/Scenes/ \
+		-I include/Characters/
 
 SOURCES = \
 		src/*.c \
 		src/System/*.c \
-		src/Scenes/*.c
+		src/Scenes/*.c \
+		src/Characters/*.c
 
 FILENAME = ACE
 
