@@ -10,12 +10,15 @@ typedef enum{
 } Cid;
 
 typedef struct{
-    Surface* Surface; // Character Surfaces
+    Surface* Surface; // Character Surface
+    char *SurfacePath;// Character Surface path 
     SDL_Rect SrcRect; // Character source rect
     SDL_Rect DstRect; // Character destination rect
-    Uint32 ColorKey;  // Character color keys
+    Uint32 ColorKey;  // Character color key
 } Characters;
 
 extern Characters Cast[CharactersCount];
+
+void InitCharacter(int CharacterID, DisplayDevice* DisplayDevice);
 
 #endif

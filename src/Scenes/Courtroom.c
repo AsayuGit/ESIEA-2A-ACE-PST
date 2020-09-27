@@ -18,7 +18,7 @@ int Scene_Courtroom(DisplayDevice* DisplayDevice, InputDevice* InputDevice, Cour
     }
 
     Courtroom = LoadSurface(ROOT""TEXTURES"Places"SL"Courtroom"TEX_EXT, DisplayDevice, NULL);
-    Cast[Mia_Fey].Surface = LoadSurface(ROOT""TEXTURES"Characters"SL"Mia_Fey"TEX_EXT, DisplayDevice, &Cast[Mia_Fey].ColorKey);
+    InitCharacter(Mia_Fey, DisplayDevice); // Initialise the character in memory
 
     MoveTile(&ScreenTile, &ScreenCoordinates); // Default Screen postion
     
