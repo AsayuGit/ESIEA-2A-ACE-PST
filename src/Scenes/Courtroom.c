@@ -9,7 +9,8 @@ int Scene_Courtroom(DisplayDevice* DisplayDevice, InputDevice* InputDevice, Cour
     Surface* Courtroom = NULL;
     SDL_Rect ScreenTile = {0, 0, DisplayDevice->ScreenResolution.x, DisplayDevice->ScreenResolution.y};
 
-    Vector2i ScreenCoordinates = {0, 1};
+    Vector2i ScreenCoordinates = {0, 0};
+    int CurrentCharacter;
 
     // Initialisation
     if (Context == NULL){
@@ -18,9 +19,11 @@ int Scene_Courtroom(DisplayDevice* DisplayDevice, InputDevice* InputDevice, Cour
     }
 
     Courtroom = LoadSurface(ROOT""TEXTURES"Places"SL"Courtroom"TEX_EXT, DisplayDevice, NULL);
-    InitCharacter(Mia_Fey, DisplayDevice); // Initialise the character in memory
-
     MoveTile(&ScreenTile, &ScreenCoordinates); // Default Screen postion
+    
+    CurrentCharacter = Phoenix_Wright;
+    InitCharacter(Phoenix_Wright, DisplayDevice); // Initialise the character in memory
+    InitCharacter(Mia_Fey, DisplayDevice);
     
     // Main Loop
     while (1){
@@ -37,7 +40,9 @@ int Scene_Courtroom(DisplayDevice* DisplayDevice, InputDevice* InputDevice, Cour
         }
         // Keyboard Inputs
         if (InputDevice->KeyStates[SDL_SCANCODE_SPACE]){
+            ScreenCoordinates.y = 1;
             ScreenCoordinates.x = 2;
+            CurrentCharacter = Mia_Fey;
             MoveTile(&ScreenTile, &ScreenCoordinates);
         }
 
@@ -49,7 +54,7 @@ int Scene_Courtroom(DisplayDevice* DisplayDevice, InputDevice* InputDevice, Cour
         // Rendering
         SDL_RenderClear(DisplayDevice->Renderer);
         SDL_RenderCopy(DisplayDevice->Renderer, Courtroom, &ScreenTile, NULL); // Background
-        SDL_RenderCopy(DisplayDevice->Renderer, Cast[Mia_Fey].Surface, &Cast[Mia_Fey].SrcRect, &Cast[Mia_Fey].DstRect); // Curent Character on screen
+        SDL_RenderCopy(DisplayDevice->Renderer, Cast[CurrentCharacter].Surface, &Cast[CurrentCharacter].SrcRect, &Cast[CurrentCharacter].DstRect); // Curent Character on screen
         SDL_RenderPresent(DisplayDevice->Renderer);
     }
 Exit:

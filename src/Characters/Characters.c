@@ -3,18 +3,18 @@
 // Characters constants
 Characters Cast[CharactersCount] = {
     { // Phoenix Wright
-        NULL, // CSurface
-        "Hello",
-        {0, 0, 0, 0}, // CSrcRects
-        {0, 0, 0, 0}, // CDstRects
-        0xFFb5a5d5  //CColorKey
+        NULL, // Surface
+        ROOT""TEXTURES"Characters"SL"Phoenix_Wright"TEX_EXT,
+        {26, 1197, 248, 151}, // SrcRect
+        {0, 41, 248, 151}, // DstRect
+        0xFFb5a5d5  // ColorKey
     },
     { // Mia Fey
-        NULL, // CSurface
+        NULL, // Surface
         ROOT""TEXTURES"Characters"SL"Mia_Fey"TEX_EXT,
-        {54, 1045, 73, 169}, // CSrcRects
-        {91, 23, 73, 169}, // CDstRects
-        0xFFb5a5d5  //CColorKey
+        {54, 1045, 73, 169}, // SrcRect
+        {87, 23, 73, 169}, // DstRect
+        0xFFb5a5d5  // ColorKey
     }
 };
 
