@@ -18,7 +18,7 @@ int Scene_Courtroom(DisplayDevice* DisplayDevice, InputDevice* InputDevice, Cour
     }
 
     Courtroom = LoadSurface(ROOT""TEXTURES"Places"SL"Courtroom"TEX_EXT, DisplayDevice, NULL);
-    CSurfaces[Mia_Fey] = LoadSurface(ROOT""TEXTURES"Characters"SL"Mia_Fey"TEX_EXT, DisplayDevice, &CColorKey[Mia_Fey]);
+    Cast[Mia_Fey].Surface = LoadSurface(ROOT""TEXTURES"Characters"SL"Mia_Fey"TEX_EXT, DisplayDevice, &Cast[Mia_Fey].ColorKey);
 
     MoveTile(&ScreenTile, &ScreenCoordinates); // Default Screen postion
     
@@ -49,7 +49,7 @@ int Scene_Courtroom(DisplayDevice* DisplayDevice, InputDevice* InputDevice, Cour
         // Rendering
         SDL_RenderClear(DisplayDevice->Renderer);
         SDL_RenderCopy(DisplayDevice->Renderer, Courtroom, &ScreenTile, NULL); // Background
-        SDL_RenderCopy(DisplayDevice->Renderer, CSurfaces[Mia_Fey], &CSrcRects[Mia_Fey], &CDstRects[Mia_Fey]); // Curent Character on screen
+        SDL_RenderCopy(DisplayDevice->Renderer, Cast[Mia_Fey].Surface, &Cast[Mia_Fey].SrcRect, &Cast[Mia_Fey].DstRect); // Curent Character on screen
         SDL_RenderPresent(DisplayDevice->Renderer);
     }
 Exit:
