@@ -6,6 +6,8 @@ int Scene_Courtroom(DisplayDevice* DisplayDevice, InputDevice* InputDevice, Cour
     // Declaration
     SDL_Event event;
 
+    DialogueContext* DiagContext;
+
     Surface* Courtroom = NULL;
     SDL_Rect ScreenTile = {0, 0, DisplayDevice->ScreenResolution.x, DisplayDevice->ScreenResolution.y};
 
@@ -14,9 +16,11 @@ int Scene_Courtroom(DisplayDevice* DisplayDevice, InputDevice* InputDevice, Cour
 
     // Initialisation
     if (Context == NULL){
-        Context = (CourtroomContext*)malloc(sizeof(CourtroomContext));
-        // Default values
+        fprintf(stderr, "Courtroom Context non initialised");
     }
+
+    DiagContext = (DialogueContext*)malloc(sizeof(DialogueContext));
+
 
     Courtroom = LoadSurface(ROOT""TEXTURES"Places"SL"Courtroom"TEX_EXT, DisplayDevice, NULL);
     MoveTile(&ScreenTile, &ScreenCoordinates); // Default Screen postion
@@ -55,6 +59,7 @@ int Scene_Courtroom(DisplayDevice* DisplayDevice, InputDevice* InputDevice, Cour
         SDL_RenderClear(DisplayDevice->Renderer);
         SDL_RenderCopy(DisplayDevice->Renderer, Courtroom, &ScreenTile, NULL); // Background
         SDL_RenderCopy(DisplayDevice->Renderer, Cast[CurrentCharacter].Surface, &Cast[CurrentCharacter].SrcRect, &Cast[CurrentCharacter].DstRect); // Curent Character on screen
+        Dialogue(DisplayDevice, InputDevice, DiagContext);
         SDL_RenderPresent(DisplayDevice->Renderer);
     }
 Exit:
@@ -64,6 +69,8 @@ Exit:
     #else
     SDL_DestroyTexture(Courtroom);
     #endif
+
+    //free(DiagContext);
 
     return 0;
 }

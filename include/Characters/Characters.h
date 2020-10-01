@@ -15,7 +15,7 @@ typedef struct{
     SDL_Rect SrcRect; // Character source rect
     SDL_Rect DstRect; // Character destination rect
     Uint32 ColorKey;  // Character color key
-} Characters;
+} Characters; // Sprite ?
 
 extern Characters Cast[CharactersCount];
 

@@ -2,13 +2,15 @@ INCLUDES = \
 		-I include/ \
 		-I include/System/ \
 		-I include/Scenes/ \
-		-I include/Characters/
+		-I include/Characters/ \
+		-I include/Menus/
 
 SOURCES = \
 		src/*.c \
 		src/System/*.c \
 		src/Scenes/*.c \
-		src/Characters/*.c
+		src/Characters/*.c \
+		src/Menus/*.c
 
 FILENAME = ACE
 

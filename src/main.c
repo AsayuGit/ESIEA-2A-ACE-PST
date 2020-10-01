@@ -6,16 +6,16 @@ int main(int argc, char* argv){
     DisplayDevice* DisplayDevice;
     InputDevice* InputDevice;
 
-    CourtroomContext* CourtroomContext;
-    CourtroomContext = NULL;
+    CourtroomContext* CourtContext;
+    CourtContext = (CourtroomContext*)malloc(sizeof(CourtroomContext));
 
     InitSDL();
     DisplayDevice = CreateDisplayDevice(256, 192, "Ace YAY");
     InputDevice = InitInputs(false);
     // We start the courtroom Scene
-    Scene_Courtroom(DisplayDevice, InputDevice, CourtroomContext);
+    Scene_Courtroom(DisplayDevice, InputDevice, CourtContext);
 
-    free(CourtroomContext);
+    free(CourtContext);
 
     free(DisplayDevice);
 
