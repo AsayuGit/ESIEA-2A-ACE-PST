@@ -14,7 +14,7 @@ int main(int argc, char* argv){
     InputDevice = InitInputs(false);
     // We start the courtroom Scene
     Scene_Courtroom(DisplayDevice, InputDevice, CourtContext);
-
+    
     free(CourtContext);
 
     free(DisplayDevice);

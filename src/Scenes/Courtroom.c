@@ -2,14 +2,14 @@
 #include "SceneCommon.h"
 #include "Characters.h"
 
-int Scene_Courtroom(DisplayDevice* DisplayDevice, InputDevice* InputDevice, CourtroomContext* Context){
+int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomContext* Context){
     // Declaration
     SDL_Event event;
 
     DialogueContext* DiagContext;
 
     Surface* Courtroom = NULL;
-    SDL_Rect ScreenTile = {0, 0, DisplayDevice->ScreenResolution.x, DisplayDevice->ScreenResolution.y};
+    SDL_Rect ScreenTile = {0, 0, DDevice->ScreenResolution.x, DDevice->ScreenResolution.y};
 
     Vector2i ScreenCoordinates = {0, 0};
     int CurrentCharacter;
@@ -20,14 +20,14 @@ int Scene_Courtroom(DisplayDevice* DisplayDevice, InputDevice* InputDevice, Cour
     }
 
     DiagContext = (DialogueContext*)malloc(sizeof(DialogueContext));
+    DiagContext->DialogBox = NULL;
 
-
-    Courtroom = LoadSurface(ROOT""TEXTURES"Places"SL"Courtroom"TEX_EXT, DisplayDevice, NULL);
+    Courtroom = LoadSurface(ROOT""TEXTURES"Places"SL"Courtroom"TEX_EXT, DDevice, NULL);
     MoveTile(&ScreenTile, &ScreenCoordinates); // Default Screen postion
     
     CurrentCharacter = Phoenix_Wright;
-    InitCharacter(Phoenix_Wright, DisplayDevice); // Initialise the character in memory
-    InitCharacter(Mia_Fey, DisplayDevice);
+    InitCharacter(Phoenix_Wright, DDevice); // Initialise the character in memory
+    InitCharacter(Mia_Fey, DDevice);
     
     // Main Loop
     while (1){
@@ -43,7 +43,7 @@ int Scene_Courtroom(DisplayDevice* DisplayDevice, InputDevice* InputDevice, Cour
             }
         }
         // Keyboard Inputs
-        if (InputDevice->KeyStates[SDL_SCANCODE_SPACE]){
+        if (IDevice->KeyStates[SDL_SCANCODE_SPACE]){
             ScreenCoordinates.y = 1;
             ScreenCoordinates.x = 2;
             CurrentCharacter = Mia_Fey;
@@ -56,11 +56,11 @@ int Scene_Courtroom(DisplayDevice* DisplayDevice, InputDevice* InputDevice, Cour
 
 
         // Rendering
-        SDL_RenderClear(DisplayDevice->Renderer);
-        SDL_RenderCopy(DisplayDevice->Renderer, Courtroom, &ScreenTile, NULL); // Background
-        SDL_RenderCopy(DisplayDevice->Renderer, Cast[CurrentCharacter].Surface, &Cast[CurrentCharacter].SrcRect, &Cast[CurrentCharacter].DstRect); // Curent Character on screen
-        Dialogue(DisplayDevice, InputDevice, DiagContext);
-        SDL_RenderPresent(DisplayDevice->Renderer);
+        SDL_RenderClear(DDevice->Renderer);
+        SDL_RenderCopy(DDevice->Renderer, Courtroom, &ScreenTile, NULL); // Background
+        SDL_RenderCopy(DDevice->Renderer, Cast[CurrentCharacter].Surface, &Cast[CurrentCharacter].SrcRect, &Cast[CurrentCharacter].DstRect); // Curent Character on screen
+        Dialogue(DDevice, IDevice, DiagContext);
+        SDL_RenderPresent(DDevice->Renderer);
     }
 Exit:
     // Cleaning memory
