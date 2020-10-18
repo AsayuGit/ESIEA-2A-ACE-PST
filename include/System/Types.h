@@ -23,6 +23,13 @@ typedef struct{
     bool JoyEnabled;
 } InputDevice;
 
+typedef struct{
+    SDL_Surface* FontSurface;
+    #ifndef SDL
+    SDL_Texture* FontTexture;
+    #endif
+} BitmapFont;
+
 // Uniformity between SDL1.2 and SDL2
 #ifdef SDL
 typedef SDL_Surface Surface;

@@ -32,8 +32,10 @@
 #include "Types.h"
 #include "System.h"
 #include "Load.h"
+#include "Graphics.h"
 
 #define TEXTURES "Assets" SL "Textures" SL
+#define FONTS "Assets" SL "Fonts" SL
 #define TEX_EXT ".bmp"
 
 #endif

@@ -18,9 +18,8 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
     if (Context == NULL){
         fprintf(stderr, "Courtroom Context non initialised");
     }
-
-    DiagContext = (DialogueContext*)malloc(sizeof(DialogueContext));
-    DiagContext->DialogBox = NULL;
+    DiagContext = InitDialog(Context->Font);
+    SetDialogueText(DiagContext, "Objection !\nThe witness could not have known the statue was a clock !");
 
     Courtroom = LoadSurface(ROOT""TEXTURES"Places"SL"Courtroom"TEX_EXT, DDevice, NULL);
     MoveTile(&ScreenTile, &ScreenCoordinates); // Default Screen postion
@@ -28,7 +27,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
     CurrentCharacter = Phoenix_Wright;
     InitCharacter(Phoenix_Wright, DDevice); // Initialise the character in memory
     InitCharacter(Mia_Fey, DDevice);
-    
+
     // Main Loop
     while (1){
         // Events Loop
@@ -48,6 +47,8 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
             ScreenCoordinates.x = 2;
             CurrentCharacter = Mia_Fey;
             MoveTile(&ScreenTile, &ScreenCoordinates);
+            ClearDialogueText(DDevice, DiagContext);
+            SetDialogueText(DiagContext, "Do you have something in mind phoenix ?");
         }
 
 
