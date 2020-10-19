@@ -20,10 +20,13 @@ all:
 
 legacy:
 	clear
-	gcc -D SDL -o $(FILENAME) $(SOURCES) $(INCLUDES) -lSDL -lSDL_image -lSDL_mixer
+	gcc -D _SDL -o $(FILENAME) $(SOURCES) $(INCLUDES) $$(sdl-config --cflags --libs) -lSDL_image -lSDL_mixer
 
 dependencies:
 	sudo apt install libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev
 
-run: all
+clean:
+	rm ACE
+
+run:
 	./$(FILENAME)

@@ -1,9 +1,9 @@
 #ifndef _LOAD
 #define _LOAD
 
-#include "include.h"
+    #include "include.h"
 
-SDL_Surface* LoadSDLSurface(char FilePath[], DisplayDevice* Device, Uint32* ColorKey);
-Surface* LoadSurface(char FilePath[], DisplayDevice* Device, Uint32* ColorKey);
+    SDL_Surface* LoadSDLSurface(char FilePath[], DisplayDevice* Device, Uint32* ColorKey);
+    Surface* LoadSurface(char FilePath[], DisplayDevice* Device, Uint32* ColorKey, char AlphaChannel);
 
 #endif

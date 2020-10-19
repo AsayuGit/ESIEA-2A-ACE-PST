@@ -21,7 +21,9 @@ int main(int argc, char* argv){
     if (MainFont.FontSurface == NULL){
         fprintf(stderr, "Can't load font %s\n", SDL_GetError());
     }
-    MainFont.FontTexture = SDL_CreateTextureFromSurface(DDevice->Renderer, MainFont.FontSurface);
+    #ifndef _SDL
+        MainFont.FontTexture = SDL_CreateTextureFromSurface(DDevice->Renderer, MainFont.FontSurface);
+    #endif
     CourtContext->Font = &MainFont;
     // We start the courtroom Scene
     Scene_Courtroom(DDevice, IDevice, CourtContext);

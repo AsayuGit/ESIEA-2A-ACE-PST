@@ -11,9 +11,13 @@ DialogueContext* InitDialog(BitmapFont* Font){
 }
 
 void ClearDialogueText(DisplayDevice* DDevice, DialogueContext* Context){
-    SDL_SetRenderTarget(DDevice->Renderer, Context->textLayer);
-    SDL_RenderClear(DDevice->Renderer);
-    SDL_SetRenderTarget(DDevice->Renderer, NULL); // Keep or nah ?
+    #ifdef _SDL
+        SDL_FillRect(Context->textLayer, NULL, 0x000000);
+    #else
+        SDL_SetRenderTarget(DDevice->Renderer, Context->textLayer);
+        SDL_RenderClear(DDevice->Renderer);
+        SDL_SetRenderTarget(DDevice->Renderer, NULL); // Keep or nah ?
+    #endif
 }
 
 void SetDialogueText(DialogueContext* Context, char* Text){
@@ -30,22 +34,37 @@ void Dialogue(DisplayDevice* DDevice, InputDevice* InputDevice, DialogueContext*
 
     // DialogBox Rendering
     if (Context->DialogBox == NULL){
-        Context->DialogBox = LoadSurface(ROOT""TEXTURES"Menus"SL"Dialog"TEX_EXT, DDevice, NULL);
+        Context->DialogBox = LoadSurface(ROOT""TEXTURES"Menus"SL"Dialog"TEX_EXT, DDevice, NULL, true);
         if (Context->DialogBox == NULL){
             fprintf(stderr, "Can't load texture %s\n", SDL_GetError());
         }else{
-            SDL_QueryTexture(Context->DialogBox, NULL, NULL, &(Context->DialogBoxBounds.w), &(Context->DialogBoxBounds.h));
+            #ifdef _SDL
+                Context->DialogBoxBounds.w = Context->DialogBox->w;
+                Context->DialogBoxBounds.h = Context->DialogBox->h;
+            #else
+                SDL_QueryTexture(Context->DialogBox, NULL, NULL, &(Context->DialogBoxBounds.w), &(Context->DialogBoxBounds.h));
+            #endif
         }
     }
-    SDL_RenderCopy(DDevice->Renderer, Context->DialogBox, NULL, NULL);
+    #ifdef _SDL
+        SDL_BlitSurface(Context->DialogBox, NULL, DDevice->Screen, NULL);
+    #else
+        SDL_RenderCopy(DDevice->Renderer, Context->DialogBox, NULL, NULL);
+    #endif
 
     if (Context->textLayer == NULL){
-        Context->textLayer = SDL_CreateTexture(DDevice->Renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, Context->DialogBoxBounds.w, Context->DialogBoxBounds.h);
-        SDL_SetTextureBlendMode(Context->textLayer, SDL_BLENDMODE_BLEND);
+        #ifdef _SDL
+            Context->textLayer = CreateEmptySurface(Context->DialogBoxBounds.w, Context->DialogBoxBounds.h);
+        #else
+            Context->textLayer = SDL_CreateTexture(DDevice->Renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, Context->DialogBoxBounds.w, Context->DialogBoxBounds.h);
+            SDL_SetTextureBlendMode(Context->textLayer, SDL_BLENDMODE_BLEND);
+        #endif
     }
 
     if (Context->Text[Context->progress] != '\0'){
-        SDL_SetRenderTarget(DDevice->Renderer, Context->textLayer);
+        #ifndef _SDL
+            SDL_SetRenderTarget(DDevice->Renderer, Context->textLayer);
+        #endif
 
         // Text processing
         if (Context->Text[Context->progress] != '\n'){
@@ -79,7 +98,11 @@ void Dialogue(DisplayDevice* DDevice, InputDevice* InputDevice, DialogueContext*
             SrcLetter.h = Context->DstLetter.h = letterY - 1;
             SrcLetter.w = Context->DstLetter.w = letterW;
 
-            SDL_RenderCopy(DDevice->Renderer, Context->Font->FontTexture, &SrcLetter, &Context->DstLetter);
+            #ifdef _SDL
+                SDL_BlitSurface(Context->Font->FontSurface, &SrcLetter, Context->textLayer, &Context->DstLetter);
+            #else
+                SDL_RenderCopy(DDevice->Renderer, Context->Font->FontTexture, &SrcLetter, &Context->DstLetter);
+            #endif
             
             if (Context->DstLetter.x + SrcLetter.w < Context->DialogBoxBounds.w - Context->DialogBoxBounds.x){
                 Context->DstLetter.x += SrcLetter.w + 1;
@@ -92,10 +115,15 @@ void Dialogue(DisplayDevice* DDevice, InputDevice* InputDevice, DialogueContext*
             Context->DstLetter.x = Context->DialogBoxBounds.x;
         }
 
-        printf("Compute : %d\n", Context->progress);
+        //printf("Compute : %d\n", Context->progress);
         Context->progress++;
-        SDL_SetRenderTarget(DDevice->Renderer, NULL);
+        #ifndef _SDL
+            SDL_SetRenderTarget(DDevice->Renderer, NULL);
+        #endif
     }
-
-    SDL_RenderCopy(DDevice->Renderer, Context->textLayer, NULL, NULL);
+    #ifdef _SDL
+        SDL_BlitSurface(Context->textLayer, NULL, DDevice->Screen, NULL);
+    #else
+        SDL_RenderCopy(DDevice->Renderer, Context->textLayer, NULL, NULL);
+    #endif
 }

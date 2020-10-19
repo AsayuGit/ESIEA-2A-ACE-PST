@@ -1,12 +1,12 @@
 #ifndef _COURTROOM
 #define _COURTROOM
 
-#include "include.h"
+    #include "include.h"
 
-typedef struct{
-    BitmapFont* Font;
-} CourtroomContext;
+    typedef struct{
+        BitmapFont* Font;
+    } CourtroomContext;
 
-int Scene_Courtroom(DisplayDevice* DisplayDevice, InputDevice* InputDevice, CourtroomContext* Context);
+    int Scene_Courtroom(DisplayDevice* DisplayDevice, InputDevice* InputDevice, CourtroomContext* Context);
 
 #endif
