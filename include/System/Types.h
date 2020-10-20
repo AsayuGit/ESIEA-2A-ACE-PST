@@ -6,9 +6,11 @@
         typedef SDL_Surface SDL_Window;
         typedef SDL_Surface Surface;
         #define SDL_GetKeyboardState SDL_GetKeyState
+        #define PADKEY event.key.keysym.sym
     #else
         typedef SDL_Texture Surface;
         #define SDL_HWSURFACE SDL_SWSURFACE
+        #define PADKEY event.key.keysym.scancode
     #endif
 
     typedef enum{

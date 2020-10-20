@@ -8,6 +8,8 @@
         bool shown;
         int progress;
         char* Text;
+        int TextSpeed;
+        Uint32 LastLetter;
 
         // Dialog Box
         Surface* DialogBox;
@@ -17,11 +19,14 @@
         BitmapFont* Font;
         SDL_Rect DstLetter;
         Surface* textLayer;
+
+        // Display
+        DisplayDevice* DDevice;
     } DialogueContext;
 
-    DialogueContext* InitDialog(BitmapFont* Font);
-    void ClearDialogueText(DisplayDevice* DDevice, DialogueContext* Context);
-    void SetDialogueText(DialogueContext* Context, char* Text);
-    void Dialogue(DisplayDevice* DisplayDevice, InputDevice* InputDevice, DialogueContext* Context);
+    void ClearDialogueText(DialogueContext* Context);
+    int SetDialogueText(DialogueContext* Context, char* Text);
+    DialogueContext* InitDialog(DisplayDevice* DDevice, BitmapFont* Font);
+    void Dialogue(InputDevice* InputDevice, DialogueContext* Context);
 
 #endif

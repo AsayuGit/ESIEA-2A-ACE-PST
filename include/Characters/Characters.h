@@ -10,15 +10,26 @@
     } Cid;
 
     typedef struct{
+        const SDL_Rect SrcRect; // Character source rect
+        SDL_Rect DstRect; // Character destination
+        int NbOfFrames;   // Number of frames in an animation
+        int Framerate;  // Number of milliseconds between two frames
+    } Animation;
+
+    typedef struct{
         Surface* Surface; // Character Surface
         char *SurfacePath;// Character Surface path 
-        SDL_Rect SrcRect; // Character source rect
-        SDL_Rect DstRect; // Character destination rect
         Uint32 ColorKey;  // Character color key
+        Uint32 LastFrame; // Time at the last frame display
+        int CurrentFrame; // Frame currently being displayed
+        int PlayingAnimation; // The Animation currently playing
+        Animation* Anim; // Contains all the differents animations for a character
     } Characters; // Sprite ?
 
-    extern Characters Cast[CharactersCount];
+    //extern Characters Cast[CharactersCount];
 
-    void InitCharacter(int CharacterID, DisplayDevice* DisplayDevice);
+    void InitCharacter(DisplayDevice* DisplayDevice, int CharacterID);
+    void CharacterPlayAnimation(int CharacterID, int AnimationID);
+    void DisplayCharacter(DisplayDevice* DDevice, int CharacterID);
 
 #endif
