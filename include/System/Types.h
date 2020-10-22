@@ -24,6 +24,11 @@
     } Vector2i;
 
     typedef struct{
+        double x;
+        double y;
+    } Vector2d;
+
+    typedef struct{
         SDL_Window *Screen;
         #ifndef _SDL
             SDL_Renderer *Renderer;

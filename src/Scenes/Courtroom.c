@@ -8,14 +8,11 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
     SDL_Event event;
 
     DialogueContext* DiagContext;
-
-    Surface* Courtroom = NULL;
-    SDL_Rect ScreenTile = {0, 0, DDevice->ScreenResolution.x, DDevice->ScreenResolution.y};
+    SceneContext* SContext;
     
     Surface* Desk = NULL; 
     SDL_Rect DeskRect;
 
-    Vector2i ScreenCoordinates = {0, 0};
     int CurrentCharacter;
     Uint32 CommonColorKey = 0xFF00FF;
     bool SceneFlip = false;
@@ -28,9 +25,8 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
     }
     DiagContext = InitDialog(DDevice, Context->Font);
     SetDialogueText(DiagContext, "Mmmmm");
-    
-    Courtroom = LoadSurface(ROOT""TEXTURES"Places"SL"Courtroom"TEX_EXT, DDevice, NULL, false);
-    MoveTile(&ScreenTile, &ScreenCoordinates); // Default Screen postion
+
+    SContext = InitScene(DDevice, S_Courtroom);
     
     Desk = LoadSurface(ROOT""TEXTURES"Places"SL"CourtroomDesk"TEX_EXT, DDevice, &CommonColorKey, false);
     #ifdef _SDL
@@ -67,14 +63,34 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                         break;
                     
                     case 1:
-                        ScreenCoordinates.y = 1;
-                        ScreenCoordinates.x = 2;
                         CurrentCharacter = Mia_Fey;
-                        MoveTile(&ScreenTile, &ScreenCoordinates);
+                        MoveTile(SContext, 5);
                         CharacterPlayAnimation(Mia_Fey, 1);
                         ReturnToDefault = SetDialogueText(DiagContext, "Do you have something in mind phoenix ?");
                         //SceneFlip = true;
                         //DeskRect.x = DDevice->ScreenResolution.x - DeskRect.w; // For Edgeworth
+                        DeskRect.x = DDevice->ScreenResolution.x;
+                        Plot++;
+                        break;
+                    case 2:
+                        CurrentCharacter = Phoenix_Wright;
+                        MoveTile(SContext, 0);
+                        CharacterPlayAnimation(Phoenix_Wright, 1);
+                        ReturnToDefault = SetDialogueText(DiagContext, "Your Honor !\nLook at the witness face !");
+                        DeskRect.x = 0;
+                        Plot++;
+                        break;
+                    
+                    case 3:
+                        BackgroundPlayAnimation(SContext, 1);
+                        Plot++;
+                        break;
+
+                    case 4:
+                        CurrentCharacter = Mia_Fey;
+                        MoveTile(SContext, 5);
+                        CharacterPlayAnimation(Mia_Fey, 1);
+                        ReturnToDefault = SetDialogueText(DiagContext, "Wow, you just slid across the courtroom !");
                         DeskRect.x = DDevice->ScreenResolution.x;
                         Plot++;
                         break;
@@ -105,17 +121,14 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
         }
         // Rendering
         #ifdef _SDL
-            SDL_BlitSurface(Courtroom, &ScreenTile, DDevice->Screen, NULL); // Background
-            
+            DisplayBackground(DDevice, SContext); // Background
             DisplayCharacter(DDevice, CurrentCharacter); // Curent Character on screen
             
             FlipBlitSurface(Desk, NULL, DDevice->Screen, &DeskRect, SceneFlip); // Desk
             Dialogue(IDevice, DiagContext); // Dialog
             SDL_Flip(DDevice->Screen);
         #else
-            //SDL_RenderClear(DDevice->Renderer); Unnecessary as the background fills the screen
-            SDL_RenderCopy(DDevice->Renderer, Courtroom, &ScreenTile, NULL); // Background
-            
+            DisplayBackground(DDevice, SContext); // Background
             DisplayCharacter(DDevice, CurrentCharacter); // Curent Character on screen
             
             SDL_RenderCopyEx(DDevice->Renderer, Desk, NULL, &DeskRect, 0, 0, SceneFlip); // Desk
@@ -127,12 +140,13 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
 
 Exit:
     // Cleaning memory
+/*
     #ifdef _SDL
     SDL_FreeSurface(Courtroom);
     #else
     SDL_DestroyTexture(Courtroom);
     #endif
-
+*/
     //free(DiagContext);
 
     return 0;
