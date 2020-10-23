@@ -23,16 +23,21 @@
     } Background;
 
     typedef struct{
+        // Background Texture properties
         Surface* Surface; // Background Surface
         Vector2i SurfaceBounds;
         int TileID;
         SDL_Rect SrcRect;
         
+        // Background Animation properties
         int PlayingAnimation;
-        Uint32 StartFrame; // Time at the last frame display
+        Uint32 StartFrame;
         int CurrentState;
         int AnimOffset;
         BGAnimation* Animation;
+
+        // Metadata
+        int ObjectLayerOffset;
     } SceneContext;
 
     SceneContext* InitScene(DisplayDevice* DDevice, int BackgroundID);

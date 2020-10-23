@@ -40,6 +40,8 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
     InitCharacter(DDevice, Phoenix_Wright); // Initialise the character in memory
     InitCharacter(DDevice, Mia_Fey);
 
+    TieCharacterToBackground(Phoenix_Wright, &SContext->ObjectLayerOffset);
+
     // Main Loop
     while (1){
         // Events Loop
@@ -111,7 +113,11 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
         }
 
         // Keyboard Inputs
-        if (IDevice->KeyStates[PAD_A]){
+        //if (IDevice->KeyStates[PAD_A]){
+        //}
+        //printf("Object layer offset : %d\n", SContext->ObjectLayerOffset);
+        if (SContext->PlayingAnimation != -1){
+            DeskRect.x = -SContext->ObjectLayerOffset;
         }
 
         // Logic

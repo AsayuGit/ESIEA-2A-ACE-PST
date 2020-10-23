@@ -37,7 +37,7 @@ SceneContext* InitScene(DisplayDevice* DDevice, int BackgroundID){
     SceneContext* LoadingContext;
     LoadingContext = (SceneContext*)malloc(sizeof(SceneContext));
     LoadingContext->PlayingAnimation = -1;
-    LoadingContext->TileID = LoadingContext->SrcRect.x = LoadingContext->SrcRect.y = 0;
+    LoadingContext->TileID = LoadingContext->SrcRect.x = LoadingContext->SrcRect.y = LoadingContext->ObjectLayerOffset = 0;
     LoadingContext->Surface = LoadSurface((char*)Scenes[BackgroundID].SurfacePath, DDevice, NULL, false);
     #ifdef _SDL
         LoadingContext->SurfaceBounds.x = LoadingContext->Surface->w;
@@ -55,11 +55,13 @@ void MoveTile(SceneContext* Context, int TileID){
     Context->SrcRect.y = ((TileID * Context->SrcRect.w) / Context->SurfaceBounds.x);
     Context->SrcRect.x = (TileID - (Context->SrcRect.y * (Context->SurfaceBounds.x / Context->SrcRect.w))) * Context->SrcRect.w;
     Context->SrcRect.y *=  Context->SrcRect.h;
+    Context->ObjectLayerOffset = 0;
 }
 
 void BackgroundPlayAnimation(SceneContext* Context, int AnimationID){
     Context->PlayingAnimation = AnimationID;
     Context->StartFrame = Context->CurrentState = Context->AnimOffset = 0;
+    Context->ObjectLayerOffset = 0;
 }
 
 void DisplayBackground(DisplayDevice* DDevice, SceneContext* Context){
@@ -78,7 +80,8 @@ void DisplayBackground(DisplayDevice* DDevice, SceneContext* Context){
             Progress = Context->Animation->AnimRange[Context->CurrentState].y;
         }
 
-        AnimSrcRect.x = (Context->Animation->AnimStates[Context->CurrentState].x * (Progress * Progress)) + (Context->Animation->AnimStates[Context->CurrentState].y * Progress) + Context->AnimOffset;
+        Context->ObjectLayerOffset = (Context->Animation->AnimStates[Context->CurrentState].x * (Progress * Progress)) + (Context->Animation->AnimStates[Context->CurrentState].y * Progress) + Context->AnimOffset;
+        AnimSrcRect.x =  Context->ObjectLayerOffset + Context->Animation->AnimRegion.x;
         AnimSrcRect.y = Context->Animation->AnimRegion.y;
         AnimSrcRect.w = DDevice->ScreenResolution.x;
         AnimSrcRect.h = DDevice->ScreenResolution.y;
@@ -99,6 +102,7 @@ void DisplayBackground(DisplayDevice* DDevice, SceneContext* Context){
             Context->AnimOffset = AnimSrcRect.x;
             if (Context->CurrentState == Context->Animation->NbOfAnimStates){
                 Context->SrcRect = AnimSrcRect;
+                Context->PlayingAnimation = -1;
             }
         }
 

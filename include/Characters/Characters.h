@@ -17,9 +17,15 @@
     } Animation;
 
     typedef struct{
+        // Character Texture properties
         Surface* Surface; // Character Surface
         char *SurfacePath;// Character Surface path 
         Uint32 ColorKey;  // Character color key
+
+        // Background Interaction properties
+        int* BackgroundOffset;
+
+        // Character Animation properties
         Uint32 LastFrame; // Time at the last frame display
         int CurrentFrame; // Frame currently being displayed
         int PlayingAnimation; // The Animation currently playing
@@ -29,6 +35,7 @@
     //extern Characters Cast[CharactersCount];
 
     void InitCharacter(DisplayDevice* DisplayDevice, int CharacterID);
+    void TieCharacterToBackground(int CharacterID, int* BackgroundOffset);
     void CharacterPlayAnimation(int CharacterID, int AnimationID);
     void DisplayCharacter(DisplayDevice* DDevice, int CharacterID);
 

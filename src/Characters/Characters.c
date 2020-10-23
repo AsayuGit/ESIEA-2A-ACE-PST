@@ -36,15 +36,17 @@ Characters Cast[CharactersCount] = {
         NULL,                                                   // Surface
         ROOT""TEXTURES"Characters"SL"Phoenix_Wright"TEX_EXT,    // SurfacePath
         0x00b5a5d5,                                             // ColorKey
+        NULL,
         0,                                                      // LastFrame
         0,                                                      // CurrentFrame
         0,                                                      // PlayingAnimation
-        (Animation*)&PhoenixAnimations                                      // Anim
+        (Animation*)&PhoenixAnimations                          // Anim
     },
     { // Mia Fey
         NULL,
         ROOT""TEXTURES"Characters"SL"Mia_Fey"TEX_EXT,
         0x00b5a5d5,
+        NULL,
         0,
         0,
         0,
@@ -56,13 +58,17 @@ void InitCharacter(DisplayDevice* DDevice, int CharacterID){
     Cast[CharacterID].Surface = LoadSurface(Cast[CharacterID].SurfacePath, DDevice, &Cast[CharacterID].ColorKey, false);
 }
 
+void TieCharacterToBackground(int CharacterID, int* BackgroundOffset){
+    Cast[CharacterID].BackgroundOffset = BackgroundOffset;
+}
+
 void CharacterPlayAnimation(int CharacterID, int AnimationID){
     Cast[CharacterID].PlayingAnimation = AnimationID;
     Cast[CharacterID].CurrentFrame = 0;
 }
 
 void DisplayCharacter(DisplayDevice* DDevice, int CharacterID){
-    SDL_Rect SpriteWindow;
+    SDL_Rect SpriteWindow, SpriteLayer;
     // On veille a ne pas dépacer le nombre de frames de l'animation
     if (Cast[CharacterID].CurrentFrame >= Cast[CharacterID].Anim[Cast[CharacterID].PlayingAnimation].NbOfFrames){
         Cast[CharacterID].CurrentFrame = 0;
@@ -75,11 +81,16 @@ void DisplayCharacter(DisplayDevice* DDevice, int CharacterID){
     SpriteWindow.w = Cast[CharacterID].Anim[Cast[CharacterID].PlayingAnimation].SrcRect.w;
     SpriteWindow.h = Cast[CharacterID].Anim[Cast[CharacterID].PlayingAnimation].SrcRect.h;
 
+    SpriteLayer = Cast[CharacterID].Anim[Cast[CharacterID].PlayingAnimation].DstRect;
+    if (Cast[CharacterID].BackgroundOffset != NULL){
+        SpriteLayer.x -= *(Cast[CharacterID].BackgroundOffset);
+    }
+
     // On affiche la frame d'animation a l'écran
     #ifdef _SDL
-        SDL_BlitSurface(Cast[CharacterID].Surface, &SpriteWindow, DDevice->Screen, &Cast[CharacterID].Anim[Cast[CharacterID].PlayingAnimation].DstRect); // Curent Character on screen
+        SDL_BlitSurface(Cast[CharacterID].Surface, &SpriteWindow, DDevice->Screen, &SpriteLayer); // Curent Character on screen
     #else
-        SDL_RenderCopy(DDevice->Renderer, Cast[CharacterID].Surface, &SpriteWindow, &Cast[CharacterID].Anim[Cast[CharacterID].PlayingAnimation].DstRect);
+        SDL_RenderCopy(DDevice->Renderer, Cast[CharacterID].Surface, &SpriteWindow, &SpriteLayer);
     #endif
     if (SDL_GetTicks() > Cast[CharacterID].LastFrame + Cast[CharacterID].Anim[Cast[CharacterID].PlayingAnimation].Framerate){
         Cast[CharacterID].LastFrame = SDL_GetTicks();
