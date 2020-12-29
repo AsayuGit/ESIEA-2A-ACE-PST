@@ -58,23 +58,75 @@ void InitCharacter(DisplayDevice* DDevice, int CharacterID){
     Cast[CharacterID].Surface = LoadSurface(Cast[CharacterID].SurfacePath, DDevice, &Cast[CharacterID].ColorKey, false);
 }
 
-void TieCharacterToBackground(int CharacterID, int* BackgroundOffset){
-    Cast[CharacterID].BackgroundOffset = BackgroundOffset;
-}
-
 void CharacterPlayAnimation(int CharacterID, int AnimationID){
     Cast[CharacterID].PlayingAnimation = AnimationID;
     Cast[CharacterID].CurrentFrame = 0;
 }
 
-void DisplayCharacter(DisplayDevice* DDevice, int CharacterID){
+void InitCharacterLayer(CharacterLayer** CharaLayer, SceneContext* SContext){
+    if ((*CharaLayer) == NULL){
+        (*CharaLayer) = (CharacterLayer*)malloc(sizeof(CharacterLayer));
+        (*CharaLayer)->CharaList = NULL;
+        
+        (*CharaLayer)->Viewport = &(SContext->SrcRect);
+        (*CharaLayer)->Flipped = &(SContext->Flipped);
+    }
+}
+
+void AddCharacterToLayer(CharacterLayer* CharaLayer, int CharacterID, int TileX, int TileY, DisplayDevice* DDevice, Vector2i BackgroundBounds){ // Add a new character to a CharacterLayer
+    CharacterList** CharaList;
+    SDL_Rect CharaRect;
+
+    if (!CharaLayer)
+        return; // error
+    CharaList = &(CharaLayer->CharaList);
+    while ((*CharaList) != NULL){
+        CharaList = &((*CharaList)->NextCharacter);
+    }
+    (*CharaList) = (CharacterList*)malloc(sizeof(CharacterList));
+    (*CharaList)->CharacterID = CharacterID;
+
+    CharaRect.w = DDevice->ScreenResolution.x;
+    CharaRect.h = DDevice->ScreenResolution.y;
+    (*CharaList)->Coordinates = RectTileToCorrdinate(CharaRect, BackgroundBounds, TileX, TileY);
+
+    (*CharaList)->NextCharacter = NULL;
+}
+
+void DeleteCharacterFromLayer(CharacterLayer* CharaLayer, int CharacterID){ // Delete a character from a CharacterLayer
+    CharacterList** CurrentCharacter;
+    CharacterList* PrevLayer;
+    CharacterList* NextLayer;
+
+    if (!CharaLayer)
+        return; // error
+    CurrentCharacter = &(CharaLayer->CharaList);
+    
+    if ((*CurrentCharacter)->CharacterID == CharacterID){
+        NextLayer = (*CurrentCharacter)->NextCharacter;
+        free(*CurrentCharacter);
+        (*CurrentCharacter) = NextLayer;
+    }else{
+        do {
+            PrevLayer = (*CurrentCharacter);
+            CurrentCharacter = &((*CurrentCharacter)->NextCharacter);
+            if ((*CurrentCharacter)->CharacterID == CharacterID){
+                NextLayer = (*CurrentCharacter)->NextCharacter;
+                free(*CurrentCharacter);
+                PrevLayer->NextCharacter = NextLayer;
+                break;
+            }
+        } while ((*CurrentCharacter) != NULL);
+    }
+}
+
+void DisplayCharacter(DisplayDevice* DDevice, int CharacterID, SDL_Rect Viewport, Vector2i Coordinates, char Effects){ // Display "A" Character on screen
     SDL_Rect SpriteWindow, SpriteLayer;
     // On veille a ne pas dépacer le nombre de frames de l'animation
     if (Cast[CharacterID].CurrentFrame >= Cast[CharacterID].Anim[Cast[CharacterID].PlayingAnimation].NbOfFrames){
         Cast[CharacterID].CurrentFrame = 0;
     }
     
-    //printf("Frame N°%d\n", *TEMP);
     // On déplace la fenêtre dans la spritesheet en fonction du numéro de la frame
     SpriteWindow.x = Cast[CharacterID].Anim[Cast[CharacterID].PlayingAnimation].SrcRect.x + Cast[CharacterID].CurrentFrame * Cast[CharacterID].Anim[Cast[CharacterID].PlayingAnimation].SrcRect.w;
     SpriteWindow.y = Cast[CharacterID].Anim[Cast[CharacterID].PlayingAnimation].SrcRect.y;
@@ -82,9 +134,8 @@ void DisplayCharacter(DisplayDevice* DDevice, int CharacterID){
     SpriteWindow.h = Cast[CharacterID].Anim[Cast[CharacterID].PlayingAnimation].SrcRect.h;
 
     SpriteLayer = Cast[CharacterID].Anim[Cast[CharacterID].PlayingAnimation].DstRect;
-    if (Cast[CharacterID].BackgroundOffset != NULL){
-        SpriteLayer.x -= *(Cast[CharacterID].BackgroundOffset);
-    }
+    SpriteLayer.x += Coordinates.x - Viewport.x;
+    SpriteLayer.y += Coordinates.y - Viewport.y;
 
     // On affiche la frame d'animation a l'écran
     #ifdef _SDL
@@ -96,4 +147,14 @@ void DisplayCharacter(DisplayDevice* DDevice, int CharacterID){
         Cast[CharacterID].LastFrame = SDL_GetTicks();
         Cast[CharacterID].CurrentFrame++;
     }
-};
+}
+
+void DisplayCharacterLayer(DisplayDevice* DDevice, CharacterLayer* CharaLayer){
+    CharacterList* CharaList;
+
+    CharaList = CharaLayer->CharaList;
+    while (CharaList != NULL){
+        DisplayCharacter(DDevice, CharaList->CharacterID, *(CharaLayer->Viewport), CharaList->Coordinates, *(CharaLayer->Flipped));
+        CharaList = CharaList->NextCharacter;
+    }
+}

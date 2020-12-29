@@ -34,6 +34,7 @@
     #include "System.h"
     #include "Load.h"
     #include "Graphics.h"
+    #include "CommunFunctions.h"
 
     #define TEXTURES "Assets" SL "Textures" SL
     #define FONTS "Assets" SL "Fonts" SL

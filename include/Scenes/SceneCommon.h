@@ -14,6 +14,7 @@
         Vector2d* AnimStates;
         int* AnimRuntime;
         Vector2d* AnimRange;
+        char* AnimEffects;
         SDL_Rect AnimRegion;
     } BGAnimation;
 
@@ -37,11 +38,12 @@
         BGAnimation* Animation;
 
         // Metadata
+        char Flipped;
         int ObjectLayerOffset;
     } SceneContext;
 
     SceneContext* InitScene(DisplayDevice* DDevice, int BackgroundID);
-    void MoveTile(SceneContext* Context, int TileID);
+    void MoveTile(SceneContext* Context, int TileX, int TileY, char Effect);
     void BackgroundPlayAnimation(SceneContext* Context, int AnimationID);
     void DisplayBackground(DisplayDevice* DDevice, SceneContext* Context);
 

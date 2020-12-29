@@ -2,6 +2,7 @@
 #define _CHARACTERS
 
     #include "include.h"
+    #include "SceneCommon.h"
 
     typedef enum{
         Phoenix_Wright,
@@ -32,11 +33,26 @@
         Animation* Anim; // Contains all the differents animations for a character
     } Characters; // Sprite ?
 
-    //extern Characters Cast[CharactersCount];
+    typedef struct CharacterList_s{
+        int CharacterID;
+        Vector2i Coordinates;
+        struct CharacterList_s* NextCharacter;
+    } CharacterList;
+
+    typedef struct {
+        CharacterList * CharaList;
+        SDL_Rect* Viewport;
+        char* Flipped;
+    } CharacterLayer; // "Context"
 
     void InitCharacter(DisplayDevice* DisplayDevice, int CharacterID);
-    void TieCharacterToBackground(int CharacterID, int* BackgroundOffset);
     void CharacterPlayAnimation(int CharacterID, int AnimationID);
-    void DisplayCharacter(DisplayDevice* DDevice, int CharacterID);
+    //void DisplayCharacter(DisplayDevice* DDevice, int CharacterID);
+
+    // Character Layer Management
+    void InitCharacterLayer(CharacterLayer** CharaLayer, SceneContext* SContext);
+    void AddCharacterToLayer(CharacterLayer* CharaLayer, int CharacterID, int TileX, int TileY, DisplayDevice* DDevice, Vector2i BackgroundBounds);
+    void DeleteCharacterFromLayer(CharacterLayer* CharaLayer, int CharacterID);
+    void DisplayCharacterLayer(DisplayDevice* DDevice, CharacterLayer* CharaLayer);
 
 #endif
