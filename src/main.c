@@ -6,7 +6,8 @@ int main(int argc, char* argv){
     DisplayDevice* DDevice;
     InputDevice* IDevice;
 
-    BitmapFont MainFont;
+    BitmapFont* MainFont;
+    BitmapFont* MainMenuFont;
     Uint32 FontColorKey = 0xff00ff;
     CourtroomContext* CourtContext;
 
@@ -16,17 +17,15 @@ int main(int argc, char* argv){
     DDevice = CreateDisplayDevice(256, 192, "Ace YAY");
     IDevice = InitInputs(false);
 
-    MainFont.FontSurface = NULL;
-    MainFont.FontSurface = LoadSDLSurface(ROOT""FONTS"AceAttorneyFont"TEX_EXT, DDevice, &FontColorKey);
-    if (MainFont.FontSurface == NULL){
-        fprintf(stderr, "Can't load font %s\n", SDL_GetError());
+    MainFont = LoadBitmapFont(ROOT""FONTS"AceAttorneyFont"TEX_EXT, DDevice, FontColorKey);
+    CourtContext->Font = MainFont;
+    MainMenuFont = LoadBitmapFont(ROOT""FONTS"MainMenuFont"TEX_EXT, DDevice, FontColorKey);
+
+    // First we start the title screen
+    if (Scene_TitleScreen(DDevice, IDevice, MainMenuFont) == 0){
+        // We start the courtroom Scene
+        Scene_Courtroom(DDevice, IDevice, CourtContext);
     }
-    #ifndef _SDL
-        MainFont.FontTexture = SDL_CreateTextureFromSurface(DDevice->Renderer, MainFont.FontSurface);
-    #endif
-    CourtContext->Font = &MainFont;
-    // We start the courtroom Scene
-    Scene_Courtroom(DDevice, IDevice, CourtContext);
     
     free(CourtContext);
 

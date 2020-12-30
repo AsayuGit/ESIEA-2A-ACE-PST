@@ -7,6 +7,6 @@
         BitmapFont* Font;
     } CourtroomContext;
 
-    int Scene_Courtroom(DisplayDevice* DisplayDevice, InputDevice* InputDevice, CourtroomContext* Context);
+    int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomContext* Context);
 
 #endif

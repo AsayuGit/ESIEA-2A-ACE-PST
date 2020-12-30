@@ -6,6 +6,7 @@
 
     typedef enum{
         S_Courtroom,
+        S_TitleScreen,
         BackgroundsCount
     } BackgroundIDS;
 
@@ -38,13 +39,14 @@
         BGAnimation* Animation;
 
         // Metadata
+        char* AnimState;
         char Flipped;
         int ObjectLayerOffset;
     } SceneContext;
 
     SceneContext* InitScene(DisplayDevice* DDevice, int BackgroundID);
     void MoveTile(SceneContext* Context, int TileX, int TileY, char Effect);
-    void BackgroundPlayAnimation(SceneContext* Context, int AnimationID);
+    void BackgroundPlayAnimation(SceneContext* Context, int AnimationID, char* AnimState);
     void DisplayBackground(DisplayDevice* DDevice, SceneContext* Context);
 
 #endif

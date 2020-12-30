@@ -38,3 +38,34 @@ Surface* LoadSurface(char FilePath[], DisplayDevice* Device, Uint32* ColorKey, c
         return SDL_CreateTextureFromSurface(Device->Renderer, LoadSDLSurface(FilePath, Device, ColorKey));
     #endif
 }
+
+BitmapFont* LoadBitmapFont(char FilePath[], DisplayDevice* DDevice, Uint32 FontColorKey){
+    BitmapFont* LoadingFont;
+
+    LoadingFont = (BitmapFont*)malloc(sizeof(BitmapFont));
+    LoadingFont->FontSurface = NULL;
+    LoadingFont->FontSurface = LoadSDLSurface(FilePath, DDevice, &FontColorKey);
+    if (LoadingFont->FontSurface == NULL){
+        fprintf(stderr, "Can't load font %s\n", SDL_GetError());
+    }
+    #ifndef _SDL
+        LoadingFont->FontTexture = SDL_CreateTextureFromSurface(DDevice->Renderer, LoadingFont->FontSurface);
+    #endif
+
+    return LoadingFont;
+}
+
+Surface* CreateTargetSurface(DisplayDevice* DDevice, int w, int h){
+    Surface* LoadingSurface;
+
+    LoadingSurface = NULL;
+#ifdef _SDL
+    LoadingSurface = CreateEmptySurface(w, h);
+#else
+    LoadingSurface = SDL_CreateTexture(DDevice->Renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, w, h);
+    SDL_SetTextureBlendMode(LoadingSurface, SDL_BLENDMODE_BLEND);
+#endif
+    if (LoadingSurface == NULL)
+        fprintf(stderr, "Can't load texture %s\n", SDL_GetError());
+    return LoadingSurface;
+}

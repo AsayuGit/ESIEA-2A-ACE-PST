@@ -56,9 +56,6 @@ DialogueContext* InitDialog(DisplayDevice* DDevice, BitmapFont* Font){
 
 // Fonction non bloquante gérant les dialogues
 void Dialogue(InputDevice* InputDevice, DialogueContext* Context){
-    SDL_Rect SrcLetter;
-    int letterX, letterY, letterW, letterID;
-
     // DialogBox Rendering
     #ifdef _SDL
         SDL_BlitSurface(Context->DialogBox, NULL, Context->DDevice->Screen, NULL);
@@ -70,63 +67,15 @@ void Dialogue(InputDevice* InputDevice, DialogueContext* Context){
         #ifndef _SDL
             SDL_SetRenderTarget(Context->DDevice->Renderer, Context->textLayer);
         #endif
-
-        // Text processing
-        if (Context->Text[Context->progress] != '\n'){
-            letterX = 0;
-            letterY = 0;
-            //printf("Letter is : >%c< >%d<\n", Context->Text[0], Context->Text[0]);
-            for (letterID = 0; letterID < Context->Text[Context->progress] - 31; letterX++){
-                if (getpixel(Context->Font->FontSurface, letterX, letterY) == 0x0){
-                    letterID++;
-                }
-            }
-            letterW = letterX;
-            while (letterID < Context->Text[Context->progress] - 30){
-                if (getpixel(Context->Font->FontSurface, letterW, letterY) == 0x0){
-                    letterID++;
-                }
-                letterW++;
-            }
-            letterW -= letterX + 1;
-            letterX--;
-            letterY = 1;
-            while(getpixel(Context->Font->FontSurface, letterX, letterY) != 0x0){
-                letterY++;
-            }
-            //printf("Yay at %d %d %d\n", letterX, letterY, letterW);
-
-
-            // Text Rendering
-            SrcLetter.x = letterX + 1;
-            SrcLetter.y = 1;
-            SrcLetter.h = Context->DstLetter.h = letterY - 1;
-            SrcLetter.w = Context->DstLetter.w = letterW;
-
-            #ifdef _SDL
-                SDL_BlitSurface(Context->Font->FontSurface, &SrcLetter, Context->textLayer, &Context->DstLetter);
-            #else
-                SDL_RenderCopy(Context->DDevice->Renderer, Context->Font->FontTexture, &SrcLetter, &Context->DstLetter);
-            #endif
-            
-            if (Context->DstLetter.x + SrcLetter.w < Context->DialogBoxBounds.w - Context->DialogBoxBounds.x){
-                Context->DstLetter.x += SrcLetter.w + 1;
-            }else{
-                Context->DstLetter.y += SrcLetter.h + 1;
-                Context->DstLetter.x = Context->DialogBoxBounds.x;
-            }
-        }else{
-            Context->DstLetter.y += Context->DstLetter.h + 1; // May change for a standard offset in the future
-            Context->DstLetter.x = Context->DialogBoxBounds.x;
-        }
-
-        //printf("Compute : %d\n", Context->progress);
+        Context->DstLetter = gputc(Context->DDevice, Context->Font, Context->Text[Context->progress], Context->DstLetter.x, Context->DstLetter.y, &(Context->DialogBoxBounds));
         Context->progress++;
+        Context->LastLetter = SDL_GetTicks();
+
         #ifndef _SDL
             SDL_SetRenderTarget(Context->DDevice->Renderer, NULL);
         #endif
-        Context->LastLetter = SDL_GetTicks();
     }
+
     #ifdef _SDL
         SDL_BlitSurface(Context->textLayer, NULL, Context->DDevice->Screen, NULL);
     #else

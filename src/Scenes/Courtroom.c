@@ -12,7 +12,6 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
     CharacterLayer* CharaLayer;
 
     int CurrentCharacter;
-    Uint32 CommonColorKey = 0xFF00FF;
     bool SceneFlip = false;
     Uint32 Plot = 0;
     int ReturnToDefault;
@@ -99,7 +98,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                         break;
                     
                     case 5:
-                        BackgroundPlayAnimation(SContext, 1);
+                        BackgroundPlayAnimation(SContext, 1, NULL);
                         Plot++;
                         break;
 

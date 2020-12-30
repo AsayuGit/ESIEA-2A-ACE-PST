@@ -73,13 +73,76 @@ BGAnimation CourtAnim[2] = {
     }
 };
 
-Background Scenes[BackgroundsCount] = {
+// Title Screen
+Vector2d TitleScreen1States[1] = {
+    {0.0, 25.6}
+};
+
+int TitleScreen1Runtime[1] = {
+    500
+};
+
+Vector2d TitleScreen1Range[1] = {
+    {0.0, 10.0}
+};
+
+char TitleScreen1Effects[1] = {
+    0
+};
+
+//
+Vector2d TitleScreen2States[2] = {
+    {0, 256},
+    {0.0, -25.6}
+};
+
+int TitleScreen2Runtime[2] = {
+    0,
+    500
+};
+
+Vector2d TitleScreen2Range[2] = {
+    {0, 1},
+    {0.0, 10.0}
+};
+
+char TitleScreen2Effects[2] = {
+    0,
+    0
+};
+
+
+BGAnimation TitleScreenAnim[2] = {
     {
-        ROOT""TEXTURES"Places"SL"Courtroom"TEX_EXT,
-        CourtAnim
+        1,                  // NbOfAnimStates
+        TitleScreen1States,
+        TitleScreen1Runtime,
+        TitleScreen1Range, // X max form 0 to +infinity
+        TitleScreen1Effects,
+        {0, 0, 512, 192}
+    },
+    {
+        2,                  // NbOfAnimStates
+        TitleScreen2States,
+        TitleScreen2Runtime,
+        TitleScreen2Range, // X max form 0 to +infinity
+        TitleScreen2Effects,
+        {0, 0, 512, 192}
     }
 };
 
+Background Scenes[BackgroundsCount] = {
+    {// S_Courtroom
+        ROOT""TEXTURES"Places"SL"Courtroom"TEX_EXT,
+        CourtAnim
+    },
+    {// S_TitleScreen
+        ROOT""TEXTURES"Menus"SL"TitleScreen"TEX_EXT,
+        TitleScreenAnim
+    }
+};
+
+// Idée : Remplacer BackgroundID avec un "Background*" de cette façon les scènes gêrent elles meme leurs bg
 SceneContext* InitScene(DisplayDevice* DDevice, int BackgroundID){
     SceneContext* LoadingContext;
     LoadingContext = (SceneContext*)malloc(sizeof(SceneContext));
@@ -124,10 +187,11 @@ void MoveTile(SceneContext* Context, int TileX, int TileY, char Effect){ // Chan
     Context->ObjectLayerOffset = 0;*/
 }
 
-void BackgroundPlayAnimation(SceneContext* Context, int AnimationID){ // Start the background animation
+void BackgroundPlayAnimation(SceneContext* Context, int AnimationID, char* AnimState){ // Start the background animation
     Context->PlayingAnimation = AnimationID;
     Context->StartFrame = Context->CurrentState = Context->AnimOffset = 0;
     Context->ObjectLayerOffset = 0;
+    Context->AnimState = AnimState;
 }
 
 void DisplayBackground(DisplayDevice* DDevice, SceneContext* Context){ // Display the background on screen
@@ -211,6 +275,9 @@ void DisplayBackground(DisplayDevice* DDevice, SceneContext* Context){ // Displa
             if (Context->CurrentState == Context->Animation[Context->PlayingAnimation].NbOfAnimStates){
                 Context->SrcRect = AnimSrcRect;
                 Context->PlayingAnimation = -1;
+                if (Context->AnimState){
+                    *(Context->AnimState) = 1;
+                }
             }
         }
 
