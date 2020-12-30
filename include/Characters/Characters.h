@@ -7,6 +7,8 @@
     typedef enum{
         Phoenix_Wright,
         Mia_Fey,
+        Miles_Edgeworth,
+        Court_Desk,
         CharactersCount
     } Cid;
 
@@ -36,6 +38,7 @@
     typedef struct CharacterList_s{
         int CharacterID;
         Vector2i Coordinates;
+        char Flip;
         struct CharacterList_s* NextCharacter;
     } CharacterList;
 
@@ -51,7 +54,7 @@
 
     // Character Layer Management
     void InitCharacterLayer(CharacterLayer** CharaLayer, SceneContext* SContext);
-    void AddCharacterToLayer(CharacterLayer* CharaLayer, int CharacterID, int TileX, int TileY, DisplayDevice* DDevice, Vector2i BackgroundBounds);
+    void AddCharacterToLayer(CharacterLayer* CharaLayer, int CharacterID, int TileX, int TileY, char Flip, DisplayDevice* DDevice, Vector2i BackgroundBounds);
     void DeleteCharacterFromLayer(CharacterLayer* CharaLayer, int CharacterID);
     void DisplayCharacterLayer(DisplayDevice* DDevice, CharacterLayer* CharaLayer);
 

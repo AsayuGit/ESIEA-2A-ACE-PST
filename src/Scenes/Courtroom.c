@@ -10,9 +10,6 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
     DialogueContext* DiagContext;
     SceneContext* SContext;
     CharacterLayer* CharaLayer;
-    
-    Surface* Desk = NULL; 
-    SDL_Rect DeskRect;
 
     int CurrentCharacter;
     Uint32 CommonColorKey = 0xFF00FF;
@@ -29,24 +26,24 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
     SetDialogueText(DiagContext, "Mmmmm");
 
     SContext = InitScene(DDevice, S_Courtroom);
-    
-    Desk = LoadSurface(ROOT""TEXTURES"Places"SL"CourtroomDesk"TEX_EXT, DDevice, &CommonColorKey, false);
-    #ifdef _SDL
-        DeskRect.w = Desk->w; DeskRect.h = Desk->h;
-    #else
-        SDL_QueryTexture(Desk, NULL, NULL, &DeskRect.w, &DeskRect.h);
-    #endif
-    DeskRect.x = 0; DeskRect.y = DDevice->ScreenResolution.y - DeskRect.h;
 
     InitCharacter(DDevice, Phoenix_Wright); // Initialise the character in memory
     InitCharacter(DDevice, Mia_Fey);
-    CurrentCharacter = Phoenix_Wright;
+    InitCharacter(DDevice, Miles_Edgeworth);
+
+    InitCharacter(DDevice, Court_Desk);
 
     CharaLayer = NULL;
     InitCharacterLayer(&CharaLayer, SContext);
-    AddCharacterToLayer(CharaLayer, Phoenix_Wright, 0, 0, DDevice, SContext->SurfaceBounds);
-    AddCharacterToLayer(CharaLayer, Mia_Fey, 2, 1, DDevice, SContext->SurfaceBounds);
-    AddCharacterToLayer(CharaLayer, Mia_Fey, 4, 0, DDevice, SContext->SurfaceBounds); // To be Egeworth
+    AddCharacterToLayer(CharaLayer, Phoenix_Wright, 0, 0, 0, DDevice, SContext->SurfaceBounds);
+    AddCharacterToLayer(CharaLayer, Court_Desk, 0, 0, 0, DDevice, SContext->SurfaceBounds);
+
+    AddCharacterToLayer(CharaLayer, Mia_Fey, 2, 1, 0, DDevice, SContext->SurfaceBounds);
+
+    AddCharacterToLayer(CharaLayer, Miles_Edgeworth, 4, 0, 0, DDevice, SContext->SurfaceBounds);
+    AddCharacterToLayer(CharaLayer, Court_Desk, 4, 0, 1, DDevice, SContext->SurfaceBounds);
+
+    CurrentCharacter = Phoenix_Wright;
 
     // Main Loop
     while (1){
@@ -65,41 +62,52 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                     switch (Plot)
                     {
                     case 0:
+                        MoveTile(SContext, 0, 0, 0);
+                        CharacterPlayAnimation(Phoenix_Wright, 1);
+                        ReturnToDefault = SetDialogueText(DiagContext, "The Defence is ready your honor.");
+                        Plot++;
+                        break;
+                    case 1:
+                        MoveTile(SContext, 4, 0, 0);
+                        CurrentCharacter = Miles_Edgeworth;
+                        CharacterPlayAnimation(Miles_Edgeworth, 1);
+                        ReturnToDefault = SetDialogueText(DiagContext, "The Prosecution is ready your honor.");
+                        Plot++;
+                        break;
+                    case 2:
+                        MoveTile(SContext, 0, 0, 0);
+                        CurrentCharacter = Phoenix_Wright;
                         CharacterPlayAnimation(Phoenix_Wright, 1);
                         ReturnToDefault = SetDialogueText(DiagContext, "Objection !\nThe witness could not have known the statue was a clock !");
                         Plot++;
                         break;
                     
-                    case 1:
+                    case 3:
                         CurrentCharacter = Mia_Fey;
                         MoveTile(SContext, 2, 1, 0);
                         CharacterPlayAnimation(Mia_Fey, 1);
                         ReturnToDefault = SetDialogueText(DiagContext, "Do you have something in mind phoenix ?");
-                        //SceneFlip = true;
-                        //DeskRect.x = DDevice->ScreenResolution.x - DeskRect.w; // For Edgeworth
-                        DeskRect.x = DDevice->ScreenResolution.x;
                         Plot++;
                         break;
-                    case 2:
+                    case 4:
                         CurrentCharacter = Phoenix_Wright;
                         MoveTile(SContext, 0, 0, 0);
                         CharacterPlayAnimation(Phoenix_Wright, 1);
                         ReturnToDefault = SetDialogueText(DiagContext, "Your Honor !\nLook at the witness face !");
-                        DeskRect.x = 0;
+                        //DeskRect.x = 0;
                         Plot++;
                         break;
                     
-                    case 3:
+                    case 5:
                         BackgroundPlayAnimation(SContext, 1);
                         Plot++;
                         break;
 
-                    case 4:
+                    case 6:
                         CurrentCharacter = Mia_Fey;
                         MoveTile(SContext, 2, 1, 0);
                         CharacterPlayAnimation(Mia_Fey, 1);
                         ReturnToDefault = SetDialogueText(DiagContext, "Wow, you just slid across the courtroom !");
-                        DeskRect.x = DDevice->ScreenResolution.x;
                         Plot++;
                         break;
                     
@@ -117,11 +125,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                 break;
             }
         }
-/* // TEMP
-        if (SContext->PlayingAnimation != -1){
-            DeskRect.x = -SContext->ObjectLayerOffset;
-        }
-*/
+
         // Logic
         if ((DiagContext->progress == ReturnToDefault) && (ReturnToDefault != -1)){
             CharacterPlayAnimation(CurrentCharacter, 0);
@@ -130,17 +134,13 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
         // Rendering
         #ifdef _SDL
             DisplayBackground(DDevice, SContext); // Background
-            //DisplayCharacter(DDevice, CurrentCharacter); // Curent Character on screen
             DisplayCharacterLayer(DDevice, CharaLayer);
-            
-            FlipBlitSurface(Desk, NULL, DDevice->Screen, &DeskRect, SceneFlip); // Desk
+            //FlipBlitSurface(Desk, NULL, DDevice->Screen, &DeskRect, SceneFlip); // Desk
             Dialogue(IDevice, DiagContext); // Dialog
             SDL_Flip(DDevice->Screen);
         #else
             DisplayBackground(DDevice, SContext); // Background
             DisplayCharacterLayer(DDevice, CharaLayer);
-            
-            SDL_RenderCopyEx(DDevice->Renderer, Desk, NULL, &DeskRect, 0, 0, SceneFlip); // Desk
             Dialogue(IDevice, DiagContext); // Dialog
             SDL_RenderPresent(DDevice->Renderer);
         #endif

@@ -172,7 +172,7 @@ void DisplayBackground(DisplayDevice* DDevice, SceneContext* Context){ // Displa
             NewOffset = (Context->Animation[Context->PlayingAnimation].AnimStates[Context->CurrentState].x * (Progress * Progress)) + (Context->Animation[Context->PlayingAnimation].AnimStates[Context->CurrentState].y * Progress);
             Context->ObjectLayerOffset = MaxOffset - NewOffset + Context->AnimOffset;
         }
-        printf("Total Offset %d\n", Context->ObjectLayerOffset);
+        //printf("Total Offset %d\n", Context->ObjectLayerOffset);
         AnimSrcRect.x =  Context->ObjectLayerOffset + Context->Animation[Context->PlayingAnimation].AnimRegion.x; // + Offset
         AnimSrcRect.y = Context->Animation[Context->PlayingAnimation].AnimRegion.y;
         AnimSrcRect.w = DDevice->ScreenResolution.x;

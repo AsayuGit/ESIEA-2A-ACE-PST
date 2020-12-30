@@ -30,6 +30,28 @@ Animation MiaAnimations[2] = {
     }
 };
 
+Animation MilesAnimations[2] = {
+    {
+        {37, 35, 104, 143}, // SrcRect // Idle
+        {136, 16, 104, 143}, // DstRect
+        4,   // NbOfFrames
+        500 // Framerate
+    },
+    {
+        {493, 35, 104, 143}, // SrcRect // Talk
+        {136, 16, 104, 143}, // DstRect
+        4,   // NbOfFrames
+        125 // Framerate
+    }
+};
+
+Animation DeskAnim = {
+    {0, 0, 256, 44}, // SrcRect // Idle
+    {0, 148, 256, 44}, // DstRect
+    1,   // NbOfFrames
+    0 // Framerate
+};
+
 // Characters constants
 Characters Cast[CharactersCount] = {
     { // Phoenix Wright
@@ -51,6 +73,26 @@ Characters Cast[CharactersCount] = {
         0,
         0,
         (Animation*)&MiaAnimations
+    },
+    { // Miles Edgeworth
+        NULL,
+        ROOT""TEXTURES"Characters"SL"Miles_Edgeworth"TEX_EXT,
+        0x00b5a5d5,
+        NULL,
+        0,
+        0,
+        0,
+        (Animation*)&MilesAnimations
+    },
+    { // Courtroom Desk
+        NULL,
+        ROOT""TEXTURES"Places"SL"CourtroomDesk"TEX_EXT,
+        0x00ff00ff,
+        NULL,
+        0,
+        0,
+        0,
+        (Animation*)&DeskAnim
     }
 };
 
@@ -73,7 +115,7 @@ void InitCharacterLayer(CharacterLayer** CharaLayer, SceneContext* SContext){
     }
 }
 
-void AddCharacterToLayer(CharacterLayer* CharaLayer, int CharacterID, int TileX, int TileY, DisplayDevice* DDevice, Vector2i BackgroundBounds){ // Add a new character to a CharacterLayer
+void AddCharacterToLayer(CharacterLayer* CharaLayer, int CharacterID, int TileX, int TileY, char Flip, DisplayDevice* DDevice, Vector2i BackgroundBounds){ // Add a new character to a CharacterLayer
     CharacterList** CharaList;
     SDL_Rect CharaRect;
 
@@ -89,7 +131,7 @@ void AddCharacterToLayer(CharacterLayer* CharaLayer, int CharacterID, int TileX,
     CharaRect.w = DDevice->ScreenResolution.x;
     CharaRect.h = DDevice->ScreenResolution.y;
     (*CharaList)->Coordinates = RectTileToCorrdinate(CharaRect, BackgroundBounds, TileX, TileY);
-
+    (*CharaList)->Flip = Flip;
     (*CharaList)->NextCharacter = NULL;
 }
 
@@ -120,8 +162,9 @@ void DeleteCharacterFromLayer(CharacterLayer* CharaLayer, int CharacterID){ // D
     }
 }
 
-void DisplayCharacter(DisplayDevice* DDevice, int CharacterID, SDL_Rect Viewport, Vector2i Coordinates, char Effects){ // Display "A" Character on screen
+void DisplayCharacter(DisplayDevice* DDevice, int CharacterID, SDL_Rect Viewport, Vector2i Coordinates, char Flip){ // Display "A" Character on screen
     SDL_Rect SpriteWindow, SpriteLayer;
+
     // On veille a ne pas dépacer le nombre de frames de l'animation
     if (Cast[CharacterID].CurrentFrame >= Cast[CharacterID].Anim[Cast[CharacterID].PlayingAnimation].NbOfFrames){
         Cast[CharacterID].CurrentFrame = 0;
@@ -141,7 +184,7 @@ void DisplayCharacter(DisplayDevice* DDevice, int CharacterID, SDL_Rect Viewport
     #ifdef _SDL
         SDL_BlitSurface(Cast[CharacterID].Surface, &SpriteWindow, DDevice->Screen, &SpriteLayer); // Curent Character on screen
     #else
-        SDL_RenderCopy(DDevice->Renderer, Cast[CharacterID].Surface, &SpriteWindow, &SpriteLayer);
+        SDL_RenderCopyEx(DDevice->Renderer, Cast[CharacterID].Surface, &SpriteWindow, &SpriteLayer, 0, 0, Flip);
     #endif
     if (SDL_GetTicks() > Cast[CharacterID].LastFrame + Cast[CharacterID].Anim[Cast[CharacterID].PlayingAnimation].Framerate){
         Cast[CharacterID].LastFrame = SDL_GetTicks();
@@ -154,7 +197,7 @@ void DisplayCharacterLayer(DisplayDevice* DDevice, CharacterLayer* CharaLayer){
 
     CharaList = CharaLayer->CharaList;
     while (CharaList != NULL){
-        DisplayCharacter(DDevice, CharaList->CharacterID, *(CharaLayer->Viewport), CharaList->Coordinates, *(CharaLayer->Flipped));
+        DisplayCharacter(DDevice, CharaList->CharacterID, *(CharaLayer->Viewport), CharaList->Coordinates, CharaList->Flip);
         CharaList = CharaList->NextCharacter;
     }
 }
