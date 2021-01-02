@@ -69,3 +69,25 @@ Surface* CreateTargetSurface(DisplayDevice* DDevice, int w, int h){
         fprintf(stderr, "Can't load texture %s\n", SDL_GetError());
     return LoadingSurface;
 }
+
+Mix_Music* LoadMusic(char FilePath[]){
+    Mix_Music* LoadingMusic;
+    
+    LoadingMusic = NULL;
+    LoadingMusic = Mix_LoadMUS(FilePath);
+    
+    if (LoadingMusic == NULL)
+        fprintf(stderr, "Can't load music %d\n", Mix_GetError());
+    return LoadingMusic;
+}
+
+Mix_Chunk* LoadSoundEffect(char FilePath[]){
+    Mix_Chunk* LoadingSoundEffect;
+    
+    LoadingSoundEffect = NULL;
+    LoadingSoundEffect = Mix_LoadWAV(FilePath);
+
+    if (LoadingSoundEffect == NULL)
+        fprintf(stderr, "Can't load sound effect %d\n", Mix_GetError());
+    return LoadingSoundEffect;
+}

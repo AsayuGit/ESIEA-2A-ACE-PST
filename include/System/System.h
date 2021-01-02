@@ -6,5 +6,6 @@
     void InitSDL();
     InputDevice* InitInputs(bool JoyEnabled);
     DisplayDevice* CreateDisplayDevice(int ScreenWidth, int ScreenHeight, char* Title);
+    SoundDevice* CreateSoundDevice();
 
 #endif

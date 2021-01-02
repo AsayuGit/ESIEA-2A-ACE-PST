@@ -12,6 +12,8 @@ int Scene_TitleScreen(DisplayDevice* DDevice, InputDevice* IDevice, BitmapFont* 
     char AnimComplete;
     char Menu;
 
+    Mix_Chunk* ToMenu;
+
     SContext = InitScene(DDevice, S_TitleScreen);
     BContext = InitButtons(DDevice, SContext, Font);
 
@@ -20,10 +22,14 @@ int Scene_TitleScreen(DisplayDevice* DDevice, InputDevice* IDevice, BitmapFont* 
     AddButton(BContext, "Back");
 
     MoveButtonsToCoordinates(BContext, DDevice->ScreenResolution.x, 0);
+    SetButtonClkSndEffect(BContext, 0, CHK_Gravel);
+    SetButtonClkSndEffect(BContext, 1, CHK_ButtonBack);
 
     Slide = 0; // Which side of the slide we're on
     AnimComplete = 0; // Wether the animation is done or not
     Menu = 0; // Wether the menu should be activated or not
+
+    ToMenu = LoadSoundEffect(EffectPath[CHK_ButtonClicked]);
 
     while (1){
         // Events Loop
@@ -42,6 +48,7 @@ int Scene_TitleScreen(DisplayDevice* DDevice, InputDevice* IDevice, BitmapFont* 
                 {
                 case PAD_A:
                     if (Slide == 0){
+                        Mix_PlayChannel(-1, ToMenu, 0);
                         SetSlkdButtonID(BContext, 0);
                         BackgroundPlayAnimation(SContext, 0, &AnimComplete);
                         Slide = 1;

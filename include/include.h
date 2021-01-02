@@ -32,6 +32,7 @@
     #include "Types.h"
     #include "KeyMap.h"
     #include "System.h"
+    #include "Jukebox.h"
     #include "Load.h"
     #include "Graphics.h"
     #include "CommunFunctions.h"
@@ -39,5 +40,9 @@
     #define TEXTURES "Assets" SL "Textures" SL
     #define FONTS "Assets" SL "Fonts" SL
     #define TEX_EXT ".bmp"
+
+    #define MUSIC "Assets" SL "Sound" SL "Music" SL
+    #define EFFECTS "Assets" SL "Sound" SL "Effects" SL
+    #define MUS_EXT ".wav"
 
 #endif

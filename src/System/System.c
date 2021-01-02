@@ -50,3 +50,12 @@ DisplayDevice* CreateDisplayDevice(int ScreenWidth, int ScreenHeight, char* Titl
 
     return Device;
 }
+
+SoundDevice* CreateSoundDevice(){
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 512) < 0){
+        fprintf(stderr, "Can't create main renderer\n - %s\n", SDL_GetError());
+        exit(EXIT_INIT);
+    }
+    InitJukebox();
+    return NULL;
+}

@@ -1,8 +1,12 @@
 #include "Buttons.h"
 
+Mix_Chunk* ButtonUpDown;
+Mix_Chunk* ButtonClicked;
+
 ButtonsContext* InitButtons(DisplayDevice* DDevice, SceneContext* SContext, BitmapFont* Font){
     ButtonsContext* BContext;
     Uint32 ColorKey;
+    char i;
 
     // Buttons Texture
     ColorKey = 0xff00ff;
@@ -11,6 +15,14 @@ ButtonsContext* InitButtons(DisplayDevice* DDevice, SceneContext* SContext, Bitm
 
     // Buttons Font
     BContext->Font = Font;
+
+    // Buttons Sound effects
+    ButtonUpDown = LoadSoundEffect(EffectPath[CHK_ButtonUpDown]);
+    ButtonClicked = LoadSoundEffect(EffectPath[CHK_ButtonClicked]);
+    for (i = 0; i < 4; i++){
+        BContext->ClickedSndEffect[i] = ButtonClicked;
+    }
+
 
     // Buttons Properties
     BContext->nbOfButtons = 0;
@@ -68,6 +80,7 @@ void HandleButtonsEvents(ButtonsContext* ButtonObject, SDL_Event* event){
             }else{
                 ButtonObject->selButtonID = ButtonObject->nbOfButtons - 1;
             }
+            Mix_PlayChannel(-1, ButtonUpDown, 0);
             break;
         case PAD_DOWN:
             if (ButtonObject->selButtonID < ButtonObject->nbOfButtons - 1){
@@ -75,9 +88,11 @@ void HandleButtonsEvents(ButtonsContext* ButtonObject, SDL_Event* event){
             }else{
                 ButtonObject->selButtonID = 0;
             }
+            Mix_PlayChannel(-1, ButtonUpDown, 0);
             break;
         case PAD_A:
             ButtonObject->clkdButton = ButtonObject->selButtonID;
+            Mix_PlayChannel(-1, ButtonObject->ClickedSndEffect[ButtonObject->clkdButton], 0);
             break;
         }
         break;
@@ -143,4 +158,11 @@ void DrawButtons(ButtonsContext* ButtonObject){ // TO OPTIMIZE !
         #endif
         ButtonDstRect.y += ButtonObject->ButtonState[0].h + 5; // Temp ?
     }
+}
+
+void SetButtonClkSndEffect(ButtonsContext* ButtonObject, char ButtonID, EffectsPlaylistID NewSndEffect){
+    if (ButtonObject->ClickedSndEffect[ButtonID] != ButtonClicked){
+        Mix_FreeChunk(ButtonObject->ClickedSndEffect[ButtonID]);
+    }
+    ButtonObject->ClickedSndEffect[ButtonID] = LoadSoundEffect(EffectPath[NewSndEffect]);
 }

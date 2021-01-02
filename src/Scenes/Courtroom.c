@@ -43,7 +43,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
     AddCharacterToLayer(CharaLayer, Court_Desk, 4, 0, 1, DDevice, SContext->SurfaceBounds);
 
     CurrentCharacter = Phoenix_Wright;
-
+    PlayTrackID(TRK_Courtroom);
     // Main Loop
     while (1){
         // Events Loop

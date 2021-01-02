@@ -8,6 +8,7 @@
         Surface* ButtonsSurface;
         char* Label[4];
         BitmapFont* Font;
+        Mix_Chunk* ClickedSndEffect[4];
 
         char nbOfButtons;
         char selButtonID;
@@ -35,5 +36,7 @@
     char GetClkdButtonID(ButtonsContext* ButtonObject);
     void SetSlkdButtonID(ButtonsContext* ButtonObject, char ButtonID);
     void DrawButtons(ButtonsContext* ButtonObject);
+
+    void SetButtonClkSndEffect(ButtonsContext* ButtonObject, char ButtonID, EffectsPlaylistID NewSndEffect);
 
 #endif

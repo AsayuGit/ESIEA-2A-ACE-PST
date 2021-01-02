@@ -5,6 +5,7 @@ int main(int argc, char* argv){
 
     DisplayDevice* DDevice;
     InputDevice* IDevice;
+    SoundDevice* SDevice;
 
     BitmapFont* MainFont;
     BitmapFont* MainMenuFont;
@@ -14,8 +15,9 @@ int main(int argc, char* argv){
     CourtContext = (CourtroomContext*)malloc(sizeof(CourtroomContext));
 
     InitSDL();
-    DDevice = CreateDisplayDevice(256, 192, "Ace YAY");
+    DDevice = CreateDisplayDevice(256, 192, "Mia's Legacy");
     IDevice = InitInputs(false);
+    SDevice = CreateSoundDevice();
 
     MainFont = LoadBitmapFont(ROOT""FONTS"AceAttorneyFont"TEX_EXT, DDevice, FontColorKey);
     CourtContext->Font = MainFont;

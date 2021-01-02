@@ -45,6 +45,10 @@
     } InputDevice;
 
     typedef struct{
+        char FOO;
+    } SoundDevice;
+
+    typedef struct{
         SDL_Surface* FontSurface;
         #ifndef _SDL
             SDL_Texture* FontTexture;

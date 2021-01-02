@@ -9,4 +9,7 @@
 
     Surface* CreateTargetSurface(DisplayDevice* DDevice, int w, int h);
 
+    Mix_Music* LoadMusic(char FilePath[]);
+    Mix_Chunk* LoadSoundEffect(char FilePath[]);
+
 #endif
