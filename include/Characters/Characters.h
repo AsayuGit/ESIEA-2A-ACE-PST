@@ -8,6 +8,7 @@
         Phoenix_Wright,
         Mia_Fey,
         Miles_Edgeworth,
+        Judge,
         Court_Desk,
         CharactersCount
     } Cid;

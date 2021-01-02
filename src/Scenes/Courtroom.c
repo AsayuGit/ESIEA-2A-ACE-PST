@@ -22,13 +22,12 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
         return -1;
     }
     DiagContext = InitDialog(DDevice, Context->Font);
-    SetDialogueText(DiagContext, "Mmmmm", 0);
-
     SContext = InitScene(DDevice, S_Courtroom);
 
     InitCharacter(DDevice, Phoenix_Wright); // Initialise the character in memory
     InitCharacter(DDevice, Mia_Fey);
     InitCharacter(DDevice, Miles_Edgeworth);
+    InitCharacter(DDevice, Judge);
 
     InitCharacter(DDevice, Court_Desk);
 
@@ -42,8 +41,16 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
     AddCharacterToLayer(CharaLayer, Miles_Edgeworth, 4, 0, 0, DDevice, SContext->SurfaceBounds);
     AddCharacterToLayer(CharaLayer, Court_Desk, 4, 0, 1, DDevice, SContext->SurfaceBounds);
 
-    CurrentCharacter = Phoenix_Wright;
+    AddCharacterToLayer(CharaLayer, Judge, 1, 1, 0, DDevice, SContext->SurfaceBounds);
     PlayTrackID(TRK_Courtroom);
+
+
+    // Scene setup
+    CurrentCharacter = Judge;
+    MoveTile(SContext, 1, 1, 0);
+    CharacterPlayAnimation(Judge, 1);
+    ReturnToDefault = SetDialogueText(DiagContext, "The court is now in session\nfor the trial of Ms. DEMO.", 2);
+
     // Main Loop
     while (1){
         // Events Loop
@@ -62,52 +69,95 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                     switch (Plot)
                     {
                     case 0:
-                        MoveTile(SContext, 0, 0, 0);
-                        CharacterPlayAnimation(Phoenix_Wright, 1);
-                        ReturnToDefault = SetDialogueText(DiagContext, "The Defence is ready your honor.", 1);
+                        CurrentCharacter = Miles_Edgeworth;
+                        MoveTile(SContext, 4, 0, 0);
+                        CharacterPlayAnimation(Miles_Edgeworth, 1);
+                        ReturnToDefault = SetDialogueText(DiagContext, "The prosecution is\nready, Your Honor.", 2);
                         Plot++;
                         break;
                     case 1:
-                        MoveTile(SContext, 4, 0, 0);
-                        CurrentCharacter = Miles_Edgeworth;
-                        CharacterPlayAnimation(Miles_Edgeworth, 1);
-                        ReturnToDefault = SetDialogueText(DiagContext, "The Prosecution is ready your honor.", 1);
+                        CurrentCharacter = Phoenix_Wright;
+                        BackgroundPlayAnimation(SContext, 2, NULL);
+                        CharacterPlayAnimation(Phoenix_Wright, 1);
+                        ReturnToDefault = SetDialogueText(DiagContext, "The defence\nis ready, Your Honor.", 2);
                         Plot++;
                         break;
                     case 2:
-                        MoveTile(SContext, 0, 0, 0);
-                        CurrentCharacter = Phoenix_Wright;
-                        CharacterPlayAnimation(Phoenix_Wright, 1);
-                        ReturnToDefault = SetDialogueText(DiagContext, "Objection !\nThe witness could not have known the statue was a clock !", 2);
+                        CurrentCharacter = Judge;
+                        MoveTile(SContext, 1, 1, 0);
+                        CharacterPlayAnimation(Judge, 1);
+                        ReturnToDefault = SetDialogueText(DiagContext, "Mr. Edgeworth.\nPlease give the court\nyour opening statement.", 2);
                         Plot++;
                         break;
-                    
                     case 3:
-                        CurrentCharacter = Mia_Fey;
-                        MoveTile(SContext, 2, 1, 0);
-                        CharacterPlayAnimation(Mia_Fey, 1);
-                        ReturnToDefault = SetDialogueText(DiagContext, "Do you have something in mind phoenix ?", 1);
+                        CurrentCharacter = Miles_Edgeworth;
+                        MoveTile(SContext, 4, 0, 0);
+                        CharacterPlayAnimation(Miles_Edgeworth, 1);
+                        ReturnToDefault = SetDialogueText(DiagContext, "Thank you, Your Honor.\nThe defandant, Ms. DEMO,\nwas at the scene of the crime.", 2);
                         Plot++;
                         break;
                     case 4:
-                        CurrentCharacter = Phoenix_Wright;
-                        MoveTile(SContext, 0, 0, 0);
-                        CharacterPlayAnimation(Phoenix_Wright, 1);
-                        ReturnToDefault = SetDialogueText(DiagContext, "Your Honor !\nLook at the witness face !", 2);
-                        //DeskRect.x = 0;
+                        //CurrentCharacter = Miles_Edgeworth;
+                        //MoveTile(SContext, 4, 0, 0);
+                        CharacterPlayAnimation(Miles_Edgeworth, 1);
+                        ReturnToDefault = SetDialogueText(DiagContext, "The prosecution has evidence\nshe committed this murder...", 1);
                         Plot++;
                         break;
-                    
                     case 5:
-                        BackgroundPlayAnimation(SContext, 1, NULL);
+                        //CurrentCharacter = Miles_Edgeworth;
+                        //MoveTile(SContext, 4, 0, 0);
+                        CharacterPlayAnimation(Miles_Edgeworth, 1);
+                        ReturnToDefault = SetDialogueText(DiagContext, "and we have a witness\nwho saw her do it.", 1);
                         Plot++;
                         break;
-
                     case 6:
+                        //CurrentCharacter = Miles_Edgeworth;
+                        //MoveTile(SContext, 4, 0, 0);
+                        CharacterPlayAnimation(Miles_Edgeworth, 1);
+                        ReturnToDefault = SetDialogueText(DiagContext, "The prosecution sees no\nreason to doubt the facts\nof this case, Your Honor.", 1);
+                        Plot++;
+                        break;
+                    case 7:
+                        CurrentCharacter = Judge;
+                        MoveTile(SContext, 1, 1, 0);
+                        CharacterPlayAnimation(Judge, 1);
+                        ReturnToDefault = SetDialogueText(DiagContext, "I see.", 2);
+                        Plot++;
+                        break;
+                    case 8:
+                        //CurrentCharacter = Judge;
+                        //MoveTile(SContext, 1, 1, 0);
+                        CharacterPlayAnimation(Judge, 1);
+                        ReturnToDefault = SetDialogueText(DiagContext, "Thank you, Mr. Edgeworth.\nLet's begin then.", 1);
+                        Plot++;
+                        break;
+                    case 9:
+                        //CurrentCharacter = Judge;
+                        //MoveTile(SContext, 1, 1, 0);
+                        CharacterPlayAnimation(Judge, 1);
+                        ReturnToDefault = SetDialogueText(DiagContext, "You may call your\nfirst witness.", 1);
+                        Plot++;
+                        break;
+                    case 10:
+                        CurrentCharacter = Miles_Edgeworth;
+                        MoveTile(SContext, 4, 0, 0);
+                        CharacterPlayAnimation(Miles_Edgeworth, 1);
+                        ReturnToDefault = SetDialogueText(DiagContext, "The prosecution calls the\nchief officer at the scene,\nDetective Gumshoe!", 2);
+                        Plot++;
+                        break;
+                    // end of plot
+                    case 11:
                         CurrentCharacter = Mia_Fey;
                         MoveTile(SContext, 2, 1, 0);
                         CharacterPlayAnimation(Mia_Fey, 1);
-                        ReturnToDefault = SetDialogueText(DiagContext, "Wow, you just slid across the courtroom !", 2);
+                        ReturnToDefault = SetDialogueText(DiagContext, "Get Ready phoenix !\nThis will be out last\nchance", 2);
+                        Plot++;
+                        break;
+                    case 12:
+                        CurrentCharacter = Mia_Fey;
+                        MoveTile(SContext, 2, 1, 0);
+                        CharacterPlayAnimation(Mia_Fey, 1);
+                        ReturnToDefault = SetDialogueText(DiagContext, "And this conclude this\nbrief demo.", 1);
                         Plot++;
                         break;
                     

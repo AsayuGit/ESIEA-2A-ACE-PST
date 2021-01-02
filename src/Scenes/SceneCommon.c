@@ -54,7 +54,40 @@ char CourtAnim2Effects[4] = {
     0
 };
 
-BGAnimation CourtAnim[2] = {
+// Third background animation (Reverse 180° turn)
+Vector2d CourtAnim3States[5] = {
+    {0.0, 1037.0},
+    {0.0, -1.6},
+    {-4.0, -4.0},
+    {-4.0, -4.0},
+    {0.0, -1.6}
+};
+
+int CourtAnim3Runtime[5] = {
+    0,
+    64,
+    320,
+    320,
+    64
+};
+
+Vector2d CourtAnim3Range[5] = {
+    {0.0, 1.0},
+    {0.0, 10.0},
+    {0.0, 10.72}, // To tweak
+    {10.72, 0.0},
+    {10.0, 0.0}
+};
+
+char CourtAnim3Effects[5] = {
+    0,
+    0,
+    0,
+    0,
+    0
+};
+
+BGAnimation CourtAnim[3] = {
     {
         3,                  // NbOfAnimStates
         CourtAnim1States,
@@ -69,6 +102,14 @@ BGAnimation CourtAnim[2] = {
         CourtAnim2Runtime,
         CourtAnim2Range,
         CourtAnim2Effects,
+        {0, 0, 1293, 192}
+    },
+    {
+       5,
+        CourtAnim3States,
+        CourtAnim3Runtime,
+        CourtAnim3Range,
+        CourtAnim3Effects,
         {0, 0, 1293, 192}
     }
 };
@@ -179,12 +220,6 @@ void MoveTile(SceneContext* Context, int TileX, int TileY, char Effect){ // Chan
             Context->Flipped = 1;
             break;
     }
-    
-    /*
-    Context->SrcRect.y = ((TileID * Context->SrcRect.w) / Context->SurfaceBounds.x);
-    Context->SrcRect.x = (TileID - (Context->SrcRect.y * (Context->SurfaceBounds.x / Context->SrcRect.w))) * Context->SrcRect.w;
-    Context->SrcRect.y *=  Context->SrcRect.h;
-    Context->ObjectLayerOffset = 0;*/
 }
 
 void BackgroundPlayAnimation(SceneContext* Context, int AnimationID, char* AnimState){ // Start the background animation

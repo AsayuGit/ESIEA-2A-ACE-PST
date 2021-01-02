@@ -45,6 +45,21 @@ Animation MilesAnimations[2] = {
     }
 };
 
+Animation JudgeAnimations[2] = {
+    {
+        {8, 11, 118, 96}, // SrcRect // Idle
+        {69, 35, 118, 96}, // DstRect
+        5,   // NbOfFrames
+        500 // Framerate
+    },
+    {
+        {131, 136, 118, 96}, // SrcRect // Talk
+        {69, 35, 118, 96}, // DstRect
+        4,   // NbOfFrames
+        125 // Framerate
+    }
+};
+
 Animation DeskAnim = {
     {0, 0, 256, 44}, // SrcRect // Idle
     {0, 148, 256, 44}, // DstRect
@@ -83,6 +98,16 @@ Characters Cast[CharactersCount] = {
         0,
         0,
         (Animation*)&MilesAnimations
+    },
+    { // Judge
+        NULL,
+        ROOT""TEXTURES"Characters"SL"Judge"TEX_EXT,
+        0x00b5a5d5,
+        NULL,
+        0,
+        0,
+        0,
+        (Animation*)&JudgeAnimations
     },
     { // Courtroom Desk
         NULL,
