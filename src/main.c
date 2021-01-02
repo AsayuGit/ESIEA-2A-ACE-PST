@@ -8,6 +8,7 @@ int main(int argc, char* argv){
     SoundDevice* SDevice;
 
     BitmapFont* MainFont;
+    BitmapFont* NameFont;
     BitmapFont* MainMenuFont;
     Uint32 FontColorKey = 0xff00ff;
     CourtroomContext* CourtContext;
@@ -20,7 +21,9 @@ int main(int argc, char* argv){
     SDevice = CreateSoundDevice();
 
     MainFont = LoadBitmapFont(ROOT""FONTS"AceAttorneyFont"TEX_EXT, DDevice, FontColorKey);
-    CourtContext->Font = MainFont;
+    NameFont = LoadBitmapFont(ROOT""FONTS"NameFont"TEX_EXT, DDevice, FontColorKey);
+    CourtContext->MainFont = MainFont;
+    CourtContext->NameFont = NameFont;
     MainMenuFont = LoadBitmapFont(ROOT""FONTS"MainMenuFont"TEX_EXT, DDevice, FontColorKey);
 
     // First we start the title screen

@@ -21,6 +21,7 @@
     } Animation;
 
     typedef struct{
+        char* DisplayName;
         // Character Texture properties
         Surface* Surface; // Character Surface
         char *SurfacePath;// Character Surface path 
@@ -51,7 +52,7 @@
 
     void InitCharacter(DisplayDevice* DisplayDevice, int CharacterID);
     void CharacterPlayAnimation(int CharacterID, int AnimationID);
-    //void DisplayCharacter(DisplayDevice* DDevice, int CharacterID);
+    char* GetCharacterName(Cid CharacterID);
 
     // Character Layer Management
     void InitCharacterLayer(CharacterLayer** CharaLayer, SceneContext* SContext);

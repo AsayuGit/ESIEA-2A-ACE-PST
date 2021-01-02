@@ -4,7 +4,8 @@
     #include "include.h"
 
     typedef struct{
-        BitmapFont* Font;
+        BitmapFont* MainFont;
+        BitmapFont* NameFont;
     } CourtroomContext;
 
     int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomContext* Context);

@@ -59,16 +59,18 @@ SDL_Rect gputc(DisplayDevice* DDevice, BitmapFont* Font, char c, int x, int y, i
         #else
             SDL_RenderCopy(DDevice->Renderer, Font->FontTexture, &SrcLetter, &DstLetter);
         #endif
-        //if (DstLetter.x + SrcLetter.w < Bounds->w - Bounds->x){
-        if (DstLetter.x + SrcLetter.w < Bounds->w + Bounds->x){
-            DstLetter.x += SrcLetter.w + 1;
-        }else{
+
+        if ((Bounds) && (DstLetter.x + SrcLetter.w > Bounds->w + Bounds->x)){
             DstLetter.y += SrcLetter.h + 1;
             DstLetter.x = Bounds->x;
+        } else {
+            DstLetter.x += SrcLetter.w + 1;
         }
     }else{
-        DstLetter.y += DstLetter.h + 1; // May change for a standard offset in the future
-        DstLetter.x = Bounds->x;
+        if (Bounds){
+            DstLetter.y += DstLetter.h + 1; // May change for a standard offset in the future
+            DstLetter.x = Bounds->x;
+        }
     }
 
     return DstLetter;
@@ -78,8 +80,14 @@ SDL_Rect gprintf(DisplayDevice* DDevice, BitmapFont* Font, char* text, SDL_Rect*
     int CharID;
     SDL_Rect DstLetter;
 
-    DstLetter.x = Bounds->x;
-    DstLetter.y = Bounds->y;
+    if (Bounds) {
+        DstLetter.x = Bounds->x;
+        DstLetter.y = Bounds->y;
+    } else {
+        DstLetter.x = 0;
+        DstLetter.y = 0;
+
+    }
 
     CharID = 0;
     while (text[CharID] != '\0'){

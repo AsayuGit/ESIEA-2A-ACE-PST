@@ -70,6 +70,7 @@ Animation DeskAnim = {
 // Characters constants
 Characters Cast[CharactersCount] = {
     { // Phoenix Wright
+        "Phoenix",
         NULL,                                                   // Surface
         ROOT""TEXTURES"Characters"SL"Phoenix_Wright"TEX_EXT,    // SurfacePath
         0x00b5a5d5,                                             // ColorKey
@@ -80,6 +81,7 @@ Characters Cast[CharactersCount] = {
         (Animation*)&PhoenixAnimations                          // Anim
     },
     { // Mia Fey
+        "Mia",
         NULL,
         ROOT""TEXTURES"Characters"SL"Mia_Fey"TEX_EXT,
         0x00b5a5d5,
@@ -90,6 +92,7 @@ Characters Cast[CharactersCount] = {
         (Animation*)&MiaAnimations
     },
     { // Miles Edgeworth
+        "Edgeworth",
         NULL,
         ROOT""TEXTURES"Characters"SL"Miles_Edgeworth"TEX_EXT,
         0x00b5a5d5,
@@ -100,6 +103,7 @@ Characters Cast[CharactersCount] = {
         (Animation*)&MilesAnimations
     },
     { // Judge
+        "Judge",
         NULL,
         ROOT""TEXTURES"Characters"SL"Judge"TEX_EXT,
         0x00b5a5d5,
@@ -110,6 +114,7 @@ Characters Cast[CharactersCount] = {
         (Animation*)&JudgeAnimations
     },
     { // Courtroom Desk
+        NULL,
         NULL,
         ROOT""TEXTURES"Places"SL"CourtroomDesk"TEX_EXT,
         0x00ff00ff,
@@ -128,6 +133,10 @@ void InitCharacter(DisplayDevice* DDevice, int CharacterID){
 void CharacterPlayAnimation(int CharacterID, int AnimationID){
     Cast[CharacterID].PlayingAnimation = AnimationID;
     Cast[CharacterID].CurrentFrame = 0;
+}
+
+char* GetCharacterName(Cid CharacterID){
+    return Cast[CharacterID].DisplayName;
 }
 
 void InitCharacterLayer(CharacterLayer** CharaLayer, SceneContext* SContext){
