@@ -20,12 +20,17 @@
         SDL_Rect DstLetter;
         Surface* textLayer;
 
+        char letterLag;
+        Mix_Chunk* Letter;
+        Mix_Chunk* NextLine;
+        Mix_Chunk* LineComplete;
+
         // Display
         DisplayDevice* DDevice;
     } DialogueContext;
 
     void ClearDialogueText(DialogueContext* Context);
-    int SetDialogueText(DialogueContext* Context, char* Text);
+    int SetDialogueText(DialogueContext* Context, char* Text, char SndEffType);
     DialogueContext* InitDialog(DisplayDevice* DDevice, BitmapFont* Font);
     void Dialogue(InputDevice* InputDevice, DialogueContext* Context);
 

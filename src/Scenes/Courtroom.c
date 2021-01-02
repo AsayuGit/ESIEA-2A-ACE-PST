@@ -22,7 +22,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
         return -1;
     }
     DiagContext = InitDialog(DDevice, Context->Font);
-    SetDialogueText(DiagContext, "Mmmmm");
+    SetDialogueText(DiagContext, "Mmmmm", 0);
 
     SContext = InitScene(DDevice, S_Courtroom);
 
@@ -58,26 +58,27 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                 switch (PADKEY)
                 {
                 case PAD_A:
+                    CharacterPlayAnimation(CurrentCharacter, 0);
                     switch (Plot)
                     {
                     case 0:
                         MoveTile(SContext, 0, 0, 0);
                         CharacterPlayAnimation(Phoenix_Wright, 1);
-                        ReturnToDefault = SetDialogueText(DiagContext, "The Defence is ready your honor.");
+                        ReturnToDefault = SetDialogueText(DiagContext, "The Defence is ready your honor.", 1);
                         Plot++;
                         break;
                     case 1:
                         MoveTile(SContext, 4, 0, 0);
                         CurrentCharacter = Miles_Edgeworth;
                         CharacterPlayAnimation(Miles_Edgeworth, 1);
-                        ReturnToDefault = SetDialogueText(DiagContext, "The Prosecution is ready your honor.");
+                        ReturnToDefault = SetDialogueText(DiagContext, "The Prosecution is ready your honor.", 1);
                         Plot++;
                         break;
                     case 2:
                         MoveTile(SContext, 0, 0, 0);
                         CurrentCharacter = Phoenix_Wright;
                         CharacterPlayAnimation(Phoenix_Wright, 1);
-                        ReturnToDefault = SetDialogueText(DiagContext, "Objection !\nThe witness could not have known the statue was a clock !");
+                        ReturnToDefault = SetDialogueText(DiagContext, "Objection !\nThe witness could not have known the statue was a clock !", 2);
                         Plot++;
                         break;
                     
@@ -85,14 +86,14 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                         CurrentCharacter = Mia_Fey;
                         MoveTile(SContext, 2, 1, 0);
                         CharacterPlayAnimation(Mia_Fey, 1);
-                        ReturnToDefault = SetDialogueText(DiagContext, "Do you have something in mind phoenix ?");
+                        ReturnToDefault = SetDialogueText(DiagContext, "Do you have something in mind phoenix ?", 1);
                         Plot++;
                         break;
                     case 4:
                         CurrentCharacter = Phoenix_Wright;
                         MoveTile(SContext, 0, 0, 0);
                         CharacterPlayAnimation(Phoenix_Wright, 1);
-                        ReturnToDefault = SetDialogueText(DiagContext, "Your Honor !\nLook at the witness face !");
+                        ReturnToDefault = SetDialogueText(DiagContext, "Your Honor !\nLook at the witness face !", 2);
                         //DeskRect.x = 0;
                         Plot++;
                         break;
@@ -106,7 +107,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                         CurrentCharacter = Mia_Fey;
                         MoveTile(SContext, 2, 1, 0);
                         CharacterPlayAnimation(Mia_Fey, 1);
-                        ReturnToDefault = SetDialogueText(DiagContext, "Wow, you just slid across the courtroom !");
+                        ReturnToDefault = SetDialogueText(DiagContext, "Wow, you just slid across the courtroom !", 2);
                         Plot++;
                         break;
                     
@@ -126,7 +127,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
         }
 
         // Logic
-        if ((DiagContext->progress == ReturnToDefault) && (ReturnToDefault != -1)){
+        if ((DiagContext->progress >= ReturnToDefault) && (ReturnToDefault != -1)){
             CharacterPlayAnimation(CurrentCharacter, 0);
             ReturnToDefault = -1;
         }

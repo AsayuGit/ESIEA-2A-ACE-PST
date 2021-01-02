@@ -13,6 +13,10 @@
         CHK_ButtonClicked,
         CHK_Gravel,
         CHK_ButtonBack,
+        CHK_Letter,
+        CHK_HPLetter,
+        CHK_NextLine,
+        CHK_LineComplete,
         NumberOfEffectTracks
     } EffectsPlaylistID;
 

@@ -10,12 +10,25 @@ void ClearDialogueText(DialogueContext* Context){
     #endif
 }
 
-int SetDialogueText(DialogueContext* Context, char* Text){
+int SetDialogueText(DialogueContext* Context, char* Text, char SndEffType){
     Context->Text = Text;
     Context->progress = 0;
     Context->DstLetter.x = Context->DialogBoxBounds.x;
     Context->DstLetter.y = Context->DialogBoxBounds.y;
     ClearDialogueText(Context);
+
+    switch (SndEffType){
+        case 0:
+            // Nothing
+            break;
+        case 1:
+            Mix_PlayChannel(-1, Context->NextLine, 0);
+            break;
+        case 2:
+            Mix_PlayChannel(-1, Context->LineComplete, 0);
+            break;
+    }
+
     return strlen(Text);
 }
 
@@ -23,7 +36,7 @@ DialogueContext* InitDialog(DisplayDevice* DDevice, BitmapFont* Font){
     
     DialogueContext* DiagContext;
     DiagContext = (DialogueContext*)malloc(sizeof(DialogueContext));
-    DiagContext->TextSpeed = 50;
+    DiagContext->TextSpeed = 40;
     DiagContext->LastLetter = 0;
     DiagContext->DialogBox = NULL;
     DiagContext->DialogBox = LoadSurface(ROOT""TEXTURES"Menus"SL"Dialog"TEX_EXT, DDevice, NULL, true);
@@ -49,8 +62,21 @@ DialogueContext* InitDialog(DisplayDevice* DDevice, BitmapFont* Font){
     DiagContext->Font = Font;
     DiagContext->DstLetter.x = DiagContext->DialogBoxBounds.x = 5;
     DiagContext->DstLetter.y = DiagContext->DialogBoxBounds.y = 135;
+    
+    // Text Margin
+    DiagContext->DialogBoxBounds.w -= 10;
+    DiagContext->DialogBoxBounds.h -= 10;
+
+    DiagContext->letterLag = 0;
+    DiagContext->Letter = LoadSoundEffect(EffectPath[CHK_Letter]);
+    DiagContext->NextLine = LoadSoundEffect(EffectPath[CHK_NextLine]);
+    DiagContext->LineComplete = LoadSoundEffect(EffectPath[CHK_LineComplete]);
+    Mix_VolumeChunk(DiagContext->Letter, 32);
+    Mix_VolumeChunk(DiagContext->NextLine, 32);
+    Mix_VolumeChunk(DiagContext->LineComplete, 32);
+
     DiagContext->DDevice = DDevice;
-    SetDialogueText(DiagContext, "");
+    SetDialogueText(DiagContext, "", 0);
     return DiagContext;
 }
 
@@ -67,10 +93,15 @@ void Dialogue(InputDevice* InputDevice, DialogueContext* Context){
         #ifndef _SDL
             SDL_SetRenderTarget(Context->DDevice->Renderer, Context->textLayer);
         #endif
-        Context->DstLetter = gputc(Context->DDevice, Context->Font, Context->Text[Context->progress], Context->DstLetter.x, Context->DstLetter.y, &(Context->DialogBoxBounds));
+        if (!Context->letterLag){
+            Mix_PlayChannel(-1, Context->Letter, 0);
+            Context->letterLag = 1;
+        }else{
+            Context->letterLag--;
+        }
+        Context->DstLetter = gputc(Context->DDevice, Context->Font, Context->Text[Context->progress], Context->DstLetter.x, Context->DstLetter.y, Context->DstLetter.h, &(Context->DialogBoxBounds));
         Context->progress++;
         Context->LastLetter = SDL_GetTicks();
-
         #ifndef _SDL
             SDL_SetRenderTarget(Context->DDevice->Renderer, NULL);
         #endif

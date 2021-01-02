@@ -16,12 +16,13 @@ Vector2i RectTileToCorrdinate(SDL_Rect SrcRect, Vector2i SurfaceBounds, int Tile
     return Coordinates;
 }
 
-SDL_Rect gputc(DisplayDevice* DDevice, BitmapFont* Font, char c, int x, int y, SDL_Rect* Bounds){
+SDL_Rect gputc(DisplayDevice* DDevice, BitmapFont* Font, char c, int x, int y, int NewLineJump, SDL_Rect* Bounds){
     SDL_Rect SrcLetter, DstLetter;
     int letterX, letterY, letterW, letterID;
 
     DstLetter.x = x;
     DstLetter.y = y;
+    DstLetter.h = NewLineJump;
 
     // Text processing
     if (c != '\n'){
@@ -82,7 +83,7 @@ SDL_Rect gprintf(DisplayDevice* DDevice, BitmapFont* Font, char* text, SDL_Rect*
 
     CharID = 0;
     while (text[CharID] != '\0'){
-        DstLetter = gputc(DDevice, Font, text[CharID], DstLetter.x, DstLetter.y, Bounds);
+        DstLetter = gputc(DDevice, Font, text[CharID], DstLetter.x, DstLetter.y, DstLetter.h, Bounds);
         CharID++;
     }
 

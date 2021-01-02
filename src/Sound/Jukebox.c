@@ -8,7 +8,11 @@ char* EffectPath[NumberOfEffectTracks] = {
     ROOT""EFFECTS"ButtonUpDown"MUS_EXT,
     ROOT""EFFECTS"ButtonClicked"MUS_EXT,
     ROOT""EFFECTS"Gravel"MUS_EXT,
-    ROOT""EFFECTS"ButtonBack"MUS_EXT
+    ROOT""EFFECTS"ButtonBack"MUS_EXT,
+    ROOT""EFFECTS"Letter"MUS_EXT,
+    ROOT""EFFECTS"HPLetter"MUS_EXT,
+    ROOT""EFFECTS"NextLine"MUS_EXT,
+    ROOT""EFFECTS"LineComplete"MUS_EXT
 };
 
 Mix_Music* LoadedTrack;

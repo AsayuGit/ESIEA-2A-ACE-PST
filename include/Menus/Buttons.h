@@ -8,6 +8,8 @@
         Surface* ButtonsSurface;
         char* Label[4];
         BitmapFont* Font;
+        Mix_Chunk* ButtonUpDown;
+        Mix_Chunk* ButtonClicked;
         Mix_Chunk* ClickedSndEffect[4];
 
         char nbOfButtons;
