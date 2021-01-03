@@ -15,7 +15,7 @@ int Scene_TitleScreen(DisplayDevice* DDevice, InputDevice* IDevice, BitmapFont* 
     Mix_Chunk* ToMenu;
 
     SContext = InitScene(DDevice, S_TitleScreen);
-    BContext = InitButtons(DDevice, SContext, Font);
+    BContext = InitButtons(DDevice, SContext, Font, NULL);
 
     AddButton(BContext, "New Game");
     //AddButton(BContext, "Continue");

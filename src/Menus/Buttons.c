@@ -1,6 +1,6 @@
 #include "Buttons.h"
 
-ButtonsContext* InitButtons(DisplayDevice* DDevice, SceneContext* SContext, BitmapFont* Font){
+ButtonsContext* InitButtons(DisplayDevice* DDevice, SceneContext* SContext, BitmapFont* Font, SDL_Rect* ButtonObjectDimensions){
     ButtonsContext* BContext;
     Uint32 ColorKey;
     char i;
@@ -27,10 +27,14 @@ ButtonsContext* InitButtons(DisplayDevice* DDevice, SceneContext* SContext, Bitm
     BContext->clkdButton = -1;
 
     // Buttons Dimensions
-    BContext->ObjectDimensions.x = BContext->ObjectDimensions.y = 0;
-    BContext->ObjectDimensions.w = DDevice->ScreenResolution.x;
-    BContext->ObjectDimensions.h = DDevice->ScreenResolution.y;
-    
+    if (ButtonObjectDimensions){
+        BContext->ObjectDimensions = *ButtonObjectDimensions;
+    }else {
+        BContext->ObjectDimensions.x = BContext->ObjectDimensions.y = 0;
+        BContext->ObjectDimensions.w = DDevice->ScreenResolution.x;
+        BContext->ObjectDimensions.h = DDevice->ScreenResolution.y;
+    }
+
     // Buttons States
     BContext->ButtonState[0].x = BContext->ButtonState[1].x = BContext->ButtonState[0].y = 0;
     BContext->ButtonState[0].h = BContext->ButtonState[1].h = BContext->ButtonState[1].y = 30;
@@ -128,9 +132,10 @@ void DrawButtons(ButtonsContext* ButtonObject){ // TO OPTIMIZE !
     char Selected;
 
     ButtonDstRect = ButtonObject->ButtonState[0]; // Temp ?
+
+    ButtonDstRect.x = (ButtonObject->ObjectDimensions.x + ButtonObject->ObjectDimensions.w - ButtonObject->ButtonState[0].w) / 2;
+    ButtonDstRect.y = (ButtonObject->ObjectDimensions.y + ButtonObject->ObjectDimensions.h - ((ButtonObject->ButtonState[0].h + 5) * ButtonObject->nbOfButtons)) / 2;
     
-    ButtonDstRect.x = (ButtonObject->ObjectDimensions.x + ButtonObject->DDevice->ScreenResolution.x - ButtonObject->ButtonState[0].w) / 2;
-    ButtonDstRect.y = (ButtonObject->ObjectDimensions.y + ButtonObject->DDevice->ScreenResolution.y - ((ButtonObject->ButtonState[0].h + 5) * ButtonObject->nbOfButtons)) / 2;
     ButtonDstRect.x += ButtonObject->Coordinates.x - ButtonObject->Viewport->x;
     ButtonDstRect.y += ButtonObject->Coordinates.y - ButtonObject->Viewport->y;
 

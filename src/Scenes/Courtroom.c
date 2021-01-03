@@ -564,6 +564,8 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
     SceneContext* SEmpty;
     ButtonsContext* BContext;
 
+    SDL_Rect ButtonsRect;
+
     int CurrentCharacter;
     bool SceneFlip = false;
     int Plot = 0;
@@ -579,8 +581,13 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
     DiagContext = InitDialog(DDevice, Context->MainFont, Context->NameFont);
     SContext = InitScene(DDevice, S_Courtroom);
 
+    ButtonsRect.x = 0;
+    ButtonsRect.y = 0;
+    ButtonsRect.w = DDevice->ScreenResolution.x;
+    ButtonsRect.h = DDevice->ScreenResolution.y - (DiagContext->TextBounds.h + DiagContext->NameBounds.h);
+
     SEmpty = InitScene(DDevice, S_Empty);
-    BContext = InitButtons(DDevice, SEmpty, Context->ButtonFont);
+    BContext = InitButtons(DDevice, SEmpty, Context->ButtonFont, &ButtonsRect);
     MoveButtonsToCoordinates(BContext, DDevice->ScreenResolution.x, 0);
 
     InitCharacter(DDevice, Phoenix_Wright); // Initialise the character in memory

@@ -31,7 +31,7 @@
     } ButtonItem;
 
 
-    ButtonsContext* InitButtons(DisplayDevice* DDevice, SceneContext* SContext, BitmapFont* Font);
+    ButtonsContext* InitButtons(DisplayDevice* DDevice, SceneContext* SContext, BitmapFont* Font, SDL_Rect* ButtonObjectDimensions);
     
     void AddButton(ButtonsContext* ButtonObject, const char* Label);
     void ClearButtons(ButtonsContext* ButtObject);
