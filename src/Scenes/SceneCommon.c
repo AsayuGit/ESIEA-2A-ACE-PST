@@ -55,32 +55,28 @@ char CourtAnim2Effects[4] = {
 };
 
 // Third background animation (Reverse 180° turn)
-Vector2d CourtAnim3States[5] = {
-    {0.0, 1037.0},
+Vector2d CourtAnim3States[4] = {
     {0.0, -1.6},
     {-4.0, -4.0},
     {-4.0, -4.0},
     {0.0, -1.6}
 };
 
-int CourtAnim3Runtime[5] = {
-    0,
+int CourtAnim3Runtime[4] = {
     64,
     320,
     320,
     64
 };
 
-Vector2d CourtAnim3Range[5] = {
-    {0.0, 1.0},
+Vector2d CourtAnim3Range[4] = {
     {0.0, 10.0},
     {0.0, 10.72}, // To tweak
     {10.72, 0.0},
     {10.0, 0.0}
 };
 
-char CourtAnim3Effects[5] = {
-    0,
+char CourtAnim3Effects[4] = {
     0,
     0,
     0,
@@ -94,7 +90,7 @@ BGAnimation CourtAnim[3] = {
         CourtAnim1Runtime,
         CourtAnim1Range, // X max form 0 to +infinity
         CourtAnim1Effects,
-        {0, 0, 648, 192}
+        {0, 0, 648, 0}
     },
     {
         4,
@@ -102,15 +98,15 @@ BGAnimation CourtAnim[3] = {
         CourtAnim2Runtime,
         CourtAnim2Range,
         CourtAnim2Effects,
-        {0, 0, 1293, 192}
+        {0, 0, 1037, 0}
     },
     {
-       5,
+        4,
         CourtAnim3States,
         CourtAnim3Runtime,
         CourtAnim3Range,
         CourtAnim3Effects,
-        {0, 0, 1293, 192}
+        {1037, 0, 0, 0}
     }
 };
 
@@ -132,23 +128,19 @@ char TitleScreen1Effects[1] = {
 };
 
 //
-Vector2d TitleScreen2States[2] = {
-    {0, 256},
+Vector2d TitleScreen2States[1] = {
     {0.0, -25.6}
 };
 
-int TitleScreen2Runtime[2] = {
-    0,
+int TitleScreen2Runtime[1] = {
     500
 };
 
-Vector2d TitleScreen2Range[2] = {
-    {0, 1},
+Vector2d TitleScreen2Range[1] = {
     {0.0, 10.0}
 };
 
-char TitleScreen2Effects[2] = {
-    0,
+char TitleScreen2Effects[1] = {
     0
 };
 
@@ -160,15 +152,15 @@ BGAnimation TitleScreenAnim[2] = {
         TitleScreen1Runtime,
         TitleScreen1Range, // X max form 0 to +infinity
         TitleScreen1Effects,
-        {0, 0, 512, 192}
+        {0, 0, 256, 0}
     },
     {
-        2,                  // NbOfAnimStates
+        1,                  // NbOfAnimStates
         TitleScreen2States,
         TitleScreen2Runtime,
         TitleScreen2Range, // X max form 0 to +infinity
         TitleScreen2Effects,
-        {0, 0, 512, 192}
+        {256, 0, 0, 0}
     }
 };
 
@@ -271,8 +263,8 @@ void DisplayBackground(DisplayDevice* DDevice, SceneContext* Context){ // Displa
             NewOffset = (Context->Animation[Context->PlayingAnimation].AnimStates[Context->CurrentState].x * (Progress * Progress)) + (Context->Animation[Context->PlayingAnimation].AnimStates[Context->CurrentState].y * Progress);
             Context->ObjectLayerOffset = MaxOffset - NewOffset + Context->AnimOffset;
         }
-        //printf("Total Offset %d\n", Context->ObjectLayerOffset);
         AnimSrcRect.x =  Context->ObjectLayerOffset + Context->Animation[Context->PlayingAnimation].AnimRegion.x; // + Offset
+        //printf("Region %d | Offset %d\n", Context->Animation[Context->PlayingAnimation].AnimRegion.x, Context->ObjectLayerOffset);
         AnimSrcRect.y = Context->Animation[Context->PlayingAnimation].AnimRegion.y;
         AnimSrcRect.w = DDevice->ScreenResolution.x;
         AnimSrcRect.h = DDevice->ScreenResolution.y;
@@ -290,25 +282,24 @@ void DisplayBackground(DisplayDevice* DDevice, SceneContext* Context){ // Displa
             case 1:
                 Context->Flipped = 1;
                 Context->SrcRect = AnimSrcRect;
-                //Context->SrcRect.y = AnimSrcRect.y; //TEMP
-                //Context->SrcRect.x = Context->Animation[Context->PlayingAnimation].AnimRegion.w - AnimSrcRect.x;
-                //Context->SrcRect = AnimSrcRect;
                 break;
         }
 
         #ifdef _SDL
             SDL_BlitSurface(Context->Surface, &AnimSrcRect, DDevice->Screen, &AnimDstRect); 
         #else
-            //SDL_RenderCopy(DDevice->Renderer, Context->Surface, &AnimSrcRect, &AnimDstRect);
             SDL_RenderCopyEx(DDevice->Renderer, Context->Surface, &AnimSrcRect, &AnimDstRect, 0, 0, Context->Flipped);
         #endif
         
         if (Progress == Context->Animation[Context->PlayingAnimation].AnimRange[Context->CurrentState].y){
             Context->CurrentState++;
             Context->StartFrame = 0;
-            Context->AnimOffset = AnimSrcRect.x;
+            //Context->AnimOffset = AnimSrcRect.x;
+            Context->AnimOffset = Context->ObjectLayerOffset;
             if (Context->CurrentState == Context->Animation[Context->PlayingAnimation].NbOfAnimStates){
-                Context->SrcRect = AnimSrcRect;
+                //Context->SrcRect = AnimSrcRect;
+                Context->SrcRect.x = Context->Animation[Context->PlayingAnimation].AnimRegion.w;
+                Context->SrcRect.y = Context->Animation[Context->PlayingAnimation].AnimRegion.h;
                 Context->PlayingAnimation = -1;
                 if (Context->AnimState){
                     *(Context->AnimState) = 1;
@@ -320,7 +311,6 @@ void DisplayBackground(DisplayDevice* DDevice, SceneContext* Context){ // Displa
         #ifdef _SDL
             SDL_BlitSurface(Context->Surface, &Context->SrcRect, DDevice->Screen, NULL); 
         #else
-            //SDL_RenderCopy(DDevice->Renderer, Context->Surface, &Context->SrcRect, NULL);
             SDL_RenderCopyEx(DDevice->Renderer, Context->Surface, &Context->SrcRect, NULL, 0, 0, Context->Flipped);
         #endif
     }
