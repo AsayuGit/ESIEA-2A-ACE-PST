@@ -1,6 +1,6 @@
 #include "Characters.h"
 
-Animation PhoenixAnimations[2] = {
+Animation PhoenixAnimations[3] = {
     {
         {14, 24, 125, 142}, // SrcRect // Idle
         {0, 18, 125, 142}, // DstRect
@@ -10,6 +10,12 @@ Animation PhoenixAnimations[2] = {
     {
         {600, 24, 125, 142}, // SrcRect // Talk
         {0, 18, 125, 142}, // DstRect
+        4,   // NbOfFrames
+        125 // Framerate
+    },
+    {
+        {14, 185, 107, 136}, // SrcRect // Glup
+        {12, 24, 107, 136}, // DstRect
         4,   // NbOfFrames
         125 // Framerate
     }
