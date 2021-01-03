@@ -398,7 +398,7 @@ void CourtroomScenarioA(SceneContext* SContext, SceneContext* SEmpty, DialogueCo
         SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "(It's... wait... Uh-oh!)", 1);
         break;
     case 31:
-        SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "(No.. no way! I forgot! I'm drawing a total blank here!)", 1);
+        SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "(No.. no way! I forgot!\nI'm drawing a total blank\nhere!)", 1);
         break;
 
     case 32:
@@ -586,7 +586,7 @@ void CourtroomScenarioA(SceneContext* SContext, SceneContext* SEmpty, DialogueCo
     case 48:
         *IdleAnimation = 2;
         CharacterPlayAnimation(*CurrentCharacter, 3);
-        *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "The plot in this DEMO\nwas taken from the fist\ncase of the game.", 1);
+        *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "The plot in this DEMO\nwas taken from the first\ncase of the game.", 1);
         break;
     case 49:
         *IdleAnimation = 2;
