@@ -22,6 +22,8 @@
     typedef struct{
         const char* SurfacePath;// Background Surface path
         BGAnimation* Animation;
+        unsigned int nbOfScenes;
+        Vector2i* ScenesCoordinates;
     } Background;
 
     typedef struct{
@@ -38,6 +40,10 @@
         int AnimOffset;
         BGAnimation* Animation;
 
+        // Scenes index
+        unsigned int nbOfScenes;
+        Vector2i* ScenesCoordinates;
+
         // Metadata
         char* AnimState;
         char Flipped;
@@ -45,7 +51,7 @@
     } SceneContext;
 
     SceneContext* InitScene(DisplayDevice* DDevice, int BackgroundID);
-    void MoveTile(SceneContext* Context, int TileX, int TileY, char Effect);
+    void MoveTile(SceneContext* Context, int TileID, char Effect);
     void BackgroundPlayAnimation(SceneContext* Context, int AnimationID, char* AnimState);
     void DisplayBackground(DisplayDevice* DDevice, SceneContext* Context);
 

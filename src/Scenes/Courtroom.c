@@ -33,21 +33,21 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
 
     CharaLayer = NULL;
     InitCharacterLayer(&CharaLayer, SContext);
-    AddCharacterToLayer(CharaLayer, Phoenix_Wright, 0, 0, 0, DDevice, SContext->SurfaceBounds);
-    AddCharacterToLayer(CharaLayer, Court_Desk, 0, 0, 0, DDevice, SContext->SurfaceBounds);
+    AddCharacterToLayer(CharaLayer, Phoenix_Wright, SContext, 0, 0, DDevice, SContext->SurfaceBounds);
+    AddCharacterToLayer(CharaLayer, Court_Desk, SContext, 0, 0, DDevice, SContext->SurfaceBounds);
 
-    AddCharacterToLayer(CharaLayer, Mia_Fey, 2, 1, 0, DDevice, SContext->SurfaceBounds);
+    AddCharacterToLayer(CharaLayer, Mia_Fey, SContext, 5, 0, DDevice, SContext->SurfaceBounds);
 
-    AddCharacterToLayer(CharaLayer, Miles_Edgeworth, 4, 0, 0, DDevice, SContext->SurfaceBounds);
-    AddCharacterToLayer(CharaLayer, Court_Desk, 4, 0, 1, DDevice, SContext->SurfaceBounds);
+    AddCharacterToLayer(CharaLayer, Miles_Edgeworth, SContext, 1, 0, DDevice, SContext->SurfaceBounds);
+    AddCharacterToLayer(CharaLayer, Court_Desk, SContext, 1, 1, DDevice, SContext->SurfaceBounds);
 
-    AddCharacterToLayer(CharaLayer, Judge, 1, 1, 0, DDevice, SContext->SurfaceBounds);
+    AddCharacterToLayer(CharaLayer, Judge, SContext, 4, 0, DDevice, SContext->SurfaceBounds);
     PlayTrackID(TRK_Courtroom);
 
 
     // Scene setup
     CurrentCharacter = Judge;
-    MoveTile(SContext, 1, 1, 0);
+    MoveTile(SContext, 4, 0);
     CharacterPlayAnimation(Judge, 1);
     ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(Judge), "The court is now in session\nfor the trial of Ms. DEMO.", 2);
 
@@ -70,7 +70,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                     {
                     case 0:
                         CurrentCharacter = Miles_Edgeworth;
-                        MoveTile(SContext, 4, 0, 0);
+                        MoveTile(SContext, 1, 0);
                         CharacterPlayAnimation(Miles_Edgeworth, 1);
                         ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(Miles_Edgeworth), "The prosecution is\nready, Your Honor.", 2);
                         Plot++;
@@ -84,14 +84,14 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                         break;
                     case 2:
                         CurrentCharacter = Judge;
-                        MoveTile(SContext, 1, 1, 0);
+                        MoveTile(SContext, 4, 0);
                         CharacterPlayAnimation(Judge, 1);
                         ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(Judge), "Mr. Edgeworth.\nPlease give the court\nyour opening statement.", 2);
                         Plot++;
                         break;
                     case 3:
                         CurrentCharacter = Miles_Edgeworth;
-                        MoveTile(SContext, 4, 0, 0);
+                        MoveTile(SContext, 1, 0);
                         CharacterPlayAnimation(Miles_Edgeworth, 1);
                         ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(Miles_Edgeworth), "Thank you, Your Honor.\nThe defandant, Ms. DEMO,\nwas at the scene of the crime.", 2);
                         Plot++;
@@ -119,7 +119,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                         break;
                     case 7:
                         CurrentCharacter = Judge;
-                        MoveTile(SContext, 1, 1, 0);
+                        MoveTile(SContext, 4, 0);
                         CharacterPlayAnimation(Judge, 1);
                         ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(Judge), "I see.", 2);
                         Plot++;
@@ -140,7 +140,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                         break;
                     case 10:
                         CurrentCharacter = Miles_Edgeworth;
-                        MoveTile(SContext, 4, 0, 0);
+                        MoveTile(SContext, 1, 0);
                         CharacterPlayAnimation(Miles_Edgeworth, 1);
                         ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(Miles_Edgeworth), "The prosecution calls the\nchief officer at the scene,\nDetective Gumshoe!", 2);
                         Plot++;
@@ -148,14 +148,14 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                     // end of plot
                     case 11:
                         CurrentCharacter = Mia_Fey;
-                        MoveTile(SContext, 2, 1, 0);
+                        MoveTile(SContext, 5, 0);
                         CharacterPlayAnimation(Mia_Fey, 1);
                         ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(Mia_Fey), "Get Ready Phoenix !\nThis will be our last\nchance !", 2);
                         Plot++;
                         break;
                     case 12:
-                        CurrentCharacter = Mia_Fey;
-                        MoveTile(SContext, 2, 1, 0);
+                        //CurrentCharacter = Mia_Fey;
+                        //MoveTile(SContext, 5, 0);
                         CharacterPlayAnimation(Mia_Fey, 1);
                         ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(Mia_Fey), "On this note, this conclude this\nbrief demo.", 1);
                         Plot++;

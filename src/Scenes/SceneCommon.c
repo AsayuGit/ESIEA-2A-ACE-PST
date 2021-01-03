@@ -71,8 +71,8 @@ int CourtAnim3Runtime[4] = {
 
 Vector2d CourtAnim3Range[4] = {
     {0.0, 10.0},
-    {0.0, 10.72}, // To tweak
-    {10.72, 0.0},
+    {0.0, 10.74}, // To tweak
+    {10.74, 0.0},
     {10.0, 0.0}
 };
 
@@ -98,7 +98,7 @@ BGAnimation CourtAnim[3] = {
         CourtAnim2Runtime,
         CourtAnim2Range,
         CourtAnim2Effects,
-        {0, 0, 1037, 0}
+        {0, 0, 1040, 0}
     },
     {
         4,
@@ -106,7 +106,7 @@ BGAnimation CourtAnim[3] = {
         CourtAnim3Runtime,
         CourtAnim3Range,
         CourtAnim3Effects,
-        {1037, 0, 0, 0}
+        {1040, 0, 0, 0}
     }
 };
 
@@ -164,14 +164,27 @@ BGAnimation TitleScreenAnim[2] = {
     }
 };
 
+Vector2i CourtScenes[6] = {
+    {0, 0}, 
+    {1040, 0},
+    {519, 0},
+    {0, 192},
+    {256, 192},
+    {512, 192}
+};
+
 Background Scenes[BackgroundsCount] = {
     {// S_Courtroom
         ROOT""TEXTURES"Places"SL"Courtroom"TEX_EXT,
-        CourtAnim
+        CourtAnim,
+        6,
+        CourtScenes
     },
     {// S_TitleScreen
         ROOT""TEXTURES"Menus"SL"TitleScreen"TEX_EXT,
-        TitleScreenAnim
+        TitleScreenAnim,
+        0,
+        NULL
     }
 };
 
@@ -191,16 +204,22 @@ SceneContext* InitScene(DisplayDevice* DDevice, int BackgroundID){
     LoadingContext->SrcRect.w = DDevice->ScreenResolution.x;
     LoadingContext->SrcRect.h = DDevice->ScreenResolution.y;
     LoadingContext->Animation = Scenes[BackgroundID].Animation;
+    LoadingContext->nbOfScenes = Scenes[BackgroundID].nbOfScenes;
+    LoadingContext->ScenesCoordinates = Scenes[BackgroundID].ScenesCoordinates;
     return LoadingContext;
 }
 
-void MoveTile(SceneContext* Context, int TileX, int TileY, char Effect){ // Change the background tile
-    
+void MoveTile(SceneContext* Context, int TileID, char Effect){ // Change the background tile
+
+    /*    
     Vector2i Coordinates;
 
     Coordinates = RectTileToCorrdinate(Context->SrcRect, Context->SurfaceBounds, TileX, TileY);
     Context->SrcRect.y = Coordinates.y;
-    Context->SrcRect.x = Coordinates.x;
+    Context->SrcRect.x = Coordinates.x;*/
+
+    Context->SrcRect.x = Context->ScenesCoordinates[TileID].x;
+    Context->SrcRect.y = Context->ScenesCoordinates[TileID].y;
     Context->ObjectLayerOffset = 0;
 
     // Effects

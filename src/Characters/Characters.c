@@ -149,7 +149,7 @@ void InitCharacterLayer(CharacterLayer** CharaLayer, SceneContext* SContext){
     }
 }
 
-void AddCharacterToLayer(CharacterLayer* CharaLayer, int CharacterID, int TileX, int TileY, char Flip, DisplayDevice* DDevice, Vector2i BackgroundBounds){ // Add a new character to a CharacterLayer
+void AddCharacterToLayer(CharacterLayer* CharaLayer, int CharacterID, SceneContext* SContext, int TileID, char Flip, DisplayDevice* DDevice, Vector2i BackgroundBounds){ // Add a new character to a CharacterLayer
     CharacterList** CharaList;
     SDL_Rect CharaRect;
 
@@ -164,7 +164,8 @@ void AddCharacterToLayer(CharacterLayer* CharaLayer, int CharacterID, int TileX,
 
     CharaRect.w = DDevice->ScreenResolution.x;
     CharaRect.h = DDevice->ScreenResolution.y;
-    (*CharaList)->Coordinates = RectTileToCorrdinate(CharaRect, BackgroundBounds, TileX, TileY);
+    (*CharaList)->Coordinates.x = SContext->ScenesCoordinates[TileID].x;
+    (*CharaList)->Coordinates.y = SContext->ScenesCoordinates[TileID].y;
     (*CharaList)->Flip = Flip;
     (*CharaList)->NextCharacter = NULL;
 }
