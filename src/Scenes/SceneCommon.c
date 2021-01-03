@@ -173,7 +173,17 @@ Vector2i CourtScenes[6] = {
     {512, 192}
 };
 
+Vector2i EmptyScenes[1] = {
+    {0, 0}
+};
+
 Background Scenes[BackgroundsCount] = {
+    {// S_Empty
+        NULL,
+        TitleScreenAnim,
+        1,
+        EmptyScenes
+    },
     {// S_Courtroom
         ROOT""TEXTURES"Places"SL"Courtroom"TEX_EXT,
         CourtAnim,
@@ -183,8 +193,8 @@ Background Scenes[BackgroundsCount] = {
     {// S_TitleScreen
         ROOT""TEXTURES"Menus"SL"TitleScreen"TEX_EXT,
         TitleScreenAnim,
-        0,
-        NULL
+        1,
+        EmptyScenes
     }
 };
 

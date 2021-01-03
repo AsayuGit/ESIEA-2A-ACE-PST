@@ -32,7 +32,12 @@
 
 
     ButtonsContext* InitButtons(DisplayDevice* DDevice, SceneContext* SContext, BitmapFont* Font);
+    
     void AddButton(ButtonsContext* ButtonObject, const char* Label);
+    void ClearButtons(ButtonsContext* ButtObject);
+    
+    char GetNbOfButtons(ButtonsContext* ButtonObject);
+    
     void MoveButtonsToCoordinates(ButtonsContext* ButtonObject, int x, int y);
     void HandleButtonsEvents(ButtonsContext* ButtonObject, SDL_Event* event);
     char GetClkdButtonID(ButtonsContext* ButtonObject);

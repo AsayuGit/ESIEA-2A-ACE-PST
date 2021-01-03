@@ -22,9 +22,10 @@ int main(int argc, char* argv){
 
     MainFont = LoadBitmapFont(ROOT""FONTS"AceAttorneyFont"TEX_EXT, DDevice, FontColorKey);
     NameFont = LoadBitmapFont(ROOT""FONTS"NameFont"TEX_EXT, DDevice, FontColorKey);
+    MainMenuFont = LoadBitmapFont(ROOT""FONTS"MainMenuFont"TEX_EXT, DDevice, FontColorKey);
     CourtContext->MainFont = MainFont;
     CourtContext->NameFont = NameFont;
-    MainMenuFont = LoadBitmapFont(ROOT""FONTS"MainMenuFont"TEX_EXT, DDevice, FontColorKey);
+    CourtContext->ButtonFont = MainMenuFont;
 
     // First we start the title screen
     if (Scene_TitleScreen(DDevice, IDevice, MainMenuFont) == 0){

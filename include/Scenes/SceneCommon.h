@@ -5,6 +5,7 @@
     #include "Dialogue.h"
 
     typedef enum{
+        S_Empty,
         S_Courtroom,
         S_TitleScreen,
         BackgroundsCount

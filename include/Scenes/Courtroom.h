@@ -6,6 +6,7 @@
     typedef struct{
         BitmapFont* MainFont;
         BitmapFont* NameFont;
+        BitmapFont* ButtonFont;
     } CourtroomContext;
 
     int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomContext* Context);

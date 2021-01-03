@@ -60,6 +60,14 @@ void AddButton(ButtonsContext* ButtonObject, const char* Label){
     }
 }
 
+void ClearButtons(ButtonsContext* ButtObject){
+    ButtObject->nbOfButtons = 0;
+}
+
+char GetNbOfButtons(ButtonsContext* ButtonObject){
+    return ButtonObject->nbOfButtons;
+}
+
 void MoveButtonsToCoordinates(ButtonsContext* ButtonObject, int x, int y){
     ButtonObject->Coordinates.x = x;
     ButtonObject->Coordinates.y = y;
