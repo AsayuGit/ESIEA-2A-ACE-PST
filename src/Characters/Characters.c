@@ -21,17 +21,53 @@ Animation PhoenixAnimations[3] = {
     }
 };
 
-Animation MiaAnimations[2] = {
+Animation MiaAnimations[8] = {
     {
-        {54, 1045, 73, 169}, // SrcRect // Idle
+        {54, 1045, 73, 169}, // SrcRect // Idle [0]
         {87, 23, 73, 169}, // DstRect
         4,   // NbOfFrames
         500 // Framerate
     },
     {
-        {411, 1045, 73, 169}, // SrcRect // Talk
+        {411, 1045, 73, 169}, // SrcRect // Talk [1]
         {87, 23, 73, 169}, // DstRect
         4,   // NbOfFrames
+        125 // Framerate
+    },
+    {
+        {56, 828, 92, 166}, // SrcRect // Forward Idle [2]
+        {76, 26, 92, 166}, // DstRect
+        4,   // NbOfFrames
+        500 // Framerate
+    },
+    {
+        {514, 827, 92, 166}, // SrcRect // Forward Talk [3]
+        {76, 26, 92, 166}, // DstRect
+        4,   // NbOfFrames
+        125 // Framerate
+    },
+    {
+        {53, 1465, 73, 169}, // SrcRect // Sad Idle [4]
+        {83, 23, 73, 169}, // DstRect
+        4,   // NbOfFrames
+        500 // Framerate
+    },
+    {
+        {450, 1465, 73, 169}, // SrcRect // Sad Talk [5]
+        {83, 23, 73, 169}, // DstRect
+        4,   // NbOfFrames
+        125 // Framerate
+    },
+    {
+        {61, 1257, 73, 170}, // SrcRect // Shocked Idle [6]
+        {81, 22, 73, 170}, // DstRect
+        4,   // NbOfFrames
+        500 // Framerate
+    },
+    {
+        {419, 1257, 73, 170}, // SrcRect // Shocked Talk [7]
+        {81, 22, 73, 170}, // DstRect
+        3,   // NbOfFrames
         125 // Framerate
     }
 };
@@ -51,16 +87,43 @@ Animation MilesAnimations[2] = {
     }
 };
 
-Animation JudgeAnimations[2] = {
+Animation JudgeAnimations[4] = {
     {
-        {8, 11, 118, 96}, // SrcRect // Idle
+        {8, 11, 118, 96}, // SrcRect // Idle [0]
         {69, 35, 118, 96}, // DstRect
         5,   // NbOfFrames
         500 // Framerate
     },
     {
-        {131, 136, 118, 96}, // SrcRect // Talk
+        {131, 136, 118, 96}, // SrcRect // Talk [1]
         {69, 35, 118, 96}, // DstRect
+        4,   // NbOfFrames
+        125 // Framerate
+    },
+    {
+        {12, 706, 118, 96}, // SrcRect // Serious Idle [2]
+        {69, 36, 118, 96}, // DstRect
+        5,   // NbOfFrames
+        500 // Framerate
+    },
+    {
+        {134, 834, 118, 96}, // SrcRect // Serious Talk [3]
+        {69, 36, 118, 96}, // DstRect
+        4,   // NbOfFrames
+        125 // Framerate
+    }
+};
+
+Animation PayneAnimations[2] = {
+    {
+        {17, 26, 85, 134}, // SrcRect // Idle
+        {158, 26, 85, 134}, // DstRect
+        1,   // NbOfFrames
+        500 // Framerate
+    },
+    {
+        {111, 26, 85, 134}, // SrcRect // Talk
+        {158, 26, 85, 134}, // DstRect
         4,   // NbOfFrames
         125 // Framerate
     }
@@ -118,6 +181,17 @@ Characters Cast[CharactersCount] = {
         0,
         0,
         (Animation*)&JudgeAnimations
+    },
+    { // Winston Payne
+        "Payne",
+        NULL,
+        ROOT""TEXTURES"Characters"SL"Winston_Payne"TEX_EXT,
+        0x00b5a5d5,
+        NULL,
+        0,
+        0,
+        0,
+        (Animation*)&PayneAnimations
     },
     { // Courtroom Desk
         NULL,

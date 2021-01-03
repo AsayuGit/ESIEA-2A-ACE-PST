@@ -99,18 +99,19 @@ void CourtroomScenarioB(SceneContext* SContext, DialogueContext* DiagContext, in
     }
 }
 
-void CourtroomScenarioA(SceneContext* SContext, SceneContext* SEmpty, DialogueContext* DiagContext, ButtonsContext* BContext, int* Plot, int* CurrentCharacter, int* ReturnToDefault, char* ButtonActivated, char* buttonInput){
+void CourtroomScenarioA(SceneContext* SContext, SceneContext* SEmpty, DialogueContext* DiagContext, ButtonsContext* BContext, int* Plot, int* CurrentCharacter, int* IdleAnimation, int* ReturnToDefault, char* ButtonActivated, char* buttonInput){
     switch (*Plot)
     {
     case 0:
         *CurrentCharacter = Judge;
         MoveTile(SContext, 4, 0);
+        *IdleAnimation = 0;
         CharacterPlayAnimation(*CurrentCharacter, 1);
         *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "The court is now in session for\nthe trial of Mr. Larry Butz.", 1);
         break;
     
     case 1:
-        *CurrentCharacter = Miles_Edgeworth;
+        *CurrentCharacter = Winston_Payne;
         MoveTile(SContext, 1, 0);
         CharacterPlayAnimation(*CurrentCharacter, 1);
         *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "The prosecution is ready,\nYour Honor.", 1);
@@ -126,21 +127,25 @@ void CourtroomScenarioA(SceneContext* SContext, SceneContext* SEmpty, DialogueCo
     case 3:
         *CurrentCharacter = Judge;
         MoveTile(SContext, 4, 0);
-        CharacterPlayAnimation(*CurrentCharacter, 1);
+        *IdleAnimation = 2;
+        CharacterPlayAnimation(*CurrentCharacter, 2);
         *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "Ahem.", 1);
         break;
     case 4:
-        CharacterPlayAnimation(*CurrentCharacter, 1);
+        *IdleAnimation = 2;
+        CharacterPlayAnimation(*CurrentCharacter, 3);
         *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "Mr. Wright?", 1);
         break;
     case 5:
-        CharacterPlayAnimation(*CurrentCharacter, 1);
+        *IdleAnimation = 2;
+        CharacterPlayAnimation(*CurrentCharacter, 3);
         *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "This is your first trial,\nis it not?", 1);
         break;
 
     case 6:
         *CurrentCharacter = Phoenix_Wright;
         MoveTile(SContext, 0, 0);
+        *IdleAnimation = 0;
         CharacterPlayAnimation(*CurrentCharacter, 1);
         *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "Y-Yes, Your Honor.\nI'm, um, a little nervous.", 1);
         break;
@@ -148,10 +153,12 @@ void CourtroomScenarioA(SceneContext* SContext, SceneContext* SEmpty, DialogueCo
     case 7:
         *CurrentCharacter = Judge;
         MoveTile(SContext, 4, 0);
-        CharacterPlayAnimation(*CurrentCharacter, 1);
+        *IdleAnimation = 2;
+        CharacterPlayAnimation(*CurrentCharacter, 3);
         *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "Your conduct during this\ntrial will decide the fate\nof your client.", 1);
         break;
     case 8:
+        *IdleAnimation = 0;
         CharacterPlayAnimation(*CurrentCharacter, 1);
         *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "Murder is a serious charge.\nFor your client's sake, I hope\nyou can control your nerves.", 1);
         break;
@@ -159,6 +166,7 @@ void CourtroomScenarioA(SceneContext* SContext, SceneContext* SEmpty, DialogueCo
     case 9:
         *CurrentCharacter = Phoenix_Wright;
         MoveTile(SContext, 0, 0);
+        *IdleAnimation = 0;
         CharacterPlayAnimation(*CurrentCharacter, 1);
         *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "Thank... thank you, Your Honor.", 1);
         break;
@@ -166,25 +174,30 @@ void CourtroomScenarioA(SceneContext* SContext, SceneContext* SEmpty, DialogueCo
     case 10:
         *CurrentCharacter = Judge;
         MoveTile(SContext, 4, 0);
-        CharacterPlayAnimation(*CurrentCharacter, 1);
+        *IdleAnimation = 2;
+        CharacterPlayAnimation(*CurrentCharacter, 2);
         *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "...", 1);
         break;
     case 11:
-        CharacterPlayAnimation(*CurrentCharacter, 1);
-        *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "Mr. Wright, given the circumstances...", 1);
+        *IdleAnimation = 2;
+        CharacterPlayAnimation(*CurrentCharacter, 3);
+        *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "Mr. Wright, given the\ncircumstances...", 1);
         break;
     case 12:
-        CharacterPlayAnimation(*CurrentCharacter, 1);
+        *IdleAnimation = 2;
+        CharacterPlayAnimation(*CurrentCharacter, 3);
         *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "I think we should have a test to\nascertain your readiness.", 1);
         break; 
 
     case 13:
         *CurrentCharacter = Phoenix_Wright;
         MoveTile(SContext, 0, 0);
+        *IdleAnimation = 0;
         CharacterPlayAnimation(*CurrentCharacter, 1);
         *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "Yes, Your Honor.", 1);
         break;
     case 14:
+        *IdleAnimation = 2;
         CharacterPlayAnimation(*CurrentCharacter, 2); // Glup Animation
         SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "(Glup... Hands shaking...\nEyesight... fading...)", 1);
         break;
@@ -192,11 +205,13 @@ void CourtroomScenarioA(SceneContext* SContext, SceneContext* SEmpty, DialogueCo
     case 15:
         *CurrentCharacter = Judge;
         MoveTile(SContext, 4, 0);
-        CharacterPlayAnimation(*CurrentCharacter, 1);
+        *IdleAnimation = 2;
+        CharacterPlayAnimation(*CurrentCharacter, 3);
         *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "The test will consist of a\nfew simple questions. Answer\nthem clearly and concisely", 1);
         break;
     case 16:
-        CharacterPlayAnimation(*CurrentCharacter, 1);
+        *IdleAnimation = 2;
+        CharacterPlayAnimation(*CurrentCharacter, 3);
         *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "Please state the name of\nthe defendant in this case.", 1);
         ClearButtons(BContext);
         AddButton(BContext, "Phoenix Wright");
@@ -211,12 +226,14 @@ void CourtroomScenarioA(SceneContext* SContext, SceneContext* SEmpty, DialogueCo
         case 0:
             *CurrentCharacter = Phoenix_Wright;
             MoveTile(SContext, 0, 0);
+            *IdleAnimation = 0;
             CharacterPlayAnimation(*CurrentCharacter, 1);
-            *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "Um.. the defendant...\nis me, right?", 1);
+            *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "Um... the defendant...\nis me, right?", 1);
             break;
         case 1:
             *CurrentCharacter = Phoenix_Wright;
             MoveTile(SContext, 0, 0);
+            *IdleAnimation = 0;
             CharacterPlayAnimation(*CurrentCharacter, 1);
             *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "The defendant? Well, that's\nLarry Butz, Your Honor.", 1);
             (*Plot) = 25;
@@ -225,6 +242,7 @@ void CourtroomScenarioA(SceneContext* SContext, SceneContext* SEmpty, DialogueCo
         case 2:
             *CurrentCharacter = Phoenix_Wright;
             MoveTile(SContext, 0, 0);
+            *IdleAnimation = 0;
             CharacterPlayAnimation(*CurrentCharacter, 1);
             *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "The, um, defendant?\nThat's... er... Mia Fey?", 1);
             break;
@@ -237,13 +255,15 @@ void CourtroomScenarioA(SceneContext* SContext, SceneContext* SEmpty, DialogueCo
         case 0:
             *CurrentCharacter = Mia_Fey;
             MoveTile(SContext, 5, 0);
-            CharacterPlayAnimation(*CurrentCharacter, 1); // to be shocked
+            *IdleAnimation = 4;
+            CharacterPlayAnimation(*CurrentCharacter, 5); // Sad
             *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "Wright! Have you completely\nlost your mind? Focus!", 1);
             break;
         case 2:
             *CurrentCharacter = Mia_Fey;
             MoveTile(SContext, 5, 0);
-            CharacterPlayAnimation(*CurrentCharacter, 1); // Mia pose
+            *IdleAnimation = 2;
+            CharacterPlayAnimation(*CurrentCharacter, 3); // Mia pose
             *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "Wrong, Wright.\nLook, I have to leave.", 1);
             break;
         }
@@ -253,11 +273,12 @@ void CourtroomScenarioA(SceneContext* SContext, SceneContext* SEmpty, DialogueCo
         switch (*buttonInput)
         {
         case 0:
-            CharacterPlayAnimation(*CurrentCharacter, 1);
+            *IdleAnimation = 6;
+            CharacterPlayAnimation(*CurrentCharacter, 7); // Shocked
             *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "The defendant is the\nperson on trial!", 1);
             break;
         case 2:
-            CharacterPlayAnimation(*CurrentCharacter, 1);
+            CharacterPlayAnimation(*CurrentCharacter, 3); // Mia Pose
             *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "I have to go home. I'm...\nI'm expecting a delivery.", 1);
             break;
         }
@@ -267,7 +288,7 @@ void CourtroomScenarioA(SceneContext* SContext, SceneContext* SEmpty, DialogueCo
         switch (*buttonInput)
         {
         case 0:
-            CharacterPlayAnimation(*CurrentCharacter, 1);
+            CharacterPlayAnimation(*CurrentCharacter, 7);
             *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "You're his lawyer!", 1);
             break;
         case 2:
@@ -280,11 +301,12 @@ void CourtroomScenarioA(SceneContext* SContext, SceneContext* SEmpty, DialogueCo
         switch (*buttonInput)
         {
         case 0:
-            //CharacterPlayAnimation(*CurrentCharacter, 1); // Mia Pose
+            CharacterPlayAnimation(*CurrentCharacter, 2); // Mia Pose
             SetDialogueText(DiagContext, GetCharacterName(Phoenix_Wright), "Um, er, eh?\nOh yeah, right! Eh heh heh.", 1);
             break;
         case 2:
-            CharacterPlayAnimation(*CurrentCharacter, 1); // to be shocked
+            *IdleAnimation = 6;
+            CharacterPlayAnimation(*CurrentCharacter, 7); // Shocked
             *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "Wright!", 1);
             break;
         }
@@ -294,11 +316,12 @@ void CourtroomScenarioA(SceneContext* SContext, SceneContext* SEmpty, DialogueCo
         switch (*buttonInput)
         {
         case 0:
-            CharacterPlayAnimation(*CurrentCharacter, 1);
+            *IdleAnimation = 2;
+            CharacterPlayAnimation(*CurrentCharacter, 3); // Mia pose
             *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "This is no laughing matter!", 1);
             break;
         case 2:
-            CharacterPlayAnimation(*CurrentCharacter, 1); // to be shocked
+            CharacterPlayAnimation(*CurrentCharacter, 7); // Shocked
             *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "Listen: the defendant is\nthe one on trial--your client!", 1);
             break;
         }
@@ -308,11 +331,12 @@ void CourtroomScenarioA(SceneContext* SContext, SceneContext* SEmpty, DialogueCo
         switch (*buttonInput)
         {
         case 0:
-            CharacterPlayAnimation(*CurrentCharacter, 1);
+            CharacterPlayAnimation(*CurrentCharacter, 3); // Mia Pose
             *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "You did pass the bar,\ndidn't you?", 1);
             break;
         case 2:
-            CharacterPlayAnimation(*CurrentCharacter, 1); // pose
+            *IdleAnimation = 2;
+            CharacterPlayAnimation(*CurrentCharacter, 3); // Mia pose
             *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "I mean, that's about as\nbasic as you can get!", 1);
             break;
         }
@@ -324,13 +348,14 @@ void CourtroomScenarioA(SceneContext* SContext, SceneContext* SEmpty, DialogueCo
         case 0:
             *CurrentCharacter = Judge;
             MoveTile(SContext, 4, 0);
-            CharacterPlayAnimation(*CurrentCharacter, 1);
+            *IdleAnimation = 0;
+            *IdleAnimation = 2;
+            CharacterPlayAnimation(*CurrentCharacter, 3);
             *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "Sorry, I couldn't hear your\nanswer. I'll ask once more:", 1);
             (*Plot) = 16;
             return;
             break;
         case 2:
-            //CharacterPlayAnimation(*CurrentCharacter, 1); // Mia Pose
             SetDialogueText(DiagContext, GetCharacterName(Phoenix_Wright), "(I put my foot in it this time!\nI've got to relax!)", 1);
             (*buttonInput) = 0;
             return;
@@ -341,75 +366,85 @@ void CourtroomScenarioA(SceneContext* SContext, SceneContext* SEmpty, DialogueCo
     case 25:
         *CurrentCharacter = Judge;
         MoveTile(SContext, 4, 0);
+        *IdleAnimation = 0;
         CharacterPlayAnimation(*CurrentCharacter, 1);
         *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "Correct.", 1);
         break;
     case 26:
+        *IdleAnimation = 0;
         CharacterPlayAnimation(*CurrentCharacter, 1);
         *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "Just keep your wits about\nyou and you'll do fine.", 1);
         break;
     case 27:
+        *IdleAnimation = 0;
         CharacterPlayAnimation(*CurrentCharacter, 1);
         *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "Next question:", 1);
         break;
     case 28:
-        CharacterPlayAnimation(*CurrentCharacter, 1);
+        *IdleAnimation = 2;
+        CharacterPlayAnimation(*CurrentCharacter, 3);
         *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "This is a murder trial. Tell me,\nwhat's the victim's name?", 1);
         break;
 
     case 29:
         *CurrentCharacter = Phoenix_Wright;
         MoveTile(SContext, 0, 0);
-        //CharacterPlayAnimation(*CurrentCharacter, 1);
-        *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "(Whew, I know this one! Glad\nI read the case report cover\nto cover so many times.)", 1);
+        *IdleAnimation = 0;
+        SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "(Whew, I know this one! Glad\nI read the case report cover\nto cover so many times.)", 1);
         break;
     case 30:
+        *IdleAnimation = 2;
         CharacterPlayAnimation(*CurrentCharacter, 2);
-        *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "(It's... wait... Uh-oh!)", 1);
+        SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "(It's... wait... Uh-oh!)", 1);
         break;
     case 31:
-        CharacterPlayAnimation(*CurrentCharacter, 2);
-        *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "(No.. no way! I forgot! I'm drawing a total blank here!)", 1);
+        SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "(No.. no way! I forgot! I'm drawing a total blank here!)", 1);
         break;
 
     case 32:
         *CurrentCharacter = Mia_Fey;
         MoveTile(SContext, 5, 0);
-        CharacterPlayAnimation(*CurrentCharacter, 1); // to be shocked
+        *IdleAnimation = 6;
+        CharacterPlayAnimation(*CurrentCharacter, 7); // Shocked
         *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "Phoenix! Are you absolutely\nSURE you're up to this ?", 1);
         break;
     case 33:
-        CharacterPlayAnimation(*CurrentCharacter, 1); // to be shocked
+        CharacterPlayAnimation(*CurrentCharacter, 7); // Shocked
         *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "You don't even know the\nvictim's name!?", 1);
         break;
     case 34:
-        //CharacterPlayAnimation(*CurrentCharacter, 1); // Mia Pose
+        *IdleAnimation = 2;
+        CharacterPlayAnimation(*CurrentCharacter, 2); // Mia Pose
         SetDialogueText(DiagContext, GetCharacterName(Phoenix_Wright), "Oh, the victim! O-Of course\nI know the victim's name!", 1);
         break;
     case 35:
-        SetDialogueText(DiagContext, GetCharacterName(Phoenix_Wright), "I, um, just forgot.\n... Temporarily", 1);
+        SetDialogueText(DiagContext, GetCharacterName(Phoenix_Wright), "I, um, just forgot.\n... Temporarily.", 1);
         break;
     case 36:
-        CharacterPlayAnimation(*CurrentCharacter, 1); // to be shocked
+        *IdleAnimation = 2;
+        CharacterPlayAnimation(*CurrentCharacter, 3); // Shocked
         *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "I think I feel a migraine\ncoming on.", 1);
         break;
     case 37:
-        CharacterPlayAnimation(*CurrentCharacter, 1); // to be shocked
+        *IdleAnimation = 0;
+        CharacterPlayAnimation(*CurrentCharacter, 1);
         *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "Look, the victim's name\nis listed in the Court Record.", 1);
         break;
     case 38:
-        CharacterPlayAnimation(*CurrentCharacter, 1); // to be shocked
+        CharacterPlayAnimation(*CurrentCharacter, 1);
         *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "Just press the Court Record\nbutton to check it at anytime,\nokay?", 1);
         break;
     case 39:
-        CharacterPlayAnimation(*CurrentCharacter, 1); // to be shocked
+        *IdleAnimation = 2;
+        CharacterPlayAnimation(*CurrentCharacter, 3); // Mia pose
         *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "Remember to check it often.\nDo it for me, please.\nI'm begging you.", 1);
         break;
 
     case 40:
         *CurrentCharacter = Judge;
         MoveTile(SContext, 4, 0);
-        CharacterPlayAnimation(*CurrentCharacter, 1);
+        *IdleAnimation = 2;
+        CharacterPlayAnimation(*CurrentCharacter, 3);
         *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "Let's hear your answer.\nWho is the victim in this case?", 1);
         ClearButtons(BContext);
         AddButton(BContext, "Mia Fey");
@@ -424,18 +459,21 @@ void CourtroomScenarioA(SceneContext* SContext, SceneContext* SEmpty, DialogueCo
         case 0:
             *CurrentCharacter = Phoenix_Wright;
             MoveTile(SContext, 0, 0);
+            *IdleAnimation = 0;
             CharacterPlayAnimation(*CurrentCharacter, 1);
             *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "Um.. Mia Fey", 1);
             break;
         case 1:
             *CurrentCharacter = Phoenix_Wright;
             MoveTile(SContext, 0, 0);
+            *IdleAnimation = 0;
             CharacterPlayAnimation(*CurrentCharacter, 1);
             *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "Oh, um, wasn't it Ms. Block?\nMs. Cinder Block?", 1);
             break;
         case 2:
             *CurrentCharacter = Phoenix_Wright;
             MoveTile(SContext, 0, 0);
+            *IdleAnimation = 0;
             CharacterPlayAnimation(*CurrentCharacter, 1);
             *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "Um... the victim's name\nis Cindy Stone.", 1);
             (*Plot) = 46;
@@ -450,13 +488,15 @@ void CourtroomScenarioA(SceneContext* SContext, SceneContext* SEmpty, DialogueCo
         case 0:
             *CurrentCharacter = Mia_Fey;
             MoveTile(SContext, 5, 0);
-            CharacterPlayAnimation(*CurrentCharacter, 1);
+            *IdleAnimation = 6;
+            CharacterPlayAnimation(*CurrentCharacter, 7);
             *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "W-W-What!? How can I be\nthe victim!?", 1);
             break;
         case 1:
             *CurrentCharacter = Judge;
             MoveTile(SContext, 4, 0);
-            CharacterPlayAnimation(*CurrentCharacter, 1);
+            *IdleAnimation = 2;
+            CharacterPlayAnimation(*CurrentCharacter, 3);
             *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "The person in question was a\nvictim of murder, not ill-\nconceived naming, Mr. Wright.", 1);
             break;
         }
@@ -466,13 +506,14 @@ void CourtroomScenarioA(SceneContext* SContext, SceneContext* SEmpty, DialogueCo
         switch (*buttonInput)
         {
         case 0:
-            //CharacterPlayAnimation(*CurrentCharacter, 1);
-            *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(Phoenix_Wright), "Oh! Right! Sorry! I, er,\nit was the first name that\npopped into my head, and--", 1);
+            CharacterPlayAnimation(*CurrentCharacter, 2);
+            SetDialogueText(DiagContext, GetCharacterName(Phoenix_Wright), "Oh! Right! Sorry! I, er,\nit was the first name that\npopped into my head, and--", 1);
             break;
         case 1:
             *CurrentCharacter = Mia_Fey;
             MoveTile(SContext, 5, 0);
-            CharacterPlayAnimation(*CurrentCharacter, 1);
+            *IdleAnimation = 2;
+            CharacterPlayAnimation(*CurrentCharacter, 3); // Mia Pose
             *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "Wright?", 1);
             break;
         }
@@ -484,11 +525,12 @@ void CourtroomScenarioA(SceneContext* SContext, SceneContext* SEmpty, DialogueCo
         case 0:
             *CurrentCharacter = Mia_Fey;
             MoveTile(SContext, 5, 0);
+            *IdleAnimation = 0;
             CharacterPlayAnimation(*CurrentCharacter, 1);
             *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "The Court Record button!\nRemember to use it\nwhen you are in a pinch.", 1);
             break;
         case 1:
-            CharacterPlayAnimation(*CurrentCharacter, 1);
+            CharacterPlayAnimation(*CurrentCharacter, 3); // Mia Pose
             *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "If you forget something, just\npress the Court Record button\nto help you remember.", 1);
             break;
         }
@@ -500,12 +542,14 @@ void CourtroomScenarioA(SceneContext* SContext, SceneContext* SEmpty, DialogueCo
         case 0:
             *CurrentCharacter = Judge;
             MoveTile(SContext, 4, 0);
-            CharacterPlayAnimation(*CurrentCharacter, 1);
+            *IdleAnimation = 2;
+            CharacterPlayAnimation(*CurrentCharacter, 3);
             *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "Let me ask that one again:", 1);
             (*Plot) = 40;
             return;
             break;
         case 1:
+            *IdleAnimation = 0;
             CharacterPlayAnimation(*CurrentCharacter, 1);
             *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "A mistake in court\ncould cost you the case.", 1);
             break;
@@ -518,7 +562,8 @@ void CourtroomScenarioA(SceneContext* SContext, SceneContext* SEmpty, DialogueCo
         case 1:
             *CurrentCharacter = Judge;
             MoveTile(SContext, 4, 0);
-            CharacterPlayAnimation(*CurrentCharacter, 1);
+            *IdleAnimation = 2;
+            CharacterPlayAnimation(*CurrentCharacter, 3);
             *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "I'll ask you again:", 1);
             (*Plot) = 40;
             return;
@@ -526,6 +571,7 @@ void CourtroomScenarioA(SceneContext* SContext, SceneContext* SEmpty, DialogueCo
         case 2:
             *CurrentCharacter = Judge;
             MoveTile(SContext, 4, 0);
+            *IdleAnimation = 0;
             CharacterPlayAnimation(*CurrentCharacter, 1);
             *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "Correct.", 1);
             break;
@@ -533,18 +579,22 @@ void CourtroomScenarioA(SceneContext* SContext, SceneContext* SEmpty, DialogueCo
         break;
 
     case 47:
+        *IdleAnimation = 0;
         CharacterPlayAnimation(*CurrentCharacter, 1);
         *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "This will conclude this\nshort interaction DEMO.", 1);
         break;
     case 48:
-        CharacterPlayAnimation(*CurrentCharacter, 1);
+        *IdleAnimation = 2;
+        CharacterPlayAnimation(*CurrentCharacter, 3);
         *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "The plot in this DEMO\nwas taken from the fist\ncase of the game.", 1);
         break;
     case 49:
-        CharacterPlayAnimation(*CurrentCharacter, 1);
-        *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "Though our skilled writers\nhave already made some progress\non Mia's legacy's plot", 1);
+        *IdleAnimation = 2;
+        CharacterPlayAnimation(*CurrentCharacter, 3);
+        *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "Though our skilled writers\nhave already made some progress\non Mia's legacy's plot.", 1);
         break;
     case 50:
+        *IdleAnimation = 0;
         CharacterPlayAnimation(*CurrentCharacter, 1);
         *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "Thanks for playing.", 1);
         break;
@@ -567,6 +617,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
     SDL_Rect ButtonsRect;
 
     int CurrentCharacter;
+    int IdleAnimation;
     bool SceneFlip = false;
     int Plot = 0;
     int ReturnToDefault;
@@ -592,7 +643,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
 
     InitCharacter(DDevice, Phoenix_Wright); // Initialise the character in memory
     InitCharacter(DDevice, Mia_Fey);
-    InitCharacter(DDevice, Miles_Edgeworth);
+    InitCharacter(DDevice, Winston_Payne);
     InitCharacter(DDevice, Judge);
 
     InitCharacter(DDevice, Court_Desk);
@@ -604,7 +655,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
 
     AddCharacterToLayer(CharaLayer, Mia_Fey, SContext, 5, 0, DDevice, SContext->SurfaceBounds);
 
-    AddCharacterToLayer(CharaLayer, Miles_Edgeworth, SContext, 1, 0, DDevice, SContext->SurfaceBounds);
+    AddCharacterToLayer(CharaLayer, Winston_Payne, SContext, 1, 0, DDevice, SContext->SurfaceBounds);
     AddCharacterToLayer(CharaLayer, Court_Desk, SContext, 1, 1, DDevice, SContext->SurfaceBounds);
 
     AddCharacterToLayer(CharaLayer, Judge, SContext, 4, 0, DDevice, SContext->SurfaceBounds);
@@ -613,7 +664,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
     ButtonActivated = 0;
 
     // Scene setup
-    CourtroomScenarioA(SContext, SEmpty, DiagContext, BContext, &Plot, &CurrentCharacter, &ReturnToDefault, &ButtonActivated, &ButtonInput);
+    CourtroomScenarioA(SContext, SEmpty, DiagContext, BContext, &Plot, &CurrentCharacter, &IdleAnimation, &ReturnToDefault, &ButtonActivated, &ButtonInput);
     // Main Loop
     while (1){
         // Events Loop
@@ -636,8 +687,8 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                         //printf("Reeee : %d | %d\n", SEmpty->ScenesCoordinates, SEmpty->ScenesCoordinates);
                         MoveTile(SEmpty, 0, 0);
                     }
-                    CharacterPlayAnimation(CurrentCharacter, 0);
-                    CourtroomScenarioA(SContext, SEmpty, DiagContext, BContext, &Plot, &CurrentCharacter, &ReturnToDefault, &ButtonActivated, &ButtonInput);
+                    CharacterPlayAnimation(CurrentCharacter, IdleAnimation); // Mouaif
+                    CourtroomScenarioA(SContext, SEmpty, DiagContext, BContext, &Plot, &CurrentCharacter, &IdleAnimation, &ReturnToDefault, &ButtonActivated, &ButtonInput);
                     break;
                 
                 default:
@@ -652,7 +703,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
 
         // Logic
         if ((DiagContext->progress >= ReturnToDefault) && (ReturnToDefault != -1)){
-            CharacterPlayAnimation(CurrentCharacter, 0);
+            CharacterPlayAnimation(CurrentCharacter, IdleAnimation);
             ReturnToDefault = -1;
         }
         // Rendering

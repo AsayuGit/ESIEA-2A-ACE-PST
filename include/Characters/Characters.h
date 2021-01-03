@@ -9,6 +9,7 @@
         Mia_Fey,
         Miles_Edgeworth,
         Judge,
+        Winston_Payne,
         Court_Desk,
         CharactersCount
     } Cid;
