@@ -247,6 +247,7 @@ void BackgroundPlayAnimation(SceneContext* Context, int AnimationID, char* AnimS
     Context->PlayingAnimation = AnimationID;
     Context->StartFrame = Context->CurrentState = Context->AnimOffset = 0;
     Context->ObjectLayerOffset = 0;
+    (*AnimState) = 0;
     Context->AnimState = AnimState;
 }
 

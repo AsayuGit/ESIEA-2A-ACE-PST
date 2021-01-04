@@ -99,7 +99,7 @@ void CourtroomScenarioB(SceneContext* SContext, DialogueContext* DiagContext, in
     }
 }
 
-void CourtroomScenarioA(SceneContext* SContext, SceneContext* SEmpty, DialogueContext* DiagContext, ButtonsContext* BContext, int* Plot, int* CurrentCharacter, int* IdleAnimation, int* ReturnToDefault, char* ButtonActivated, char* buttonInput){
+void CourtroomScenarioA(SceneContext* SContext, SceneContext* SEmpty, DialogueContext* DiagContext, ButtonsContext* BContext, int* Plot, int* CurrentCharacter, int* IdleAnimation, int* ReturnToDefault, char* BGAnimComplete, char* ButtonActivated, char* buttonInput){
     switch (*Plot)
     {
     case 0:
@@ -119,7 +119,7 @@ void CourtroomScenarioA(SceneContext* SContext, SceneContext* SEmpty, DialogueCo
 
     case 2:
         *CurrentCharacter = Phoenix_Wright;
-        BackgroundPlayAnimation(SContext, 2, NULL);
+        BackgroundPlayAnimation(SContext, 2, BGAnimComplete);
         CharacterPlayAnimation(*CurrentCharacter, 1);
         *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "The, um, defense is ready,\nYour Honor.", 1);
         break;
@@ -217,7 +217,8 @@ void CourtroomScenarioA(SceneContext* SContext, SceneContext* SEmpty, DialogueCo
         AddButton(BContext, "Phoenix Wright");
         AddButton(BContext, "Larry Butz");
         AddButton(BContext, "Mia Fey");
-        BackgroundPlayAnimation(SEmpty, 0, ButtonActivated);
+        (*ButtonActivated) = 1;
+        BackgroundPlayAnimation(SEmpty, 0, BGAnimComplete);
         break;
     
     case 17:
@@ -450,7 +451,8 @@ void CourtroomScenarioA(SceneContext* SContext, SceneContext* SEmpty, DialogueCo
         AddButton(BContext, "Mia Fey");
         AddButton(BContext, "Cinder Block");
         AddButton(BContext, "Cindy Stone");
-        BackgroundPlayAnimation(SEmpty, 0, ButtonActivated);
+        (*ButtonActivated) = 1;
+        BackgroundPlayAnimation(SEmpty, 0, BGAnimComplete);
         break;
 
     case 41:
@@ -621,8 +623,10 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
     bool SceneFlip = false;
     int Plot = 0;
     int ReturnToDefault;
+    
     char ButtonActivated;
     char ButtonInput;
+    char BGAnimComplete;
 
     // Initialisation
     if (Context == NULL){
@@ -662,14 +666,15 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
     PlayTrackID(TRK_Courtroom);
 
     ButtonActivated = 0;
+    BGAnimComplete = 1;
 
     // Scene setup
-    CourtroomScenarioA(SContext, SEmpty, DiagContext, BContext, &Plot, &CurrentCharacter, &IdleAnimation, &ReturnToDefault, &ButtonActivated, &ButtonInput);
+    CourtroomScenarioA(SContext, SEmpty, DiagContext, BContext, &Plot, &CurrentCharacter, &IdleAnimation, &ReturnToDefault, &BGAnimComplete, &ButtonActivated, &ButtonInput);
     // Main Loop
     while (1){
         // Events Loop
         while(SDL_PollEvent(&event)){
-            if (ButtonActivated)
+            if (BGAnimComplete && ButtonActivated)
                 HandleButtonsEvents(BContext, &event);
             switch (event.type)
             {
@@ -678,21 +683,23 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                 break;
 
             case SDL_KEYDOWN:
-                switch (PADKEY)
-                {
-                case PAD_A:
-                    if (ButtonActivated) {
-                        ButtonInput = GetClkdButtonID(BContext);
-                        ButtonActivated = 0;
-                        //printf("Reeee : %d | %d\n", SEmpty->ScenesCoordinates, SEmpty->ScenesCoordinates);
-                        MoveTile(SEmpty, 0, 0);
+                if (BGAnimComplete){
+                    switch (PADKEY)
+                    {
+                    case PAD_A:
+                        if (ButtonActivated) {
+                            ButtonInput = GetClkdButtonID(BContext);
+                            ButtonActivated = 0;
+                            //printf("Reeee : %d | %d\n", SEmpty->ScenesCoordinates, SEmpty->ScenesCoordinates);
+                            MoveTile(SEmpty, 0, 0);
+                        }
+                        CharacterPlayAnimation(CurrentCharacter, IdleAnimation); // Mouaif
+                        CourtroomScenarioA(SContext, SEmpty, DiagContext, BContext, &Plot, &CurrentCharacter, &IdleAnimation, &ReturnToDefault, &BGAnimComplete, &ButtonActivated, &ButtonInput);
+                        break;
+                    
+                    default:
+                        break;
                     }
-                    CharacterPlayAnimation(CurrentCharacter, IdleAnimation); // Mouaif
-                    CourtroomScenarioA(SContext, SEmpty, DiagContext, BContext, &Plot, &CurrentCharacter, &IdleAnimation, &ReturnToDefault, &ButtonActivated, &ButtonInput);
-                    break;
-                
-                default:
-                    break;
                 }
 
                 break;
