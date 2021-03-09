@@ -18,7 +18,7 @@ int Scene_TitleScreen(DisplayDevice* DDevice, InputDevice* IDevice, BitmapFont* 
     BContext = InitButtons(DDevice, SContext, Font, NULL);
 
     AddButton(BContext, "New Game");
-    //AddButton(BContext, "Continue");
+    //AddButton(BContext, "Continue"); // When the save system is implemented
     AddButton(BContext, "Back");
 
     MoveButtonsToCoordinates(BContext, DDevice->ScreenResolution.x, 0);

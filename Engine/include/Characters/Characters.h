@@ -39,7 +39,7 @@
     } Characters; // Sprite ?
 
     typedef struct CharacterList_s{
-        int CharacterID;
+        Characters* Character;
         Vector2i Coordinates;
         char Flip;
         struct CharacterList_s* NextCharacter;
@@ -51,14 +51,14 @@
         char* Flipped;
     } CharacterLayer; // "Context"
 
-    void InitCharacter(DisplayDevice* DisplayDevice, int CharacterID);
-    void CharacterPlayAnimation(int CharacterID, int AnimationID);
-    char* GetCharacterName(Cid CharacterID);
+    void InitCharacter(DisplayDevice* DisplayDevice, Characters* Character);
+    void CharacterPlayAnimation(Characters* Character, int AnimationID);
+    //char* GetCharacterName(Characters* Character);
 
     // Character Layer Management
     void InitCharacterLayer(CharacterLayer** CharaLayer, SceneContext* SContext);
-    void AddCharacterToLayer(CharacterLayer* CharaLayer, int CharacterID, SceneContext* SContext, int TileID, char Flip, DisplayDevice* DDevice, Vector2i BackgroundBounds);
-    void DeleteCharacterFromLayer(CharacterLayer* CharaLayer, int CharacterID);
+    void AddCharacterToLayer(CharacterLayer* CharaLayer, Characters* Character, SceneContext* SContext, int TileID, char Flip, DisplayDevice* DDevice, Vector2i BackgroundBounds);
+    void DeleteCharacterFromLayer(CharacterLayer* CharaLayer, Characters* Character);
     void DisplayCharacterLayer(DisplayDevice* DDevice, CharacterLayer* CharaLayer);
 
 #endif

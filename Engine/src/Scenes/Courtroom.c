@@ -3,23 +3,27 @@
 #include "Characters.h"
 #include "Buttons.h"
 
-void CourtroomScenarioB(SceneContext* SContext, DialogueContext* DiagContext, int* Plot, int* CurrentCharacter, int* ReturnToDefault){
+#include "CHAR_Index.h"
+
+void CourtroomScenarioB(SceneContext* SContext, DialogueContext* DiagContext, int* Plot, Characters** CurrentCharacter, int* ReturnToDefault){
     switch (*Plot)
     {
     case -1:
-        *CurrentCharacter = Judge;
+        *CurrentCharacter = &CHAR_Judge;
         MoveTile(SContext, 4, 0);
-        CharacterPlayAnimation(Judge, 1);
-        *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(Judge), "The court is now in session\nfor the trial of Ms. DEMO.", 2);
+        CharacterPlayAnimation((*CurrentCharacter), 1);
+        *ReturnToDefault = SetDialogueText(DiagContext, (*CurrentCharacter)->DisplayName, "The court is now in session\nfor the trial of Ms. DEMO.", 2);
         (*Plot)++;
         break;
     case 0:
-        *CurrentCharacter = Miles_Edgeworth;
+        *CurrentCharacter = &CHAR_MilesEdgeworth;
         MoveTile(SContext, 1, 0);
-        CharacterPlayAnimation(Miles_Edgeworth, 1);
-        *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(Miles_Edgeworth), "The prosecution is\nready, Your Honor.", 2);
+        CharacterPlayAnimation((*CurrentCharacter), 1);
+        *ReturnToDefault = SetDialogueText(DiagContext, (*CurrentCharacter)->DisplayName, "The prosecution is\nready, Your Honor.", 2);
         (*Plot)++;
         break;
+
+        /*
     case 1:
         *CurrentCharacter = Phoenix_Wright;
         BackgroundPlayAnimation(SContext, 2, NULL);
@@ -96,26 +100,28 @@ void CourtroomScenarioB(SceneContext* SContext, DialogueContext* DiagContext, in
     
     default:
         break;
+        */
     }
 }
 
-void CourtroomScenarioA(SceneContext* SContext, SceneContext* SEmpty, DialogueContext* DiagContext, ButtonsContext* BContext, int* Plot, int* CurrentCharacter, int* IdleAnimation, int* ReturnToDefault, char* BGAnimComplete, char* ButtonActivated, char* buttonInput){
+void CourtroomScenarioA(SceneContext* SContext, SceneContext* SEmpty, DialogueContext* DiagContext, ButtonsContext* BContext, int* Plot, Characters** CurrentCharacter, int* IdleAnimation, int* ReturnToDefault, char* BGAnimComplete, char* ButtonActivated, char* buttonInput){
     switch (*Plot)
     {
     case 0:
-        *CurrentCharacter = Judge;
+        *CurrentCharacter = &CHAR_Judge;
         MoveTile(SContext, 4, 0);
         *IdleAnimation = 0;
         CharacterPlayAnimation(*CurrentCharacter, 1);
-        *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "The court is now in session for\nthe trial of Mr. Larry Butz.", 1);
+        *ReturnToDefault = SetDialogueText(DiagContext, (*CurrentCharacter)->DisplayName, "The court is now in session for\nthe trial of Mr. Larry Butz.", 1);
         break;
     
     case 1:
-        *CurrentCharacter = Winston_Payne;
+        *CurrentCharacter = &CHAR_WinstonPayne;
         MoveTile(SContext, 1, 0);
         CharacterPlayAnimation(*CurrentCharacter, 1);
-        *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "The prosecution is ready,\nYour Honor.", 1);
+        *ReturnToDefault = SetDialogueText(DiagContext, (*CurrentCharacter)->DisplayName, "The prosecution is ready,\nYour Honor.", 1);
         break;
+    /*
 
     case 2:
         *CurrentCharacter = Phoenix_Wright;
@@ -600,6 +606,7 @@ void CourtroomScenarioA(SceneContext* SContext, SceneContext* SEmpty, DialogueCo
         CharacterPlayAnimation(*CurrentCharacter, 1);
         *ReturnToDefault = SetDialogueText(DiagContext, GetCharacterName(*CurrentCharacter), "Thanks for playing.", 1);
         break;
+    */
     }
     (*Plot)++;
 }
@@ -618,7 +625,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
 
     SDL_Rect ButtonsRect;
 
-    int CurrentCharacter;
+    Characters* CurrentCharacter;
     int IdleAnimation;
     bool SceneFlip = false;
     int Plot = 0;
@@ -645,24 +652,24 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
     BContext = InitButtons(DDevice, SEmpty, Context->ButtonFont, &ButtonsRect);
     MoveButtonsToCoordinates(BContext, DDevice->ScreenResolution.x, 0);
 
-    InitCharacter(DDevice, Phoenix_Wright); // Initialise the character in memory
-    InitCharacter(DDevice, Mia_Fey);
-    InitCharacter(DDevice, Winston_Payne);
-    InitCharacter(DDevice, Judge);
+    InitCharacter(DDevice, &CHAR_PhoenixWright); // Initialise the character in memory
+    InitCharacter(DDevice, &CHAR_MiaFey);
+    InitCharacter(DDevice, &CHAR_WinstonPayne);
+    InitCharacter(DDevice, &CHAR_Judge);
 
-    InitCharacter(DDevice, Court_Desk);
+    InitCharacter(DDevice, &CHAR_Desk);
 
     CharaLayer = NULL;
     InitCharacterLayer(&CharaLayer, SContext);
-    AddCharacterToLayer(CharaLayer, Phoenix_Wright, SContext, 0, 0, DDevice, SContext->SurfaceBounds);
-    AddCharacterToLayer(CharaLayer, Court_Desk, SContext, 0, 0, DDevice, SContext->SurfaceBounds);
+    AddCharacterToLayer(CharaLayer, &CHAR_PhoenixWright, SContext, 0, 0, DDevice, SContext->SurfaceBounds);
+    AddCharacterToLayer(CharaLayer, &CHAR_Desk, SContext, 0, 0, DDevice, SContext->SurfaceBounds);
 
-    AddCharacterToLayer(CharaLayer, Mia_Fey, SContext, 5, 0, DDevice, SContext->SurfaceBounds);
+    AddCharacterToLayer(CharaLayer, &CHAR_MiaFey, SContext, 5, 0, DDevice, SContext->SurfaceBounds);
 
-    AddCharacterToLayer(CharaLayer, Winston_Payne, SContext, 1, 0, DDevice, SContext->SurfaceBounds);
-    AddCharacterToLayer(CharaLayer, Court_Desk, SContext, 1, 1, DDevice, SContext->SurfaceBounds);
+    AddCharacterToLayer(CharaLayer, &CHAR_WinstonPayne, SContext, 1, 0, DDevice, SContext->SurfaceBounds);
+    AddCharacterToLayer(CharaLayer, &CHAR_Desk, SContext, 1, 1, DDevice, SContext->SurfaceBounds);
 
-    AddCharacterToLayer(CharaLayer, Judge, SContext, 4, 0, DDevice, SContext->SurfaceBounds);
+    AddCharacterToLayer(CharaLayer, &CHAR_Judge, SContext, 4, 0, DDevice, SContext->SurfaceBounds);
     PlayTrackID(TRK_Courtroom);
 
     ButtonActivated = 0;
