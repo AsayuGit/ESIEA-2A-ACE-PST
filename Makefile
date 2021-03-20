@@ -23,7 +23,7 @@ FILENAME = ACE
 
 all:
 	clear
-	gcc -o $(FILENAME) $(SOURCES) $(INCLUDES) $$(sdl2-config --cflags --libs) -lSDL2_image -lSDL2_mixer
+	gcc -o $(FILENAME) $(SOURCES) $(INCLUDES) $$(sdl2-config --cflags --libs) -lSDL2_image -lSDL2_mixer $$(xml2-config --cflags --libs)
 
 legacy:
 	clear

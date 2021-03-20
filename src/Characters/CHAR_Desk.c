@@ -1,4 +1,4 @@
-#include "Characters.h"
+#include "CharactersStructures.h"
 
 Animation ANIM_Desk = {
     {0, 0, 256, 44}, // SrcRect // Idle

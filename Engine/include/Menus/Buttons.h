@@ -2,7 +2,7 @@
 #define _BUTTONS_H
 
     #include "include.h"
-    #include "SceneCommon.h"
+    #include "SceneCommonStructs.h"
 
     typedef struct{
         Surface* ButtonsSurface;

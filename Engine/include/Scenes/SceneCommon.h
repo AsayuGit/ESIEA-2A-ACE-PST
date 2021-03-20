@@ -2,58 +2,18 @@
 #define _SCENECOMMON
 
     #include "include.h"
+    #include "SceneCommonStructs.h"
     #include "Dialogue.h"
-
-    typedef enum{
-        S_Empty,
-        S_Courtroom,
-        S_TitleScreen,
-        BackgroundsCount
-    } BackgroundIDS;
-
-    typedef struct{
-        int NbOfAnimStates;
-        Vector2d* AnimStates;
-        int* AnimRuntime;
-        Vector2d* AnimRange;
-        char* AnimEffects;
-        SDL_Rect AnimRegion;
-    } BGAnimation;
-
-    typedef struct{
-        const char* SurfacePath;// Background Surface path
-        BGAnimation* Animation;
-        unsigned int nbOfScenes;
-        Vector2i* ScenesCoordinates;
-    } Background;
-
-    typedef struct{
-        // Background Texture properties
-        Surface* Surface; // Background Surface
-        Vector2i SurfaceBounds;
-        int TileID;
-        SDL_Rect SrcRect;
-        
-        // Background Animation properties
-        int PlayingAnimation;
-        Uint32 StartFrame;
-        int CurrentState;
-        int AnimOffset;
-        BGAnimation* Animation;
-
-        // Scenes index
-        unsigned int nbOfScenes;
-        Vector2i* ScenesCoordinates;
-
-        // Metadata
-        char* AnimState;
-        char Flipped;
-        int ObjectLayerOffset;
-    } SceneContext;
+    #include "CharactersStructures.h"
+    #include "Buttons.h"
+    #include <libxml2/libxml/parser.h>
 
     SceneContext* InitScene(DisplayDevice* DDevice, int BackgroundID);
     void MoveTile(SceneContext* Context, int TileID, char Effect);
     void BackgroundPlayAnimation(SceneContext* Context, int AnimationID, char* AnimState);
     void DisplayBackground(DisplayDevice* DDevice, SceneContext* Context);
+    xmlDoc* loadScene(char* filePath);
+    xmlNode* searchSceneNode(xmlNode** entry, char* label);
+    void parseScene(xmlNode** entry, DialogueContext* DiagContext, SceneContext* SContext, ButtonsContext* BContext, Characters** CharactersIndex, int NbOfCharacters, int* IdleAnimation, int* ReturnToDefault, int* CurrentCharacter, char* BGAnimComplete, char* ButtonActivated, char** ButtonJumpLabels);
 
 #endif

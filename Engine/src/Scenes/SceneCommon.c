@@ -1,4 +1,5 @@
 #include "SceneCommon.h"
+#include "Characters.h"
 
 // First background animation (90° turn)
 Vector2d CourtAnim1States[3] = {
@@ -344,4 +345,99 @@ void DisplayBackground(DisplayDevice* DDevice, SceneContext* Context){ // Displa
             SDL_RenderCopyEx(DDevice->Renderer, Context->Surface, &Context->SrcRect, NULL, 0, 0, Context->Flipped);
         #endif
     }
+}
+
+xmlDoc* loadScene(char* filePath){ // To move to load.c (maybe)
+    xmlKeepBlanksDefault(0); // Ignore white space
+    return xmlReadFile(filePath, NULL, 0); // Load File into memory
+}
+
+xmlNode* searchSceneNode(xmlNode** entry, char* label){
+    xmlNode* root;
+    char* checkLabel;
+    root = (*entry)->parent->children;
+    while (root){
+        checkLabel = xmlGetProp(root, "label");
+        if (checkLabel){
+            if (strcmp(checkLabel, label) == 0){
+                return root;
+            }
+        }
+        root = root->next;
+    }
+    return NULL;
+}
+
+void parseScene(xmlNode** entry, DialogueContext* DiagContext, SceneContext* SContext, ButtonsContext* BContext, Characters** CharactersIndex, int NbOfCharacters, int* IdleAnimation, int* ReturnToDefault, int* CurrentCharacter, char* BGAnimComplete, char* ButtonActivated, char** ButtonJumpLabels){
+    // Declaration
+    xmlNode *searchNode, *property, *element, *next;
+    // diag
+    int CurrentCharacterID; // Hold the name of the character who is talking during the dialog
+    char* DialogueText; // Hold the text of the dialogue itself
+    int lineSize; // Hold the size of the dialog who is about to be played
+    // anim
+    int animTarget;
+    int animationID;
+    // jump
+    char* jumpLabel;
+    char* checkLabel;
+    // Buttons
+    int buttonJumpIndex;
+    // Logic
+    next = ((*entry)->next) ? (*entry)->next : (*entry);
+    property = (*entry)->children;
+    while (property){
+        if (strcmp(property->name, "diag") == 0){
+            element = property->children;
+            while (element){
+                if (strcmp(element->name, "char") == 0) {
+                    CurrentCharacterID = atoi(xmlNodeGetContent(element));
+                } else if (strcmp(element->name, "line") == 0) {
+                    //*ReturnToDefault = SetDialogueText(DiagContext, (*CurrentCharacter)->DisplayName, "The court is now in session for\nthe trial of Mr. Larry Butz.", 1);
+                    DialogueText = xmlNodeGetContent(element);
+                }
+                element = element->next;
+            }
+            lineSize = SetDialogueText(DiagContext, CharactersIndex[CurrentCharacterID]->DisplayName, DialogueText, 1);
+            *CurrentCharacter = CurrentCharacterID;
+        } else if (strcmp(property->name, "anim") == 0) {
+            element = property->children;
+            while (element){
+                if (strcmp(element->name, "animTarget") == 0) {
+                    animTarget = atoi(xmlNodeGetContent(element));
+                } else if (strcmp(element->name, "animation") == 0) {
+                    animationID = atoi(xmlNodeGetContent(element));
+                } else if (strcmp(element->name, "idleAnim") == 0) {
+                    (*IdleAnimation) = atoi(xmlNodeGetContent(element)); // Need to be setup
+                    (*ReturnToDefault) = lineSize;
+                }
+                element = element->next;
+            }
+            CharacterPlayAnimation(CharactersIndex[animTarget], animationID);
+        } else if (strcmp(property->name, "buttons") == 0) {
+            ClearButtons(BContext);
+            buttonJumpIndex = 0;
+            element = property->children;
+            while (element){
+                if (strcmp(element->name, "option") == 0) {
+                    AddButton(BContext, xmlNodeGetContent(element));
+                    ButtonJumpLabels[buttonJumpIndex] = xmlGetProp(element, "jump");
+                    buttonJumpIndex++;
+                }
+                element = element->next;
+            }
+            (*ButtonActivated) = 1;
+        } else if (strcmp(property->name, "setBackground") == 0) {
+            MoveTile(SContext, atoi(xmlNodeGetContent(property)), 0);
+        } else if (strcmp(property->name, "backgroundAnim") == 0) {
+            BackgroundPlayAnimation(SContext, atoi(xmlNodeGetContent(property)), BGAnimComplete);
+        } else if (strcmp(property->name, "jump") == 0) {
+            jumpLabel = xmlNodeGetContent(property);
+            searchNode = searchSceneNode(entry, jumpLabel);
+            if (searchNode)
+                next = searchNode;
+        }
+        property = property->next;
+    }
+    (*entry) = next;
 }

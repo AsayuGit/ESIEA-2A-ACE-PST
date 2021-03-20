@@ -1,4 +1,4 @@
-#include "Characters.h"
+#include "CharactersStructures.h"
 
 Animation ANIM_Payne[2] = {
     {
