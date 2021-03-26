@@ -46,7 +46,7 @@ int Scene_TitleScreen(DisplayDevice* DDevice, InputDevice* IDevice, BitmapFont* 
             case SDL_KEYDOWN:
                 switch (PADKEY)
                 {
-                case PAD_A:
+                case PAD_SELECT:
                     if (Slide == 0){
                         Mix_PlayChannel(-1, ToMenu, 0);
                         SetSlkdButtonID(BContext, 0);

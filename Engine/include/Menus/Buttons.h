@@ -5,7 +5,7 @@
     #include "SceneCommonStructs.h"
 
     typedef struct{
-        Surface* ButtonsSurface;
+        Surface* ButtonsSurface; // Store the button's spritesheet
         char* Label[4];
         BitmapFont* Font;
         Mix_Chunk* ButtonUpDown;
@@ -17,7 +17,7 @@
         char clkdButton;
         
         SDL_Rect ObjectDimensions;
-        SDL_Rect ButtonState[2];
+        SDL_Rect ButtonState[2]; // Store the rect for the button (Activated / Desactivated)
         Vector2i Coordinates;
         SDL_Rect* Viewport;
         

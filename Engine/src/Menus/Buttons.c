@@ -1,5 +1,7 @@
 #include "Buttons.h"
 
+#define NBOFBUTTONS 4
+
 ButtonsContext* InitButtons(DisplayDevice* DDevice, SceneContext* SContext, BitmapFont* Font, SDL_Rect* ButtonObjectDimensions){
     ButtonsContext* BContext;
     Uint32 ColorKey;
@@ -99,7 +101,7 @@ void HandleButtonsEvents(ButtonsContext* ButtonObject, SDL_Event* event){
             }
             Mix_PlayChannel(-1, ButtonObject->ButtonUpDown, 0);
             break;
-        case PAD_A:
+        case PAD_SELECT:
             ButtonObject->clkdButton = ButtonObject->selButtonID;
             Mix_PlayChannel(-1, ButtonObject->ClickedSndEffect[ButtonObject->clkdButton], 0);
             break;
@@ -123,13 +125,12 @@ void SetSlkdButtonID(ButtonsContext* ButtonObject, char ButtonID){
 }
 
 void DrawButtons(ButtonsContext* ButtonObject){ // TO OPTIMIZE !
-    const char maxNbOfButtons = 4;
     SDL_Rect ButtonDstRect;
     SDL_Rect EndString;
     SDL_Rect TextPosition;
-    int i;
-    ButtonItem ButtonsList[maxNbOfButtons];
+    ButtonItem ButtonsList[NBOFBUTTONS];
     char Selected;
+    int i;
 
     ButtonDstRect = ButtonObject->ButtonState[0]; // Temp ?
 
@@ -156,7 +157,7 @@ void DrawButtons(ButtonsContext* ButtonObject){ // TO OPTIMIZE !
             SDL_SetRenderTarget(ButtonObject->DDevice->Renderer, NULL);
         #endif
         
-        Selected = (i == ButtonObject->selButtonID);
+        Selected = (char)(i == ButtonObject->selButtonID);
         #ifdef _SDL
             SDL_BlitSurface(ButtonObject->ButtonsSurface, &(ButtonObject->ButtonState[Selected]), ButtonObject->DDevice->Screen, &ButtonDstRect);
         #else

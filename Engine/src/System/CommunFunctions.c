@@ -97,3 +97,56 @@ SDL_Rect gprintf(DisplayDevice* DDevice, BitmapFont* Font, char* text, SDL_Rect*
 
     return DstLetter;
 }
+
+int gstrlen(BitmapFont* Font, char* text){
+    int LastLineLen, StringLen;
+    int i;
+
+    SDL_Rect SrcLetter;
+    int letterX, letterY, letterW, letterID;
+
+    i = 0;
+    StringLen = 0;
+    LastLineLen = 0;
+    while (text[i] != '\0'){
+        if (text[i] != '\n'){
+            letterX = 0;
+            letterY = 0;
+            
+            for (letterID = 0; letterID < text[i] - 31; letterX++){
+                if (getpixel(Font->FontSurface, letterX, letterY) == 0x0){
+                    letterID++;
+                }
+            }
+            letterW = letterX;
+            while (letterID < text[i] - 30){
+                if (getpixel(Font->FontSurface, letterW, letterY) == 0x0){
+                    letterID++;
+                }
+                letterW++;
+            }
+            letterW -= letterX + 1;
+            letterX--;
+            letterY = 1;
+            while(getpixel(Font->FontSurface, letterX, letterY) != 0x0){
+                letterY++;
+            }
+
+            // Text Rendering
+            SrcLetter.x = letterX + 1;
+            SrcLetter.y = 1;
+            SrcLetter.h = letterY - 1;
+            SrcLetter.w = letterW;
+
+            // Display
+            StringLen += SrcLetter.w + 1;
+        } else {
+            if (StringLen > LastLineLen)
+                LastLineLen = StringLen;
+            StringLen = 0;
+        }
+        i++;
+    }
+
+    return (StringLen > LastLineLen) ? StringLen : LastLineLen;
+}
