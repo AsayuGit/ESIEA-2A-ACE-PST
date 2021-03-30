@@ -19,5 +19,8 @@
     Items* LoadItemsFromFile(DisplayDevice* DDevice, char* filePath);
     void HandleCourtReccordEvents(SDL_Event* event);
     void DrawCourtReccord(DisplayDevice* DDevice, BitmapFont* Font);
+    void AddItemToCourtReccord(int ItemID);
+    void RemoveItemFromCourtReccord(int ItemID);
+    void EmptyCourtReccord();
 
 #endif

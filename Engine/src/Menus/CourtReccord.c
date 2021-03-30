@@ -4,6 +4,12 @@
 #define NBOFITEMS 8
 #define NBOFBARS 2
 
+// Linked List
+typedef struct ItemList_t{
+    int ItemID;
+    struct ItemList_t* next;
+}ItemList;
+
 // Surfaces
 Surface* CourtReccordSpriteSheet;
 
@@ -19,6 +25,7 @@ SDL_Rect ItemName;
 Mix_Chunk* MoveCursor;
 
 Items* ItemBank;
+ItemList* StoredItemList;
 
 char SelectedItem;
 
@@ -80,13 +87,55 @@ void InitCourtReccord(DisplayDevice* DDevice, Items* ItemBankPointer){
     ItemName.h = DDevice->ScreenResolution.y;
      
     SelectedItem = 0;
+    StoredItemList = NULL;
     ItemBank = ItemBankPointer;
 }
 
-/*
 void FreeCourtReccord(){
+}
 
-}*/
+void AddItemToCourtReccord(int ItemID){
+    ItemList** List;
+
+    List = &StoredItemList;
+    while (*List){ // while it isn't empty
+        List = &((*List)->next);
+    }
+    // Once we find a free spot we append the new Item to the list
+    (*List) = (ItemList*)malloc(sizeof(ItemList));
+    (*List)->ItemID = ItemID;
+    (*List)->next = NULL;
+}
+
+void RemoveItemFromCourtReccord(int ItemID){
+    ItemList** List;
+    ItemList* ItemNext;
+
+    List = &StoredItemList;
+    while (*List){ // while it isn't empty
+        if ((*List)->ItemID == ItemID){
+            ItemNext = (*List)->next;
+            free(*List);
+            (*List) = ItemNext;
+            break;
+        }
+        List = &((*List)->next);
+    }
+}
+
+void FreeItemList(ItemList** List){
+    if (List){
+        if(*List){
+            FreeItemList(&((*List)->next));
+            free(*List);
+            (*List) = NULL;
+        }
+    }
+}
+
+void EmptyCourtReccord(){
+    FreeItemList(&StoredItemList);
+}
 
 Items* allocateItems(int nbOfItems, int ItemInRow){
     Items* loadedItem;
@@ -214,25 +263,40 @@ void HandleCourtReccordEvents(SDL_Event* event){
 // Display the court reccord menu on scren
 void DrawCourtReccord(DisplayDevice* DDevice, BitmapFont* Font){
     int i;
-    
+    int ArrowAnim;
+    SDL_Rect RightArrowAfterAnim, LeftArrowAfterAnim;
+    ItemList* StoredItemListPointer;
+
     // Arrow wiggle
-    //Arrows[0][1].x = ;
-    //Arrows[1][1].x = ;
+    ArrowAnim = sin((double)SDL_GetTicks() / 50) * 2;
+    
+    RightArrowAfterAnim = Arrows[0][1];
+    LeftArrowAfterAnim = Arrows[1][1];
+
+    RightArrowAfterAnim.x += ArrowAnim;
+    LeftArrowAfterAnim.x -= ArrowAnim;
 
     SDL_RenderCopy(DDevice->Renderer, CourtReccordSpriteSheet, CourtReccordBackground, CourtReccordBackground + 1); // Draw the background
-
-    ItemName.x = (DDevice->ScreenResolution.x - gstrlen(Font, ItemBank->NameArray[SelectedItem])) / 2;
-    gprintf(DDevice, Font, ItemBank->NameArray[SelectedItem], &ItemName);
 
     SDL_RenderCopy(DDevice->Renderer, CourtReccordSpriteSheet, &(Bars[0][0]), &(Bars[0][1])); // Draw the bars
     SDL_RenderCopy(DDevice->Renderer, CourtReccordSpriteSheet, &(Bars[1][0]), &(Bars[1][1]));
 
-    SDL_RenderCopy(DDevice->Renderer, CourtReccordSpriteSheet, &(Arrows[0][0]), &(Arrows[0][1])); // Draw the arrows
-    SDL_RenderCopy(DDevice->Renderer, CourtReccordSpriteSheet, &(Arrows[1][0]), &(Arrows[1][1]));
+    SDL_RenderCopy(DDevice->Renderer, CourtReccordSpriteSheet, &(Arrows[0][0]), &(RightArrowAfterAnim)); // Draw the arrows
+    SDL_RenderCopy(DDevice->Renderer, CourtReccordSpriteSheet, &(Arrows[1][0]), &(LeftArrowAfterAnim));
+    
+    i = 0;
+    StoredItemListPointer = StoredItemList;
+    while (StoredItemListPointer){
+        if (i == SelectedItem){
+            ItemName.x = (DDevice->ScreenResolution.x - gstrlen(Font, ItemBank->NameArray[StoredItemListPointer->ItemID])) / 2;
+            gprintf(DDevice, Font, ItemBank->NameArray[StoredItemListPointer->ItemID], &ItemName);
+        }
 
-    for (i = 0; (i < 8) && (i < ItemBank->NbOfItems); i++){
-        SDL_RenderCopy(DDevice->Renderer, ItemBank->ItemSpritesheet, &(ItemBank->ItemSrcRectArray[i]), &(SelectedSlotPos[i])); // Draw the items
+        SDL_RenderCopy(DDevice->Renderer, ItemBank->ItemSpritesheet, &(ItemBank->ItemSrcRectArray[StoredItemListPointer->ItemID]), &(SelectedSlotPos[i]));
+        StoredItemListPointer = StoredItemListPointer->next;
+        i++;
     }
+    
 
     SDL_RenderCopy(DDevice->Renderer, CourtReccordSpriteSheet, &SelectedSlotSrc, &(SelectedSlotPos[SelectedItem])); // Draw the cursor
 }
