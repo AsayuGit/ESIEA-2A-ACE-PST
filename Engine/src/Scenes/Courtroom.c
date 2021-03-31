@@ -68,11 +68,6 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
     ItemBank = LoadItemsFromFile(DDevice, ROOT""TEXTURES"Evidences"SL"Evidences.xml");
     InitCourtReccord(DDevice, ItemBank);
     CourtReccordActivated = 0;
-    AddItemToCourtReccord(0);
-    AddItemToCourtReccord(5);
-    //RemoveItemFromCourtReccord(0);
-    //RemoveItemFromCourtReccord(5);
-    //EmptyCourtReccord();
 
     InitCharacter(DDevice, &CHAR_PhoenixWright); // Initialise the character in memory
     InitCharacter(DDevice, &CHAR_MiaFey);

@@ -1,5 +1,6 @@
 #include "SceneCommon.h"
 #include "Characters.h"
+#include "CourtReccord.h"
 
 // First background animation (90° turn)
 Vector2d CourtAnim1States[3] = {
@@ -383,6 +384,8 @@ void parseScene(xmlNode** entry, DialogueContext* DiagContext, SceneContext* SCo
     char* checkLabel;
     // Buttons
     int buttonJumpIndex;
+    // Item
+    int ItemBuffer;
     // Logic
     next = ((*entry)->next) ? (*entry)->next : (*entry);
     property = (*entry)->children;
@@ -436,6 +439,15 @@ void parseScene(xmlNode** entry, DialogueContext* DiagContext, SceneContext* SCo
             searchNode = searchSceneNode(entry, jumpLabel);
             if (searchNode)
                 next = searchNode;
+        } else if (strcmp(property->name, "giveItem") == 0){
+            AddItemToCourtReccord(atoi(xmlNodeGetContent(property)));
+        } else if (strcmp(property->name, "removeItem") == 0){
+            ItemBuffer = atoi(xmlNodeGetContent(property));
+            if (ItemBuffer > -1){
+                RemoveItemFromCourtReccord(ItemBuffer);
+            } else {
+                EmptyCourtReccord();
+            }
         }
         property = property->next;
     }

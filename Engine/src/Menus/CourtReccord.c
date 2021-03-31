@@ -134,7 +134,8 @@ void FreeItemList(ItemList** List){
 }
 
 void EmptyCourtReccord(){
-    FreeItemList(&StoredItemList);
+    if (StoredItemList)
+        FreeItemList(&StoredItemList);
 }
 
 Items* allocateItems(int nbOfItems, int ItemInRow){
@@ -142,12 +143,13 @@ Items* allocateItems(int nbOfItems, int ItemInRow){
     int i;
 
     loadedItem = (Items*)calloc(1, sizeof(Items));    
-    loadedItem->NameArray = (char**)malloc(nbOfItems*sizeof(char*));
+    (loadedItem->NameArray) = (char**)malloc(nbOfItems*sizeof(char*));
     loadedItem->OrignArray = (char**)malloc(nbOfItems*sizeof(char*));
     loadedItem->DescriptionArray = (char**)malloc(nbOfItems*sizeof(char*));
     loadedItem->TypeArray = (int*)malloc(nbOfItems*sizeof(int));
     loadedItem->NbOfItems = nbOfItems;
     loadedItem->ItemInRow = ItemInRow;
+    loadedItem->ItemSpritesheet = NULL;
 
     loadedItem->ItemSrcRectArray = (SDL_Rect*)malloc(nbOfItems*sizeof(SDL_Rect));
     for (i = 0; i < nbOfItems; i++){
@@ -172,58 +174,56 @@ Items* LoadItemsFromFile(DisplayDevice* DDevice, char* filePath){
     char* SpriteSheetPath;
     char* buffer;
 
-    char* testBuffer;
-
     // Logic
     loadedItem = NULL;
     xmlKeepBlanksDefault(0); // Ignore white space
     itemListFile = xmlReadFile(filePath, NULL, 0); // Load File into memory
     itemList = xmlDocGetRootElement(itemListFile); // get the first chidlren
 
-
     if (strcmp(itemList->name, "itemList") == 0){
-        nbOfItems = xmlChildElementCount(itemList) - 1; // Get the number of items
+        nbOfItems = xmlChildElementCount(itemList); // Get the number of items
         
         sscanf(xmlGetProp(itemList, "colorKey"), "%x", &ColorKey);
         sscanf(xmlGetProp(itemList, "ItemInRow"), "%d", &ItemInRow);
         buffer = xmlGetProp(itemList, "spriteSheet");
 
+        //printf("Allocate %d Items\n", nbOfItems);
         loadedItem = allocateItems(nbOfItems, ItemInRow); // Allocate memory for the item bank
-        if (loadedItem->ItemSpritesheet){
-            SDL_DestroyTexture(loadedItem->ItemSpritesheet);
-        }
         loadedItem->ItemSpritesheet = LoadSurface(buffer, DDevice, &ColorKey, false);
-        //printf("Loading >%s<\n", buffer);
         
         property = itemList->children;
         currentItem = 0;
+        
         while (property){
             if (strcmp(property->name, "item") == 0){
                 itemProperty = property->children;
+                //printf("Current ITEM %d\n", currentItem);
                 while (itemProperty){
+                    
                     if (strcmp(itemProperty->name, "name") == 0) {
 
                         buffer = xmlNodeGetContent(itemProperty);
-                        loadedItem->NameArray[currentItem] = (char*)malloc(strlen(buffer)*sizeof(char));
+                        loadedItem->NameArray[currentItem] = (char*)malloc((strlen(buffer) + 1)*sizeof(char));
                         strcpy(loadedItem->NameArray[currentItem], buffer);
                     } else if (strcmp(itemProperty->name, "origin") == 0) {
 
                         buffer = xmlNodeGetContent(itemProperty);
-                        loadedItem->OrignArray[currentItem] = (char*)malloc(strlen(buffer)*sizeof(char));
+                        loadedItem->OrignArray[currentItem] = (char*)malloc((strlen(buffer) + 1)*sizeof(char));
                         strcpy(loadedItem->OrignArray[currentItem], buffer);
                     } else if (strcmp(itemProperty->name, "description") == 0) {
 
                         buffer = xmlNodeGetContent(itemProperty);
-                        loadedItem->DescriptionArray[currentItem] = (char*)malloc(strlen(buffer)*sizeof(char));
+                        loadedItem->DescriptionArray[currentItem] = (char*)malloc((strlen(buffer) + 1)*sizeof(char));
                         strcpy(loadedItem->DescriptionArray[currentItem], buffer);
                     } else if (strcmp(itemProperty->name, "type") == 0) {
                         loadedItem->TypeArray[currentItem] = atoi(xmlNodeGetContent(itemProperty));
                     }
+                    
                     itemProperty = itemProperty->next;
                 }
+                currentItem++;
             }
             property = property->next;
-            currentItem++;
         }
     }
 
