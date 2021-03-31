@@ -1,6 +1,8 @@
 #ifndef _INCLUDE
 #define _INLCUDE
 
+    //#define _GNU_SOURCE // Maybe temporary
+
     #include <stdio.h>
     #include <stdlib.h>
     #include <unistd.h>

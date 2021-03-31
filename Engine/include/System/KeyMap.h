@@ -4,6 +4,7 @@
     #ifdef _SDL
         // Actions
         #define PAD_SELECT SDLK_SPACE
+        #define PAD_BACK SDLK_LCTRL
         #define PAD_COURTRECCORD SDLK_E
 
         // Directions
@@ -15,6 +16,7 @@
     #else
         // Actions
         #define PAD_SELECT SDL_SCANCODE_SPACE
+        #define PAD_BACK SDL_SCANCODE_LCTRL
         #define PAD_COURTRECCORD SDL_SCANCODE_E
 
         // Directions
