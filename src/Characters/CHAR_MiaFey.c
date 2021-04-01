@@ -1,5 +1,5 @@
 #include "CharactersStructures.h"
-
+// Character ID 1
 Animation ANIM_MiaFey[8] = {
     {
         {54, 1045, 73, 169}, // SrcRect // Idle [0]
@@ -14,13 +14,13 @@ Animation ANIM_MiaFey[8] = {
         125 // Framerate
     },
     {
-        {56, 828, 92, 166}, // SrcRect // Forward Idle [2]
+        {56, 828, 92, 166}, // SrcRect // Forward Disbelief Idle [2]
         {76, 26, 92, 166}, // DstRect
         4,   // NbOfFrames
         500 // Framerate
     },
     {
-        {514, 827, 92, 166}, // SrcRect // Forward Talk [3]
+        {514, 827, 92, 166}, // SrcRect // Forward Disbelief Talk [3]
         {76, 26, 92, 166}, // DstRect
         4,   // NbOfFrames
         125 // Framerate

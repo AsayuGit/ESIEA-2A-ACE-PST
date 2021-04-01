@@ -429,6 +429,7 @@ void parseScene(xmlNode** entry, DialogueContext* DiagContext, SceneContext* SCo
                 }
                 element = element->next;
             }
+            (*BGAnimComplete) = 0;
             (*ButtonActivated) = 1;
         } else if (strcmp(property->name, "setBackground") == 0) {
             MoveTile(SContext, atoi(xmlNodeGetContent(property)), 0);
@@ -448,6 +449,8 @@ void parseScene(xmlNode** entry, DialogueContext* DiagContext, SceneContext* SCo
             } else {
                 EmptyCourtReccord();
             }
+        } else if (strcmp(property->name, "playBGM") == 0){
+            PlayTrackID(atoi(xmlNodeGetContent(property)));
         }
         property = property->next;
     }

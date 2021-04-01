@@ -1,6 +1,6 @@
 #include "CharactersStructures.h"
-
-Animation ANIM_Judge[4] = {
+// Character ID 3
+Animation ANIM_Judge[6] = {
     {
         {8, 11, 118, 96}, // SrcRect // Idle [0]
         {69, 35, 118, 96}, // DstRect
@@ -21,6 +21,18 @@ Animation ANIM_Judge[4] = {
     },
     {
         {134, 834, 118, 96}, // SrcRect // Serious Talk [3]
+        {69, 36, 118, 96}, // DstRect
+        4,   // NbOfFrames
+        125 // Framerate
+    },
+    {
+        {10, 477, 118, 96}, // SrcRect // Shocked Idle [4]
+        {69, 36, 118, 96}, // DstRect
+        5,   // NbOfFrames
+        250 // Framerate
+    },
+    {
+        {134, 600, 118, 96}, // SrcRect // Shocked Talk [5]
         {69, 36, 118, 96}, // DstRect
         4,   // NbOfFrames
         125 // Framerate

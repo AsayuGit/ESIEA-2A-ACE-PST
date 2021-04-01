@@ -1,6 +1,6 @@
 #include "CharactersStructures.h"
-
-Animation ANIM_PhoenixWright[3] = {
+// Character ID 0
+Animation ANIM_PhoenixWright[5] = { // Framerate are temporary until the anim varia-speed rework
     {
         {14, 24, 125, 142}, // SrcRect // Idle
         {0, 18, 125, 142}, // DstRect
@@ -18,6 +18,18 @@ Animation ANIM_PhoenixWright[3] = {
         {12, 24, 107, 136}, // DstRect
         4,   // NbOfFrames
         125 // Framerate
+    },
+    {
+        {15, 536, 132, 142}, // SrcRect // Scratching Chin Talk
+        {0, 18, 132, 142}, // DstRect
+        4,   // NbOfFrames
+        125 // Framerate
+    },
+    {
+        {12, 366, 132, 142}, // SrcRect // Scratching Chin Idle
+        {0, 18, 132, 142}, // DstRect
+        10,   // NbOfFrames
+        500 // Framerate
     }
 };
 
@@ -30,5 +42,5 @@ Characters CHAR_PhoenixWright = { // Phoenix Wright
     0,                                                      // LastFrame
     0,                                                      // CurrentFrame
     0,                                                      // PlayingAnimation
-    (Animation*)&ANIM_PhoenixWright                          // Anim
+    (Animation*)&ANIM_PhoenixWright                         // Anim
 };

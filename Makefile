@@ -37,6 +37,10 @@ StaticWindows:
 	clear
 	x86_64-w64-mingw32-gcc -o $(FILENAME).exe $(SOURCES) $(INCLUDES) $(WINDOWS_INCLUDES) $(WINDOWS_LIBS) -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_mixer -mwindows -lm -ldinput8 -ldxguid -ldxerr8 -luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lshell32 -lversion -luuid -static-libgcc
 
+debug:
+	clear
+	gcc -D _DEBUG -o $(FILENAME) $(SOURCES) $(INCLUDES) $$(sdl2-config --cflags --libs) -lSDL2_image -lSDL2_mixer $$(xml2-config --cflags --libs)
+
 clean:
 	rm ACE
 

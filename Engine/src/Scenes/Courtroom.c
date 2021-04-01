@@ -87,12 +87,15 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
     AddCharacterToLayer(CharaLayer, &CHAR_Desk, SContext, 1, 1, DDevice, SContext->SurfaceBounds);
 
     AddCharacterToLayer(CharaLayer, &CHAR_Judge, SContext, 4, 0, DDevice, SContext->SurfaceBounds);
-    PlayTrackID(TRK_Courtroom);
 
     BGAnimComplete = 1;
 
     // Scene setup
-    sceneFile = loadScene("Assets/Dialogue/court.xml");
+    #ifdef _DEBUG
+        sceneFile = loadScene("Assets/Dialogue/debug.xml");
+    #else
+        sceneFile = loadScene("Assets/Dialogue/court.xml");
+    #endif
     scenePointer = xmlDocGetRootElement(sceneFile)->children;
     parseScene(&scenePointer, DiagContext, SContext, BContext, CharacterIndex, NbOfCharacters, &IdleAnimation, &ReturnToDefault, &CurrentCharacter, &BGAnimComplete, &ButtonActivated, ButtonJumpLabels);
     //CourtroomScenarioA(SContext, ButtonLayer, DiagContext, BContext, &Plot, &CurrentCharacter, &IdleAnimation, &ReturnToDefault, &BGAnimComplete, &ButtonActivated, &ButtonInput);
@@ -182,7 +185,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
         if ((DiagContext->progress >= ReturnToDefault) && (ReturnToDefault != -1)){
             CharacterPlayAnimation(CharacterIndex[CurrentCharacter], IdleAnimation);
             ReturnToDefault = -1;
-            if (ButtonActivated){
+            if (ButtonActivated){ // We do that here because we want to wait for the dialogue to end before showing the buttons
                 BackgroundPlayAnimation(ButtonLayer, 0, &BGAnimComplete);
                 EventSelect = ButtonEvents;
             }

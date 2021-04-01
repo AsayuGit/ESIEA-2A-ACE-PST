@@ -48,9 +48,10 @@ char SelectedItem;
 char MenuSelect;
 char ItemDetails[50];
 
-char* ItemTypes[2] = {
+char* ItemTypes[3] = {
     "Other",
-    "Reports"
+    "Reports",
+    "Weapons"
 };
 
 void InitCourtDetails(DisplayDevice* DDevice){
