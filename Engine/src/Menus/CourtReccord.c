@@ -35,6 +35,10 @@ SDL_Rect ItemOrigin;
 // Sound Effects
 Mix_Chunk* MoveCursor;
 
+// Fonts
+BitmapFont* ItemNameFont;
+BitmapFont* DetailsFont;
+
 Items* ItemBank;
 ItemList* StoredItemList;
 ItemList** StoredItemListPointer;
@@ -50,11 +54,15 @@ char* ItemTypes[2] = {
 };
 
 void InitCourtDetails(DisplayDevice* DDevice){
-    Uint32 ColorKey;
+    Uint32 ColorKey, FontColorKey;
     
     // Load textures
     ColorKey = 0x00ffff;
+    FontColorKey = 0xff00ff;
     CourtDetailSpriteSheet = LoadSurface(ROOT""TEXTURES"Menus"SL"CourtDetails"TEX_EXT, DDevice, &ColorKey, false);
+
+    // LoadFonts
+    DetailsFont = LoadBitmapFont(ROOT""FONTS"DetailsFont"TEX_EXT, DDevice, FontColorKey);
 
     // SetRects
     CourtDetailBackground[0].x = 0; CourtDetailBackground[1].x = 0;
@@ -72,7 +80,7 @@ void InitCourtDetails(DisplayDevice* DDevice){
     DetailItemName.h = DDevice->ScreenResolution.y;
 
     ItemDescription.x = 28;
-    ItemDescription.y = 114;
+    ItemDescription.y = 117;
     ItemDescription.w = 238;
     ItemDescription.h = 46;
 
@@ -91,7 +99,7 @@ void InitCourtDetails(DisplayDevice* DDevice){
 
 // Init the court reccord menu for further use
 void InitCourtReccord(DisplayDevice* DDevice, Items* ItemBankPointer){
-    Uint32 ColorKey;
+    Uint32 ColorKey, FontColorKey;
     Vector2i SlotOrigin;
     int SlotOffset;
     int i;
@@ -99,6 +107,10 @@ void InitCourtReccord(DisplayDevice* DDevice, Items* ItemBankPointer){
     // Load textures
     ColorKey = 0x00ffff;
     CourtReccordSpriteSheet = LoadSurface(ROOT""TEXTURES"Menus"SL"CourtReccord"TEX_EXT, DDevice, &ColorKey, false);
+
+    // Load Fonts
+    FontColorKey = 0xff00ff;
+    ItemNameFont = LoadBitmapFont(ROOT""FONTS"ItemNameFont"TEX_EXT, DDevice, FontColorKey);
 
     // Load Sound Effects
     MoveCursor = LoadSoundEffect(EffectPath[CHK_ButtonUpDown]);
@@ -420,8 +432,8 @@ void DrawMainCourtReccordMenu(DisplayDevice* DDevice, BitmapFont* Font){
     StoredItemListIterator = *StoredItemListPointer;
     while (StoredItemListIterator){
         if (i == SelectedSlot){
-            ItemName.x = (DDevice->ScreenResolution.x - gstrlen(Font, ItemBank->NameArray[StoredItemListIterator->ItemID])) / 2;
-            gprintf(DDevice, Font, ItemBank->NameArray[StoredItemListIterator->ItemID], &ItemName); // Draw the item's name
+            ItemName.x = (DDevice->ScreenResolution.x - gstrlen(ItemNameFont, ItemBank->NameArray[StoredItemListIterator->ItemID])) / 2;
+            gprintf(DDevice, ItemNameFont, ItemBank->NameArray[StoredItemListIterator->ItemID], &ItemName); // Draw the item's name
         }
 
         SDL_RenderCopy(DDevice->Renderer, ItemBank->ItemSpritesheet, &(ItemBank->ItemSrcRectArray[StoredItemListIterator->ItemID]), &(SelectedSlotPos[i])); // Draw the item
@@ -445,14 +457,14 @@ void DrawCourtDetails(DisplayDevice* DDevice, BitmapFont* Font, int ItemID){
     RightArrowAfterAnim.x += ArrowAnim;
     LeftArrowAfterAnim.x -= ArrowAnim;
 
-    DetailItemName.x = ((144 - gstrlen(Font, ItemBank->NameArray[ItemID])) / 2) + 91;
+    DetailItemName.x = ((144 - gstrlen(ItemNameFont, ItemBank->NameArray[ItemID])) / 2) + 91;
 
     SDL_RenderCopy(DDevice->Renderer, CourtDetailSpriteSheet, CourtDetailBackground, CourtDetailBackground + 1); // Draw the background
     SDL_RenderCopy(DDevice->Renderer, CourtReccordSpriteSheet, &(Arrows[0][0]), &(RightArrowAfterAnim)); // Draw the arrows
     SDL_RenderCopy(DDevice->Renderer, CourtReccordSpriteSheet, &(Arrows[1][0]), &(LeftArrowAfterAnim));
 
-    gprintf(DDevice, Font, ItemBank->NameArray[ItemID], &DetailItemName); // Draw the item's name
-    gprintf(DDevice, Font, ItemDetails, &ItemOrigin); // Draw the item's origin
+    gprintf(DDevice, ItemNameFont, ItemBank->NameArray[ItemID], &DetailItemName); // Draw the item's name
+    gprintf(DDevice, DetailsFont, ItemDetails, &ItemOrigin); // Draw the item's origin
     gprintf(DDevice, Font, ItemBank->DescriptionArray[ItemID], &ItemDescription); // Draw the item's description
 
     SDL_RenderCopy(DDevice->Renderer, ItemBank->ItemSpritesheet, &(ItemBank->ItemSrcRectArray[ItemID]), &(DetailItemPos)); // Draw the item
