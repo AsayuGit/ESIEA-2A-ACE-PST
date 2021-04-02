@@ -1,48 +1,48 @@
-INCLUDES = \
-		-I include/ \
-		-I include/Characters/ \
-		-I Engine/include/System/ \
-		-I Engine/include/Scenes/ \
-		-I Engine/include/Characters/ \
-		-I Engine/include/Menus/ \
-		-I Engine/include/Sound/
+# Recursive Wildcard function
+rwildcard=$(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2)$(filter $(subst *,%,$2),$d))
 
-WINDOWS_INCLUDES = -I /usr/local/x86_64-w64-mingw32/include/
-WINDOWS_LIBS = -L /usr/local/x86_64-w64-mingw32/lib/
+# Remove duplicate function
+uniq = $(if $1,$(firstword $1) $(call uniq,$(filter-out $(firstword $1),$1))) 
 
-SOURCES = \
-		src/*.c \
-		src/Characters/*.c \
-		Engine/src/System/*.c \
-		Engine/src/Scenes/*.c \
-		Engine/src/Characters/*.c \
-		Engine/src/Menus/*.c \
-		Engine/src/Sound/*.c
+# C Compilers
+CC = gcc
+WINCC = x86_64-w64-mingw32-gcc
 
-FILENAME = ACE
+# Compile / Link Flags
+CFLAGS = -c
+LDFLAGS = $$(sdl2-config --libs) $$(xml2-config --libs) -lSDL2_image -lSDL2_mixer
 
-all:
-	clear
-	gcc -o $(FILENAME) $(SOURCES) $(INCLUDES) $$(sdl2-config --cflags --libs) -lSDL2_image -lSDL2_mixer $$(xml2-config --cflags --libs)
+# Main target and filename of the executable
+OUT = ACE
 
-legacy:
-	clear
-	gcc -D _SDL -o $(FILENAME) $(SOURCES) $(INCLUDES) $$(sdl-config --cflags --libs) -lSDL_image -lSDL_mixer
+# Build Directory
+BUILD_DIR = build
 
-windows:
-	clear
-	x86_64-w64-mingw32-gcc -o $(FILENAME).exe $(SOURCES) $(INCLUDES) $(WINDOWS_INCLUDES) $(WINDOWS_LIBS) -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_mixer -mwindows
+# List of all the .c source files to compile
+SRC = $(call rwildcard,,*.c)
 
-StaticWindows:
-	clear
-	x86_64-w64-mingw32-gcc -o $(FILENAME).exe $(SOURCES) $(INCLUDES) $(WINDOWS_INCLUDES) $(WINDOWS_LIBS) -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_mixer -mwindows -lm -ldinput8 -ldxguid -ldxerr8 -luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lshell32 -lversion -luuid -static-libgcc
+# List of all the .o object files to produce
+OBJ = $(patsubst %,$(BUILD_DIR)/%,$(SRC:%.c=%.o))
+OBJ_DIR = $(call uniq, $(dir $(OBJ)))
 
-debug:
-	clear
-	gcc -D _DEBUG -o $(FILENAME) $(SOURCES) $(INCLUDES) $$(sdl2-config --cflags --libs) -lSDL2_image -lSDL2_mixer $$(xml2-config --cflags --libs)
+# List of all includes directory
+INCLUDES = $(patsubst %, -I %, $(call uniq, $(dir $(call rwildcard,,*.h)))) $$(sdl2-config --cflags) $$(xml2-config --cflags)
+
+all: $(OBJ_DIR) $(OUT)
+
+$(OBJ_DIR):
+	mkdir -p $@
+
+$(BUILD_DIR)/%.o: %.c
+	@echo "Compiling $<"
+	$(CC) $(CFLAGS) $< $(INCLUDES) -o $@
+
+$(OUT): $(OBJ)
+	@echo "Linking $<"
+	$(CC) -o $(OUT) $^ $(LDFLAGS)
 
 clean:
-	rm ACE
+	rm -rf $(BUILD_DIR) $(OUT)
 
 run:
-	./$(FILENAME)
+	./$(OUT)
