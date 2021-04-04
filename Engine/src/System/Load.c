@@ -55,6 +55,7 @@ BitmapFont* LoadBitmapFont(char FilePath[], DisplayDevice* DDevice, Uint32 FontC
     #ifndef _SDL
         LoadingFont->FontTexture = SDL_CreateTextureFromSurface(DDevice->Renderer, LoadingFont->FontSurface);
     #endif
+    LoadingFont->FontHeight = getFontHeight(LoadingFont);
 
     return LoadingFont;
 }

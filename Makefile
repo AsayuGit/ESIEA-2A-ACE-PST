@@ -9,7 +9,7 @@ CC = gcc
 WINCC = x86_64-w64-mingw32-gcc
 
 # Compile / Link Flags
-CFLAGS = -c -Wall
+CFLAGS += -c -Wall
 LDFLAGS = $$(sdl2-config --libs) $$(xml2-config --libs) -lSDL2_image -lSDL2_mixer
 
 # Main target and filename of the executable

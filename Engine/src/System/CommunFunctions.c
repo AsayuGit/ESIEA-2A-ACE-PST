@@ -16,6 +16,15 @@ Vector2i RectTileToCorrdinate(SDL_Rect SrcRect, Vector2i SurfaceBounds, int Tile
     return Coordinates;
 }
 
+unsigned int getFontHeight(BitmapFont* Font){
+    unsigned int FontHeight = 1;
+    while(getpixel(Font->FontSurface, 0, FontHeight) != 0x0){
+        FontHeight++;
+    }
+
+    return FontHeight - 1;
+}
+
 SDL_Rect gputc(DisplayDevice* DDevice, BitmapFont* Font, char c, int x, int y, int NewLineJump, SDL_Rect* Bounds){
     SDL_Rect SrcLetter, DstLetter;
     int letterX, letterY, letterW, letterID;

@@ -53,6 +53,7 @@
         #ifndef _SDL
             SDL_Texture* FontTexture;
         #endif
+        unsigned int FontHeight;
     } BitmapFont;
 
 #endif

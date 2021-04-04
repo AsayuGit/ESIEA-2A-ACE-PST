@@ -60,7 +60,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
 
     // Button Init
     ButtonLayer = InitScene(DDevice, S_Empty);
-    BContext = InitButtons(DDevice, ButtonLayer, Context->ButtonFont, &ButtonsRect);
+    BContext = InitButtons(DDevice, ButtonLayer, Context->ButtonFont, 224, &ButtonsRect);
     MoveButtonsToCoordinates(BContext, DDevice->ScreenResolution.x, 0);
     ButtonActivated = 0;
 
