@@ -6,7 +6,7 @@ int main(int argc, char* argv[]){
 
     DisplayDevice* DDevice;
     InputDevice* IDevice;
-    SoundDevice* SDevice;
+    //SoundDevice* SDevice;
 
     BitmapFont* MainFont;
     BitmapFont* NameFont;
@@ -19,7 +19,8 @@ int main(int argc, char* argv[]){
     InitSDL();
     DDevice = CreateDisplayDevice(256, 192, "Mia's Legacy");
     IDevice = InitInputs(false);
-    SDevice = CreateSoundDevice();
+    //SDevice = CreateSoundDevice(); // Always return null so we don't need to store it for now
+    CreateSoundDevice();
 
     MainFont = LoadBitmapFont(ROOT""FONTS"AceAttorneyFont"TEX_EXT, DDevice, FontColorKey);
     NameFont = LoadBitmapFont(ROOT""FONTS"NameFont"TEX_EXT, DDevice, FontColorKey);

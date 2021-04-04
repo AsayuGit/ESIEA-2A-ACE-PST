@@ -5,7 +5,7 @@
 ButtonsContext* InitButtons(DisplayDevice* DDevice, SceneContext* SContext, BitmapFont* Font, SDL_Rect* ButtonObjectDimensions){
     ButtonsContext* BContext;
     Uint32 ColorKey;
-    char i;
+    unsigned char i;
 
     // Buttons Texture
     ColorKey = 0xff00ff;
@@ -70,7 +70,7 @@ void ClearButtons(ButtonsContext* ButtObject){
     ButtObject->nbOfButtons = 0;
 }
 
-char GetNbOfButtons(ButtonsContext* ButtonObject){
+unsigned char GetNbOfButtons(ButtonsContext* ButtonObject){
     return ButtonObject->nbOfButtons;
 }
 
@@ -105,6 +105,8 @@ void HandleButtonsEvents(ButtonsContext* ButtonObject, SDL_Event* event){
             ButtonObject->clkdButton = ButtonObject->selButtonID;
             Mix_PlayChannel(-1, ButtonObject->ClickedSndEffect[ButtonObject->clkdButton], 0);
             break;
+        default:
+            break;
         }
         break;
     default:
@@ -112,15 +114,15 @@ void HandleButtonsEvents(ButtonsContext* ButtonObject, SDL_Event* event){
     }
 }
 
-char GetClkdButtonID(ButtonsContext* ButtonObject){
-    char BID;
+unsigned char GetClkdButtonID(ButtonsContext* ButtonObject){
+    unsigned char BID;
 
     BID = ButtonObject->clkdButton;
     ButtonObject->clkdButton = -1;
     return BID;
 }
 
-void SetSlkdButtonID(ButtonsContext* ButtonObject, char ButtonID){
+void SetSlkdButtonID(ButtonsContext* ButtonObject, unsigned char ButtonID){
     ButtonObject->selButtonID = ButtonID;
 }
 
@@ -128,8 +130,8 @@ void DrawButtons(ButtonsContext* ButtonObject){ // TO OPTIMIZE !
     SDL_Rect ButtonDstRect;
     SDL_Rect EndString;
     SDL_Rect TextPosition;
-    ButtonItem ButtonsList[NBOFBUTTONS];
-    char Selected;
+    //ButtonItem ButtonsList[NBOFBUTTONS];
+    unsigned char Selected;
     int i;
 
     ButtonDstRect = ButtonObject->ButtonState[0]; // Temp ?
@@ -157,7 +159,7 @@ void DrawButtons(ButtonsContext* ButtonObject){ // TO OPTIMIZE !
             SDL_SetRenderTarget(ButtonObject->DDevice->Renderer, NULL);
         #endif
         
-        Selected = (char)(i == ButtonObject->selButtonID);
+        Selected = (unsigned char)(i == ButtonObject->selButtonID);
         #ifdef _SDL
             SDL_BlitSurface(ButtonObject->ButtonsSurface, &(ButtonObject->ButtonState[Selected]), ButtonObject->DDevice->Screen, &ButtonDstRect);
         #else
@@ -171,7 +173,7 @@ void DrawButtons(ButtonsContext* ButtonObject){ // TO OPTIMIZE !
     }
 }
 
-void SetButtonClkSndEffect(ButtonsContext* ButtonObject, char ButtonID, EffectsPlaylistID NewSndEffect){
+void SetButtonClkSndEffect(ButtonsContext* ButtonObject, unsigned char ButtonID, EffectsPlaylistID NewSndEffect){
     if (ButtonObject->ClickedSndEffect[ButtonID] != ButtonObject->ButtonClicked){
         Mix_FreeChunk(ButtonObject->ClickedSndEffect[ButtonID]);
     }

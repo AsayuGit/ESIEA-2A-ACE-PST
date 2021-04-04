@@ -43,9 +43,10 @@ Items* ItemBank;
 ItemList* StoredItemList;
 ItemList** StoredItemListPointer;
 
-char SelectedSlot;
-char SelectedItem;
-char MenuSelect;
+unsigned char SelectedSlot;
+unsigned char SelectedItem;
+unsigned char MenuSelect;
+
 char ItemDetails[50];
 
 char* ItemTypes[3] = {
@@ -249,7 +250,6 @@ Items* LoadItemsFromFile(DisplayDevice* DDevice, char* filePath){
     int nbOfItems;
     int ItemInRow;
     int currentItem;
-    char* SpriteSheetPath;
     char* buffer;
 
     // Logic
@@ -258,12 +258,12 @@ Items* LoadItemsFromFile(DisplayDevice* DDevice, char* filePath){
     itemListFile = xmlReadFile(filePath, NULL, 0); // Load File into memory
     itemList = xmlDocGetRootElement(itemListFile); // get the first chidlren
 
-    if (strcmp(itemList->name, "itemList") == 0){
+    if (strcmp((char*)itemList->name, "itemList") == 0){
         nbOfItems = xmlChildElementCount(itemList); // Get the number of items
         
-        sscanf(xmlGetProp(itemList, "colorKey"), "%x", &ColorKey);
-        sscanf(xmlGetProp(itemList, "ItemInRow"), "%d", &ItemInRow);
-        buffer = xmlGetProp(itemList, "spriteSheet");
+        sscanf((char*)xmlGetProp(itemList, (xmlChar*)"colorKey"), "%x", &ColorKey);
+        sscanf((char*)xmlGetProp(itemList, (xmlChar*)"ItemInRow"), "%d", &ItemInRow);
+        buffer = (char*)xmlGetProp(itemList, (xmlChar*)"spriteSheet");
 
         //printf("Allocate %d Items\n", nbOfItems);
         loadedItem = allocateItems(nbOfItems, ItemInRow); // Allocate memory for the item bank
@@ -273,28 +273,28 @@ Items* LoadItemsFromFile(DisplayDevice* DDevice, char* filePath){
         currentItem = 0;
         
         while (property){
-            if (strcmp(property->name, "item") == 0){
+            if (strcmp((char*)property->name, "item") == 0){
                 itemProperty = property->children;
                 //printf("Current ITEM %d\n", currentItem);
                 while (itemProperty){
                     
-                    if (strcmp(itemProperty->name, "name") == 0) {
+                    if (strcmp((char*)itemProperty->name, "name") == 0) {
 
-                        buffer = xmlNodeGetContent(itemProperty);
+                        buffer = (char*)xmlNodeGetContent(itemProperty);
                         loadedItem->NameArray[currentItem] = (char*)malloc((strlen(buffer) + 1)*sizeof(char));
                         strcpy(loadedItem->NameArray[currentItem], buffer);
-                    } else if (strcmp(itemProperty->name, "origin") == 0) {
+                    } else if (strcmp((char*)itemProperty->name, "origin") == 0) {
 
-                        buffer = xmlNodeGetContent(itemProperty);
+                        buffer = (char*)xmlNodeGetContent(itemProperty);
                         loadedItem->OrignArray[currentItem] = (char*)malloc((strlen(buffer) + 1)*sizeof(char));
                         strcpy(loadedItem->OrignArray[currentItem], buffer);
-                    } else if (strcmp(itemProperty->name, "description") == 0) {
+                    } else if (strcmp((char*)itemProperty->name, "description") == 0) {
 
-                        buffer = xmlNodeGetContent(itemProperty);
+                        buffer = (char*)xmlNodeGetContent(itemProperty);
                         loadedItem->DescriptionArray[currentItem] = (char*)malloc((strlen(buffer) + 1)*sizeof(char));
                         strcpy(loadedItem->DescriptionArray[currentItem], buffer);
-                    } else if (strcmp(itemProperty->name, "type") == 0) {
-                        loadedItem->TypeArray[currentItem] = atoi(xmlNodeGetContent(itemProperty));
+                    } else if (strcmp((char*)itemProperty->name, "type") == 0) {
+                        loadedItem->TypeArray[currentItem] = atoi((char*)xmlNodeGetContent(itemProperty));
                     }
                     
                     itemProperty = itemProperty->next;
@@ -362,7 +362,11 @@ void HandleCourtReccordEvents(SDL_Event* event){
                     Mix_PlayChannel(-1, MoveCursor, 0);
                 }
                 break;
+            default:
+                break;
             }
+            break;
+        default:
             break;
         }
         break;
@@ -398,7 +402,11 @@ void HandleCourtReccordEvents(SDL_Event* event){
                 MenuSelect = MainCRMenu;
                 Mix_PlayChannel(-1, MoveCursor, 0);
                 break;
+            default:
+                break;
             }
+            break;
+        default:
             break;
         }
         break;

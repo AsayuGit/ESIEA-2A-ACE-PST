@@ -11,7 +11,11 @@
 
 SDL_Surface* LoadSDLSurface(char FilePath[], DisplayDevice* Device, Uint32* ColorKey){
     SDL_Surface* LoadingSurface;
-    SDL_Surface* AcceleratedSurface;
+    
+    #ifdef _SDL
+        SDL_Surface* AcceleratedSurface;
+    #endif
+
     LoadingSurface = SDL_LoadBMP(FilePath);
     #ifdef _SDL
         AcceleratedSurface = SDL_DisplayFormat(LoadingSurface);
@@ -77,7 +81,7 @@ Mix_Music* LoadMusic(char FilePath[]){
     LoadingMusic = Mix_LoadMUS(FilePath);
     
     if (LoadingMusic == NULL)
-        fprintf(stderr, "Can't load music %d\n", Mix_GetError());
+        fprintf(stderr, "Can't load music %s\n", Mix_GetError());
     return LoadingMusic;
 }
 
@@ -88,6 +92,6 @@ Mix_Chunk* LoadSoundEffect(char FilePath[]){
     LoadingSoundEffect = Mix_LoadWAV(FilePath);
 
     if (LoadingSoundEffect == NULL)
-        fprintf(stderr, "Can't load sound effect %d\n", Mix_GetError());
+        fprintf(stderr, "Can't load sound effect %s\n", Mix_GetError());
     return LoadingSoundEffect;
 }

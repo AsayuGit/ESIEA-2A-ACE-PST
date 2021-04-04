@@ -74,7 +74,7 @@ void FlipBlitSurface(SDL_Surface* SourceSurface, SDL_Rect* SrcRect, SDL_Surface*
         Dst.w = 1;
 
 
-        for (Src.x; Src.x < LocalSrcRect.x + LocalSrcRect.w; Src.x++){
+        for (; Src.x < LocalSrcRect.x + LocalSrcRect.w; Src.x++){
             SDL_BlitSurface(SourceSurface, &Src, ScreenTarget, &Dst);
             if (Dst.x > LocalDstRect.x){
                 Dst.x--;

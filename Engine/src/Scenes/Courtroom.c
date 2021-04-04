@@ -16,7 +16,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
         MainEvents,
         ButtonEvents,
         CourtRecordEvents
-    }EventID;
+    };
 
     DialogueContext* DiagContext;
     SceneContext* SContext;
@@ -27,7 +27,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
     ButtonsContext* BContext;
     SDL_Rect ButtonsRect;
     char ButtonActivated;
-    char ButtonInput;
+    unsigned char ButtonInput;
     char* ButtonJumpLabels[4];
     char BGAnimComplete;
 
@@ -129,6 +129,8 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                             CourtReccordActivated = 1;
                             EventSelect = CourtRecordEvents;
                             break;
+                        default:
+                            break;
                         }
                         break;
                     }
@@ -153,6 +155,8 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                             CourtReccordActivated = 1;
                             EventSelect = CourtRecordEvents;
                             break;
+                        default:
+                            break;
                         }
                         break;
                     }
@@ -173,9 +177,13 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                                 EventSelect = ButtonEvents;
                             }
                             break;
+                        default:
+                            break;
                         }
                         break;
                     }
+                    break;
+                default:
                     break;
                 }
             }

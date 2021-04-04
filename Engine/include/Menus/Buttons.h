@@ -12,9 +12,9 @@
         Mix_Chunk* ButtonClicked;
         Mix_Chunk* ClickedSndEffect[4];
 
-        char nbOfButtons;
-        char selButtonID;
-        char clkdButton;
+        unsigned char nbOfButtons;
+        unsigned char selButtonID;
+        unsigned char clkdButton;
         
         SDL_Rect ObjectDimensions;
         SDL_Rect ButtonState[2]; // Store the rect for the button (Activated / Desactivated)
@@ -36,14 +36,14 @@
     void AddButton(ButtonsContext* ButtonObject, const char* Label);
     void ClearButtons(ButtonsContext* ButtObject);
     
-    char GetNbOfButtons(ButtonsContext* ButtonObject);
+    unsigned char GetNbOfButtons(ButtonsContext* ButtonObject);
     
     void MoveButtonsToCoordinates(ButtonsContext* ButtonObject, int x, int y);
     void HandleButtonsEvents(ButtonsContext* ButtonObject, SDL_Event* event);
-    char GetClkdButtonID(ButtonsContext* ButtonObject);
-    void SetSlkdButtonID(ButtonsContext* ButtonObject, char ButtonID);
+    unsigned char GetClkdButtonID(ButtonsContext* ButtonObject);
+    void SetSlkdButtonID(ButtonsContext* ButtonObject, unsigned char ButtonID);
     void DrawButtons(ButtonsContext* ButtonObject);
 
-    void SetButtonClkSndEffect(ButtonsContext* ButtonObject, char ButtonID, EffectsPlaylistID NewSndEffect);
+    void SetButtonClkSndEffect(ButtonsContext* ButtonObject, unsigned char ButtonID, EffectsPlaylistID NewSndEffect);
 
 #endif

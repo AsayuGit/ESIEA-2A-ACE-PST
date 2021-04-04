@@ -358,7 +358,7 @@ xmlNode* searchSceneNode(xmlNode** entry, char* label){
     char* checkLabel;
     root = (*entry)->parent->children;
     while (root){
-        checkLabel = xmlGetProp(root, "label");
+        checkLabel = (char*)xmlGetProp(root, (xmlChar*)"label");
         if (checkLabel){
             if (strcmp(checkLabel, label) == 0){
                 return root;
@@ -381,7 +381,6 @@ void parseScene(xmlNode** entry, DialogueContext* DiagContext, SceneContext* SCo
     int animationID;
     // jump
     char* jumpLabel;
-    char* checkLabel;
     // Buttons
     int buttonJumpIndex;
     // Item
@@ -390,67 +389,67 @@ void parseScene(xmlNode** entry, DialogueContext* DiagContext, SceneContext* SCo
     next = ((*entry)->next) ? (*entry)->next : (*entry);
     property = (*entry)->children;
     while (property){
-        if (strcmp(property->name, "diag") == 0){
+        if (strcmp((char*)property->name, "diag") == 0){
             element = property->children;
             while (element){
-                if (strcmp(element->name, "char") == 0) {
-                    CurrentCharacterID = atoi(xmlNodeGetContent(element));
-                } else if (strcmp(element->name, "line") == 0) {
+                if (strcmp((char*)element->name, "char") == 0) {
+                    CurrentCharacterID = atoi((char*)xmlNodeGetContent(element));
+                } else if (strcmp((char*)element->name, "line") == 0) {
                     //*ReturnToDefault = SetDialogueText(DiagContext, (*CurrentCharacter)->DisplayName, "The court is now in session for\nthe trial of Mr. Larry Butz.", 1);
-                    DialogueText = xmlNodeGetContent(element);
+                    DialogueText = (char*)xmlNodeGetContent(element);
                 }
                 element = element->next;
             }
             lineSize = SetDialogueText(DiagContext, CharactersIndex[CurrentCharacterID]->DisplayName, DialogueText, 1);
             *CurrentCharacter = CurrentCharacterID;
-        } else if (strcmp(property->name, "anim") == 0) {
+        } else if (strcmp((char*)property->name, "anim") == 0) {
             element = property->children;
             while (element){
-                if (strcmp(element->name, "animTarget") == 0) {
-                    animTarget = atoi(xmlNodeGetContent(element));
-                } else if (strcmp(element->name, "animation") == 0) {
-                    animationID = atoi(xmlNodeGetContent(element));
-                } else if (strcmp(element->name, "idleAnim") == 0) {
-                    (*IdleAnimation) = atoi(xmlNodeGetContent(element)); // Need to be setup
+                if (strcmp((char*)element->name, "animTarget") == 0) {
+                    animTarget = atoi((char*)xmlNodeGetContent(element));
+                } else if (strcmp((char*)element->name, "animation") == 0) {
+                    animationID = atoi((char*)xmlNodeGetContent(element));
+                } else if (strcmp((char*)element->name, "idleAnim") == 0) {
+                    (*IdleAnimation) = atoi((char*)xmlNodeGetContent(element)); // Need to be setup
                     (*ReturnToDefault) = lineSize;
                 }
                 element = element->next;
             }
             CharacterPlayAnimation(CharactersIndex[animTarget], animationID);
-        } else if (strcmp(property->name, "buttons") == 0) {
+        } else if (strcmp((char*)property->name, "buttons") == 0) {
             ClearButtons(BContext);
             buttonJumpIndex = 0;
             element = property->children;
             while (element){
-                if (strcmp(element->name, "option") == 0) {
-                    AddButton(BContext, xmlNodeGetContent(element));
-                    ButtonJumpLabels[buttonJumpIndex] = xmlGetProp(element, "jump");
+                if (strcmp((char*)element->name, "option") == 0) {
+                    AddButton(BContext, (char*)xmlNodeGetContent(element));
+                    ButtonJumpLabels[buttonJumpIndex] = (char*)xmlGetProp(element, (xmlChar*)"jump");
                     buttonJumpIndex++;
                 }
                 element = element->next;
             }
             (*BGAnimComplete) = 0;
             (*ButtonActivated) = 1;
-        } else if (strcmp(property->name, "setBackground") == 0) {
-            MoveTile(SContext, atoi(xmlNodeGetContent(property)), 0);
-        } else if (strcmp(property->name, "backgroundAnim") == 0) {
-            BackgroundPlayAnimation(SContext, atoi(xmlNodeGetContent(property)), BGAnimComplete);
-        } else if (strcmp(property->name, "jump") == 0) {
-            jumpLabel = xmlNodeGetContent(property);
+        } else if (strcmp((char*)property->name, "setBackground") == 0) {
+            MoveTile(SContext, atoi((char*)xmlNodeGetContent(property)), 0);
+        } else if (strcmp((char*)property->name, "backgroundAnim") == 0) {
+            BackgroundPlayAnimation(SContext, atoi((char*)xmlNodeGetContent(property)), BGAnimComplete);
+        } else if (strcmp((char*)property->name, "jump") == 0) {
+            jumpLabel = (char*)xmlNodeGetContent(property);
             searchNode = searchSceneNode(entry, jumpLabel);
             if (searchNode)
                 next = searchNode;
-        } else if (strcmp(property->name, "giveItem") == 0){
-            AddItemToCourtReccord(atoi(xmlNodeGetContent(property)));
-        } else if (strcmp(property->name, "removeItem") == 0){
-            ItemBuffer = atoi(xmlNodeGetContent(property));
+        } else if (strcmp((char*)property->name, "giveItem") == 0){
+            AddItemToCourtReccord(atoi((char*)xmlNodeGetContent(property)));
+        } else if (strcmp((char*)property->name, "removeItem") == 0){
+            ItemBuffer = atoi((char*)xmlNodeGetContent(property));
             if (ItemBuffer > -1){
                 RemoveItemFromCourtReccord(ItemBuffer);
             } else {
                 EmptyCourtReccord();
             }
-        } else if (strcmp(property->name, "playBGM") == 0){
-            PlayTrackID(atoi(xmlNodeGetContent(property)));
+        } else if (strcmp((char*)property->name, "playBGM") == 0){
+            PlayTrackID(atoi((char*)xmlNodeGetContent(property)));
         }
         property = property->next;
     }
