@@ -14,6 +14,8 @@ void ClearDialogueText(DialogueContext* Context){
 }
 
 int SetDialogueText(DialogueContext* Context, char* Name, char* Text, char SndEffType){
+    SDL_Rect NameDest;
+
     Context->Text = Text;
     Context->progress = 0;
     Context->DstLetter.x = 0;
@@ -23,7 +25,12 @@ int SetDialogueText(DialogueContext* Context, char* Name, char* Text, char SndEf
     #ifndef _SDL
         SDL_SetRenderTarget(Context->DDevice->Renderer, Context->nameLayer);
     #endif
-        gprintf(Context->DDevice, Context->NameFont, Name, NULL);
+        NameDest.w = gstrlen(Context->NameFont, Name, 1);
+        NameDest.x = ((Context->NameBounds.w - Context->NameBounds.x) - NameDest.w) / 2;
+        NameDest.h = Context->NameFont->FontHeight;
+        NameDest.y = (Context->NameBounds.h - NameDest.h) / 2;
+        NameDest.y = 0;
+        gprintf(Context->DDevice, Context->NameFont, Name, -1, &NameDest);
     #ifndef _SDL
         SDL_SetRenderTarget(Context->DDevice->Renderer, NULL);
     #endif
@@ -47,7 +54,7 @@ DialogueContext* InitDialog(DisplayDevice* DDevice, BitmapFont* MainFont, Bitmap
     
     DialogueContext* DiagContext;
     const int NameMargin = 3;
-    const int TextMargin = 5;
+    const int TextMargin = 10;
 
     DiagContext = (DialogueContext*)malloc(sizeof(DialogueContext));
     DiagContext->TextSpeed = 40;
@@ -71,11 +78,11 @@ DialogueContext* InitDialog(DisplayDevice* DDevice, BitmapFont* MainFont, Bitmap
     DiagContext->NameBounds.w = 42;
     DiagContext->NameBounds.h = 8;
     DiagContext->NameBounds.x = NameMargin;
-    DiagContext->NameBounds.y = DiagContext->DialogBoxBounds.y + NameMargin;
+    DiagContext->NameBounds.y = DiagContext->DialogBoxBounds.y + NameMargin + 1;
 
     DiagContext->TextBounds = DiagContext->DialogBoxBounds;
     DiagContext->TextBounds.x += TextMargin;
-    DiagContext->TextBounds.y += DiagContext->NameBounds.h + NameMargin + TextMargin + 1;
+    DiagContext->TextBounds.y += DiagContext->NameBounds.h + NameMargin + TextMargin - 2;
     DiagContext->TextBounds.w -= (TextMargin << 1); // To inspect
     DiagContext->TextBounds.h -= (DiagContext->NameBounds.h + (TextMargin << 1) + NameMargin + 1);
     
@@ -136,7 +143,8 @@ void Dialogue(InputDevice* InputDevice, DialogueContext* Context){
         }else{
             Context->letterLag--;
         }
-        Context->DstLetter = gputc(Context->DDevice, Context->MainFont, Context->Text[Context->progress], Context->DstLetter.x, Context->DstLetter.y, Context->DstLetter.h, &(InLayerTextBounds));
+        // Here we use gputc() instead than gprintf() because we want to be able to print out the dialogue character by character
+        Context->DstLetter = gputc(Context->DDevice, Context->MainFont, Context->Text[Context->progress], Context->DstLetter.x, Context->DstLetter.y, Context->DstLetter.h + 2, -1, &(InLayerTextBounds));
         Context->progress++;
         Context->LastLetter = SDL_GetTicks();
         #ifndef _SDL

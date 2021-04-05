@@ -25,13 +25,72 @@ unsigned int getFontHeight(BitmapFont* Font){
     return FontHeight - 1;
 }
 
-SDL_Rect gputc(DisplayDevice* DDevice, BitmapFont* Font, char c, int x, int y, int NewLineJump, SDL_Rect* Bounds){
+int gstrlen(BitmapFont* Font, char* text, int intCharSpce){ // To update (offsets changed recently)
+    int LastLineLen, StringLen;
+    int i;
+
+    SDL_Rect SrcLetter;
+    unsigned int letterX, letterY, letterW, letterID;
+
+    if (intCharSpce < 0)
+        intCharSpce = 2;
+
+    i = 0;
+    StringLen = 0;
+    LastLineLen = 0;
+    while (text[i] != '\0'){
+        if (text[i] != '\n'){
+            letterX = 0;
+            letterY = 0;
+            
+            for (letterID = 0; letterID < text[i] - 31; letterX++){
+                if (getpixel(Font->FontSurface, letterX, letterY) == 0x0){
+                    letterID++;
+                }
+            }
+            letterW = letterX;
+            while (letterID < text[i] - 30){
+                if (getpixel(Font->FontSurface, letterW, letterY) == 0x0){
+                    letterID++;
+                }
+                letterW++;
+            }
+            letterW -= letterX + 1;
+            letterX--;
+            letterY = 1;
+            while(getpixel(Font->FontSurface, letterX, letterY) != 0x0){
+                letterY++;
+            }
+
+            // Text Rendering
+            SrcLetter.x = letterX + 1;
+            SrcLetter.y = 1;
+            SrcLetter.h = letterY - 1;
+            SrcLetter.w = letterW;
+
+            // Display
+            StringLen += SrcLetter.w + intCharSpce;
+        } else {
+            if (StringLen > LastLineLen)
+                LastLineLen = StringLen;
+            StringLen = 0;
+        }
+        i++;
+    }
+
+    return (StringLen > LastLineLen) ? StringLen : LastLineLen;
+}
+
+SDL_Rect gputc(DisplayDevice* DDevice, BitmapFont* Font, char c, unsigned int x, unsigned int y, unsigned int intLineSpce, int intCharSpce, SDL_Rect* Bounds){
     SDL_Rect SrcLetter, DstLetter;
-    int letterX, letterY, letterW, letterID;
+    unsigned int letterX, letterY, letterW, letterID;
 
     DstLetter.x = x;
     DstLetter.y = y;
-    DstLetter.h = NewLineJump;
+    DstLetter.h = intLineSpce;
+
+    if (intCharSpce < 0)
+        intCharSpce = 2;
 
     // Text processing
     if (c != '\n'){
@@ -70,10 +129,10 @@ SDL_Rect gputc(DisplayDevice* DDevice, BitmapFont* Font, char c, int x, int y, i
         #endif
 
         if ((Bounds) && (DstLetter.x + SrcLetter.w > Bounds->w + Bounds->x)){
-            DstLetter.y += SrcLetter.h + 1;
+            DstLetter.y += SrcLetter.h + intLineSpce;
             DstLetter.x = Bounds->x;
         } else {
-            DstLetter.x += SrcLetter.w + 1;
+            DstLetter.x += SrcLetter.w + intCharSpce;
         }
     }else{
         if (Bounds){
@@ -85,7 +144,7 @@ SDL_Rect gputc(DisplayDevice* DDevice, BitmapFont* Font, char c, int x, int y, i
     return DstLetter;
 }
 
-SDL_Rect gprintf(DisplayDevice* DDevice, BitmapFont* Font, char* text, SDL_Rect* Bounds){
+SDL_Rect gprintf(DisplayDevice* DDevice, BitmapFont* Font, char* text, int intCharSpce, SDL_Rect* Bounds){
     int CharID;
     SDL_Rect DstLetter;
 
@@ -95,67 +154,13 @@ SDL_Rect gprintf(DisplayDevice* DDevice, BitmapFont* Font, char* text, SDL_Rect*
     } else {
         DstLetter.x = 0;
         DstLetter.y = 0;
-
     }
 
     CharID = 0;
     while (text[CharID] != '\0'){
-        DstLetter = gputc(DDevice, Font, text[CharID], DstLetter.x, DstLetter.y, DstLetter.h, Bounds);
+        DstLetter = gputc(DDevice, Font, text[CharID], DstLetter.x, DstLetter.y, DstLetter.h, intCharSpce, Bounds);
         CharID++;
     }
 
     return DstLetter;
-}
-
-int gstrlen(BitmapFont* Font, char* text){
-    int LastLineLen, StringLen;
-    int i;
-
-    SDL_Rect SrcLetter;
-    int letterX, letterY, letterW, letterID;
-
-    i = 0;
-    StringLen = 0;
-    LastLineLen = 0;
-    while (text[i] != '\0'){
-        if (text[i] != '\n'){
-            letterX = 0;
-            letterY = 0;
-            
-            for (letterID = 0; letterID < text[i] - 31; letterX++){
-                if (getpixel(Font->FontSurface, letterX, letterY) == 0x0){
-                    letterID++;
-                }
-            }
-            letterW = letterX;
-            while (letterID < text[i] - 30){
-                if (getpixel(Font->FontSurface, letterW, letterY) == 0x0){
-                    letterID++;
-                }
-                letterW++;
-            }
-            letterW -= letterX + 1;
-            letterX--;
-            letterY = 1;
-            while(getpixel(Font->FontSurface, letterX, letterY) != 0x0){
-                letterY++;
-            }
-
-            // Text Rendering
-            SrcLetter.x = letterX + 1;
-            SrcLetter.y = 1;
-            SrcLetter.h = letterY - 1;
-            SrcLetter.w = letterW;
-
-            // Display
-            StringLen += SrcLetter.w + 1;
-        } else {
-            if (StringLen > LastLineLen)
-                LastLineLen = StringLen;
-            StringLen = 0;
-        }
-        i++;
-    }
-
-    return (StringLen > LastLineLen) ? StringLen : LastLineLen;
 }

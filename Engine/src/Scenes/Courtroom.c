@@ -2,7 +2,8 @@
 #include "SceneCommon.h"
 #include "Characters.h"
 #include "Buttons.h"
-#include "CourtReccord.h"
+#include "CourtRecord.h"
+#include "Notifications.h"
 
 #include "CHAR_Index.h"
 
@@ -31,8 +32,8 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
     char* ButtonJumpLabels[4];
     char BGAnimComplete;
 
-    // CourtReccord related variables
-    char CourtReccordActivated;
+    // CourtRecord related variables
+    char CourtRecordActivated;
 
     int CurrentCharacter;
     int IdleAnimation;
@@ -64,10 +65,13 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
     MoveButtonsToCoordinates(BContext, DDevice->ScreenResolution.x, 0);
     ButtonActivated = 0;
 
-    // CourtReccord Init
+    // Load the ItemBank in memory
     ItemBank = LoadItemsFromFile(DDevice, ROOT""TEXTURES"Evidences"SL"Evidences.xml");
-    InitCourtReccord(DDevice, ItemBank);
-    CourtReccordActivated = 0;
+    // CourtRecord Init
+    InitCourtRecord(DDevice, ItemBank);
+    // Init the notification handler
+    InitNotifications(DDevice, ItemBank);
+    CourtRecordActivated = 0;
 
     InitCharacter(DDevice, &CHAR_PhoenixWright); // Initialise the character in memory
     InitCharacter(DDevice, &CHAR_MiaFey);
@@ -125,8 +129,8 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                             CharacterPlayAnimation(CharacterIndex[CurrentCharacter], IdleAnimation); // Mouaif
                             parseScene(&scenePointer, DiagContext, SContext, BContext, CharacterIndex, NbOfCharacters, &IdleAnimation, &ReturnToDefault, &CurrentCharacter, &BGAnimComplete, &ButtonActivated, ButtonJumpLabels);
                             break;
-                        case PAD_COURTRECCORD:
-                            CourtReccordActivated = 1;
+                        case PAD_COURTRECORD:
+                            CourtRecordActivated = 1;
                             EventSelect = CourtRecordEvents;
                             break;
                         default:
@@ -151,8 +155,8 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                             CharacterPlayAnimation(CharacterIndex[CurrentCharacter], IdleAnimation); // Mouaif
                             parseScene(&scenePointer, DiagContext, SContext, BContext, CharacterIndex, NbOfCharacters, &IdleAnimation, &ReturnToDefault, &CurrentCharacter, &BGAnimComplete, &ButtonActivated, ButtonJumpLabels);
                             break;
-                        case PAD_COURTRECCORD:
-                            CourtReccordActivated = 1;
+                        case PAD_COURTRECORD:
+                            CourtRecordActivated = 1;
                             EventSelect = CourtRecordEvents;
                             break;
                         default:
@@ -163,14 +167,14 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                     break;
 
                 case CourtRecordEvents:
-                    HandleCourtReccordEvents(&event);
+                    HandleCourtRecordEvents(&event);
                     switch (event.type)
                     {
                     case SDL_KEYDOWN:
                         switch (PADKEY)
                         {
-                        case PAD_COURTRECCORD:
-                            CourtReccordActivated = 0;
+                        case PAD_COURTRECORD:
+                            CourtRecordActivated = 0;
                             if (!ButtonActivated){
                                 EventSelect = MainEvents;
                             } else {
@@ -199,7 +203,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
             }
         }
 
-        // Rendering
+        // Rendering (Back to front)
         #ifdef _SDL
             DisplayBackground(DDevice, SContext); // Background
             DisplayCharacterLayer(DDevice, CharaLayer);
@@ -214,8 +218,9 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                 DisplayBackground(DDevice, ButtonLayer); // Animate the button layer
                 DrawButtons(BContext);                   // Draw the actual buttons (Maybe merge ?)
             }
-            if (CourtReccordActivated){
-                DrawCourtReccord(DDevice, Context->MainFont);               // Draw the court reccord
+            DrawNotifications(DDevice);
+            if (CourtRecordActivated){
+                DrawCourtRecord(DDevice, Context->MainFont);               // Draw the court Record
             }
             SDL_RenderPresent(DDevice->Renderer);
         #endif

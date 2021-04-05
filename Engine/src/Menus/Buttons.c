@@ -200,9 +200,9 @@ void DrawButtons(ButtonsContext* ButtonObject){
         #endif
 
         TextPosition = ButtonDstRect;
-        TextPosition.x += ((ButtonObject->buttonLength - (gstrlen(ButtonObject->Font, ButtonObject->Label[i]))) >> 1);
+        TextPosition.x += ((ButtonObject->buttonLength - (gstrlen(ButtonObject->Font, ButtonObject->Label[i], 1))) >> 1);
         TextPosition.y += ((ButtonObject->buttonHeight - (ButtonObject->Font->FontHeight)) >> 1);
-        gprintf(ButtonObject->DDevice, ButtonObject->Font, ButtonObject->Label[i], &(TextPosition));
+        gprintf(ButtonObject->DDevice, ButtonObject->Font, ButtonObject->Label[i], 1, &(TextPosition));
 
         ButtonDstRect.y += ButtonObject->buttonHeight + 5; // Go to next button
     }

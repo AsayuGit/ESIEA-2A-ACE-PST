@@ -1,6 +1,7 @@
 #include "SceneCommon.h"
 #include "Characters.h"
-#include "CourtReccord.h"
+#include "CourtRecord.h"
+#include "Notifications.h"
 
 // First background animation (90° turn)
 Vector2d CourtAnim1States[3] = {
@@ -440,16 +441,20 @@ void parseScene(xmlNode** entry, DialogueContext* DiagContext, SceneContext* SCo
             if (searchNode)
                 next = searchNode;
         } else if (strcmp((char*)property->name, "giveItem") == 0){
-            AddItemToCourtReccord(atoi((char*)xmlNodeGetContent(property)));
+            AddItemToCourtRecord(atoi((char*)xmlNodeGetContent(property)));
         } else if (strcmp((char*)property->name, "removeItem") == 0){
             ItemBuffer = atoi((char*)xmlNodeGetContent(property));
             if (ItemBuffer > -1){
-                RemoveItemFromCourtReccord(ItemBuffer);
+                RemoveItemFromCourtRecord(ItemBuffer);
             } else {
-                EmptyCourtReccord();
+                EmptyCourtRecord();
             }
         } else if (strcmp((char*)property->name, "playBGM") == 0){
             PlayTrackID(atoi((char*)xmlNodeGetContent(property)));
+        } else if (strcmp((char*)property->name, "presentItem") == 0){
+            SummonNotification(SHOW_ITEM_TO_COURT, atoi((char*)xmlNodeGetContent(property)));
+        } else if (strcmp((char*)property->name, "clearNotif") == 0){
+            ClearNotifications();
         }
         property = property->next;
     }

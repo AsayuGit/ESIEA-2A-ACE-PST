@@ -5,7 +5,7 @@
         // Actions
         #define PAD_SELECT SDLK_SPACE
         #define PAD_BACK SDLK_LCTRL
-        #define PAD_COURTRECCORD SDLK_E
+        #define PAD_COURTRECORD SDLK_E
 
         // Directions
         #define PAD_UP SDLK_UP
@@ -17,7 +17,7 @@
         // Actions
         #define PAD_SELECT SDL_SCANCODE_SPACE
         #define PAD_BACK SDL_SCANCODE_LCTRL
-        #define PAD_COURTRECCORD SDL_SCANCODE_E
+        #define PAD_COURTRECORD SDL_SCANCODE_E
 
         // Directions
         #define PAD_UP SDL_SCANCODE_UP

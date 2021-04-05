@@ -34,13 +34,19 @@ SDL_Surface* LoadSDLSurface(char FilePath[], DisplayDevice* Device, Uint32* Colo
 }
 
 Surface* LoadSurface(char FilePath[], DisplayDevice* Device, Uint32* ColorKey, char AlphaChannel){
-    #ifdef _SDL
-        if (AlphaChannel)
-            return UseAlphaChannel(LoadSDLSurface(FilePath, Device, ColorKey));
-        return LoadSDLSurface(FilePath, Device, ColorKey);
-    #else
-        return SDL_CreateTextureFromSurface(Device->Renderer, LoadSDLSurface(FilePath, Device, ColorKey));
-    #endif
+    SDL_Surface* loadingSurface;
+    
+    loadingSurface = LoadSDLSurface(FilePath, Device, ColorKey);
+    if (loadingSurface){
+        #ifdef _SDL
+            return (AlphaChannel) ? UseAlphaChannel(loadingSurface) : loadingSurface;
+        #else
+            return SDL_CreateTextureFromSurface(Device->Renderer, loadingSurface);
+        #endif
+    } else {
+        printf("ERROR! : Couldn't load %s !\n", FilePath);
+    }
+    return NULL;
 }
 
 BitmapFont* LoadBitmapFont(char FilePath[], DisplayDevice* DDevice, Uint32 FontColorKey){
