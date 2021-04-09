@@ -1,7 +1,7 @@
 #ifndef _TYPES
 #define _TYPES
 
-    // Uniformity between SDL1.2 and SDL2
+    /* Uniformity between SDL1.2 and SDL2 */
     #ifdef _SDL
         typedef SDL_Surface SDL_Window;
         typedef SDL_Surface Surface;
@@ -39,8 +39,8 @@
     } DisplayDevice;
 
     typedef struct{
-        const Uint8* KeyStates; // Pointer to the keypresses
-        SDL_Joystick* Joy1; // Pointers to the Joypad
+        const Uint8* KeyStates; /* Pointer to the keypresses */
+        SDL_Joystick* Joy1; /* Pointers to the Joypad */
         bool JoyEnabled;
     } InputDevice;
 

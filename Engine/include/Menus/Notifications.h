@@ -10,10 +10,10 @@
 
     void InitNotifications(DisplayDevice* DDevice, Items* ItemBankPointer);
 
-    // Add a notification
+    /* Add a notification */
     void SummonNotification(unsigned int notifType, unsigned int ItemID);
 
-    // Remove any notification
+    /* Remove any notification */
     void ClearNotifications();
 
     void DrawNotifications(DisplayDevice* DDevice);

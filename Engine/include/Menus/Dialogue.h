@@ -4,20 +4,20 @@
     #include "include.h"
 
     typedef struct{
-        // Meta
+        /* Meta */
         bool shown;
         int progress;
         char* Text;
         int TextSpeed;
         Uint32 LastLetter;
 
-        // Dialog Box
+        /* Dialog Box */
         Surface* DialogBox;
-        SDL_Rect DialogBoxBounds;   // Region where the dialog box should be drawn
-        SDL_Rect TextBounds;        // Region where the text should be drawn
-        SDL_Rect NameBounds;        // Region where the name should be drawn
+        SDL_Rect DialogBoxBounds;   /* Region where the dialog box should be drawn */
+        SDL_Rect TextBounds;        /* Region where the text should be drawn */
+        SDL_Rect NameBounds;        /* Region where the name should be drawn */
 
-        // Font
+        /* Font */
         BitmapFont* MainFont;
         BitmapFont* NameFont;
         SDL_Rect DstLetter;
@@ -29,7 +29,7 @@
         Mix_Chunk* NextLine;
         Mix_Chunk* LineComplete;
 
-        // Display
+        /* Display */
         DisplayDevice* DDevice;
     } DialogueContext;
 

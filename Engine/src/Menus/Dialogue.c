@@ -37,7 +37,7 @@ int SetDialogueText(DialogueContext* Context, char* Name, char* Text, char SndEf
 
     switch (SndEffType){
         case 0:
-            // Nothing
+            /* Nothing */
             break;
         case 1:
             Mix_PlayChannel(-1, Context->NextLine, 0);
@@ -83,7 +83,7 @@ DialogueContext* InitDialog(DisplayDevice* DDevice, BitmapFont* MainFont, Bitmap
     DiagContext->TextBounds = DiagContext->DialogBoxBounds;
     DiagContext->TextBounds.x += TextMargin;
     DiagContext->TextBounds.y += DiagContext->NameBounds.h + NameMargin + TextMargin - 2;
-    DiagContext->TextBounds.w -= (TextMargin << 1); // To inspect
+    DiagContext->TextBounds.w -= (TextMargin << 1); /* To inspect */
     DiagContext->TextBounds.h -= (DiagContext->NameBounds.h + (TextMargin << 1) + NameMargin + 1);
     
 
@@ -118,21 +118,21 @@ DialogueContext* InitDialog(DisplayDevice* DDevice, BitmapFont* MainFont, Bitmap
     return DiagContext;
 }
 
-// Fonction non bloquante gérant les dialogues
+/* Fonction non bloquante gérant les dialogues */
 void Dialogue(InputDevice* InputDevice, DialogueContext* Context){
     SDL_Rect InLayerTextBounds;
 
     InLayerTextBounds = Context->TextBounds;
     InLayerTextBounds.x = InLayerTextBounds.y = 0;
 
-    // DialogBox Rendering
+    /* DialogBox Rendering */
     #ifdef _SDL
         SDL_BlitSurface(Context->DialogBox, NULL, Context->DDevice->Screen, &(Context->DialogBoxBounds));
     #else
         SDL_RenderCopy(Context->DDevice->Renderer, Context->DialogBox, NULL, &(Context->DialogBoxBounds));
     #endif
 
-    // Write text
+    /* Write text */
     if ((Context->Text[Context->progress] != '\0') && (SDL_GetTicks() >= Context->LastLetter + Context->TextSpeed)){
         #ifndef _SDL
             SDL_SetRenderTarget(Context->DDevice->Renderer, Context->textLayer);
@@ -143,7 +143,7 @@ void Dialogue(InputDevice* InputDevice, DialogueContext* Context){
         }else{
             Context->letterLag--;
         }
-        // Here we use gputc() instead than gprintf() because we want to be able to print out the dialogue character by character
+        /* Here we use gputc() instead than gprintf() because we want to be able to print out the dialogue character by character */
         Context->DstLetter = gputc(Context->DDevice, Context->MainFont, Context->Text[Context->progress], Context->DstLetter.x, Context->DstLetter.y, Context->DstLetter.h + 2, -1, &(InLayerTextBounds));
         Context->progress++;
         Context->LastLetter = SDL_GetTicks();
@@ -156,7 +156,7 @@ void Dialogue(InputDevice* InputDevice, DialogueContext* Context){
         SDL_BlitSurface(Context->textLayer, NULL, Context->DDevice->Screen, &(Context->TextBounds));
     #else
         SDL_RenderCopy(Context->DDevice->Renderer, Context->textLayer, NULL, &(Context->TextBounds));
-        //printf("Name bounds %d %d %d %d\n", Context->NameBounds.x, Context->NameBounds.y, Context->NameBounds.w, Context->NameBounds.h);
+        /*printf("Name bounds %d %d %d %d\n", Context->NameBounds.x, Context->NameBounds.y, Context->NameBounds.w, Context->NameBounds.h); */
         SDL_RenderCopy(Context->DDevice->Renderer, Context->nameLayer, NULL, &(Context->NameBounds));
     #endif
 }

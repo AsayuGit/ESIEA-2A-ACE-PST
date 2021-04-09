@@ -7,15 +7,15 @@ ButtonsContext* InitButtons(DisplayDevice* DDevice, SceneContext* SContext, Bitm
     Uint32 ColorKey;
     unsigned char i;
 
-    // Buttons Texture
+    /* Buttons Texture */
     ColorKey = 0xff00ff;
     BContext = (ButtonsContext*)malloc(sizeof(ButtonsContext));
     BContext->ButtonsSurface = LoadSurface(ROOT""TEXTURES"Menus"SL"Buttons"TEX_EXT, DDevice, &ColorKey, false);
 
-    // Buttons Font
+    /* Buttons Font */
     BContext->Font = Font;
 
-    // Buttons Sound effects
+    /* Buttons Sound effects */
     BContext->ButtonUpDown = LoadSoundEffect(EffectPath[CHK_ButtonUpDown]);
     BContext->ButtonClicked = LoadSoundEffect(EffectPath[CHK_ButtonClicked]);
     for (i = 0; i < 4; i++){
@@ -23,14 +23,14 @@ ButtonsContext* InitButtons(DisplayDevice* DDevice, SceneContext* SContext, Bitm
     }
 
 
-    // Buttons Properties
+    /* Buttons Properties */
     BContext->nbOfButtons = 0;
     BContext->selButtonID = 0;
     BContext->clkdButton = 0;
     BContext->buttonHeight = 30;
     BContext->buttonLength = buttonLength;
 
-    // Buttons Dimensions (Takes the whole screen if not specified)
+    /* Buttons Dimensions (Takes the whole screen if not specified) */
     if (ButtonObjectDimensions){
         BContext->ObjectDimensions = *ButtonObjectDimensions;
     }else {
@@ -39,7 +39,7 @@ ButtonsContext* InitButtons(DisplayDevice* DDevice, SceneContext* SContext, Bitm
         BContext->ObjectDimensions.h = DDevice->ScreenResolution.y;
     }
 
-    // Buttons Parts / States
+    /* Buttons Parts / States */
     BContext->ButtonLeft[0].x = 0;
     BContext->ButtonLeft[0].y = 0;
     BContext->ButtonLeft[0].w = 11;
@@ -65,10 +65,10 @@ ButtonsContext* InitButtons(DisplayDevice* DDevice, SceneContext* SContext, Bitm
     BContext->ButtonMiddle.w = 1;
     BContext->ButtonMiddle.h = BContext->buttonHeight;
 
-    // Buttons Viewport
+    /* Buttons Viewport */
     BContext->Viewport = &(SContext->SrcRect);
 
-    // System Display device
+    /* System Display device */
     BContext->DDevice = DDevice;
 
     return BContext;
@@ -140,15 +140,15 @@ void SetSlkdButtonID(ButtonsContext* ButtonObject, unsigned char ButtonID){
     ButtonObject->selButtonID = ButtonID;
 }
 
-// TO OPTIMIZE ! (Maybe its about the render to texture thingy) (Thats not more)
+/* TO OPTIMIZE ! (Maybe its about the render to texture thingy) (Thats not more) */
 void DrawButtons(ButtonsContext* ButtonObject){
-    SDL_Rect ButtonDstRect; // Where to put the button ON SCREEN
-    SDL_Rect LeftDstRect;   // Where to put the left button part ON SCREEN
-    SDL_Rect RightDstRect;  // Where to put the right button part ON SCREEN
-    SDL_Rect CenterDstRect; // Where to put the center button part ON SCREEN [Variable length]
+    SDL_Rect ButtonDstRect; /* Where to put the button ON SCREEN */
+    SDL_Rect LeftDstRect;   /* Where to put the left button part ON SCREEN */
+    SDL_Rect RightDstRect;  /* Where to put the right button part ON SCREEN */
+    SDL_Rect CenterDstRect; /* Where to put the center button part ON SCREEN [Variable length] */
 
     SDL_Rect TextPosition;
-    //ButtonItem ButtonsList[NBOFBUTTONS];
+    /*ButtonItem ButtonsList[NBOFBUTTONS]; */
     unsigned char Selected;
     unsigned char i;
     #ifdef _SDL
@@ -156,23 +156,23 @@ void DrawButtons(ButtonsContext* ButtonObject){
         unsigned int CenterPartLength;
     #endif
 
-    // Whole button coordinates
+    /* Whole button coordinates */
     ButtonDstRect.x = ButtonObject->ObjectDimensions.x + ((ButtonObject->ObjectDimensions.w - ButtonObject->buttonLength) / 2) - ButtonObject->Viewport->x;
     ButtonDstRect.y = ButtonObject->ObjectDimensions.y + ((ButtonObject->ObjectDimensions.h - ((ButtonObject->buttonHeight + 5) * ButtonObject->nbOfButtons)) / 2) - ButtonObject->Viewport->y;
     ButtonDstRect.w = ButtonObject->buttonLength;
     ButtonDstRect.h = ButtonObject->buttonHeight;
 
-    // Left button part rect
+    /* Left button part rect */
     LeftDstRect.x = ButtonDstRect.x;
     LeftDstRect.w = ButtonObject->ButtonLeft[0].w;
     LeftDstRect.h = ButtonObject->ButtonLeft[0].h;
 
-    // Right button part rect
+    /* Right button part rect */
     RightDstRect.w = ButtonObject->ButtonRight[0].w;
     RightDstRect.h = ButtonObject->ButtonRight[0].h;
     RightDstRect.x = ButtonDstRect.x + ButtonObject->buttonLength - RightDstRect.w;
 
-    // Center button part rect
+    /* Center button part rect */
     CenterDstRect.h = LeftDstRect.h;
     #ifdef _SDL
         CenterDstRect.w = 1;
@@ -181,22 +181,22 @@ void DrawButtons(ButtonsContext* ButtonObject){
         CenterDstRect.w = ButtonObject->buttonLength - (ButtonObject->ButtonLeft[0].w << 1);
     #endif
 
-    for (i = 0; i < ButtonObject->nbOfButtons; i++){ // For Each button to draw
+    for (i = 0; i < ButtonObject->nbOfButtons; i++){ /* For Each button to draw */
 
-        Selected = (unsigned char)(i == ButtonObject->selButtonID); // If the button is selected
-        // Draw button
-        LeftDstRect.y = RightDstRect.y = CenterDstRect.y =  ButtonDstRect.y; // Update Position
-        SDL_RenderCopy(ButtonObject->DDevice->Renderer, ButtonObject->ButtonsSurface, &(ButtonObject->ButtonLeft[Selected]), &LeftDstRect); // Left part
-        SDL_RenderCopy(ButtonObject->DDevice->Renderer, ButtonObject->ButtonsSurface, &(ButtonObject->ButtonRight[Selected]), &RightDstRect); // Right part
+        Selected = (unsigned char)(i == ButtonObject->selButtonID); /* If the button is selected */
+        /* Draw button */
+        LeftDstRect.y = RightDstRect.y = CenterDstRect.y =  ButtonDstRect.y; /* Update Position */
+        SDL_RenderCopy(ButtonObject->DDevice->Renderer, ButtonObject->ButtonsSurface, &(ButtonObject->ButtonLeft[Selected]), &LeftDstRect); /* Left part */
+        SDL_RenderCopy(ButtonObject->DDevice->Renderer, ButtonObject->ButtonsSurface, &(ButtonObject->ButtonRight[Selected]), &RightDstRect); /* Right part */
         
         CenterDstRect.x = LeftDstRect.x + LeftDstRect.w;
         #ifdef _SDL
             for (j = 0; j < CenterPartLength; j++){
-                SDL_RenderCopy(ButtonObject->DDevice->Renderer, ButtonObject->ButtonsSurface, &(ButtonObject->ButtonRight[Selected]), &CenterDstRect); // Center part
+                SDL_RenderCopy(ButtonObject->DDevice->Renderer, ButtonObject->ButtonsSurface, &(ButtonObject->ButtonRight[Selected]), &CenterDstRect); /* Center part */
                 CenterDstRect.x++;
             }
         #else
-            SDL_RenderCopy(ButtonObject->DDevice->Renderer, ButtonObject->ButtonsSurface, &(ButtonObject->ButtonMiddle), &CenterDstRect); // Center part
+            SDL_RenderCopy(ButtonObject->DDevice->Renderer, ButtonObject->ButtonsSurface, &(ButtonObject->ButtonMiddle), &CenterDstRect); /* Center part */
         #endif
 
         TextPosition = ButtonDstRect;
@@ -204,7 +204,7 @@ void DrawButtons(ButtonsContext* ButtonObject){
         TextPosition.y += ((ButtonObject->buttonHeight - (ButtonObject->Font->FontHeight)) >> 1);
         gprintf(ButtonObject->DDevice, ButtonObject->Font, ButtonObject->Label[i], 1, &(TextPosition));
 
-        ButtonDstRect.y += ButtonObject->buttonHeight + 5; // Go to next button
+        ButtonDstRect.y += ButtonObject->buttonHeight + 5; /* Go to next button */
     }
 }
 

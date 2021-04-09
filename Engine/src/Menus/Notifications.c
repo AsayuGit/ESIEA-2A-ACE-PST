@@ -6,10 +6,10 @@ static SDL_Rect ItemPos;
 static void (*notification)(DisplayDevice*);
 
 void Notif_ShowToCourt(DisplayDevice* DDevice){
-    SDL_RenderCopy(DDevice->Renderer, NotifyItemBank->ItemSpritesheet, &(NotifyItemBank->ItemSrcRectArray[StoredItemID]), &(ItemPos)); // Draw the item
+    SDL_RenderCopy(DDevice->Renderer, NotifyItemBank->ItemSpritesheet, &(NotifyItemBank->ItemSrcRectArray[StoredItemID]), &(ItemPos)); /* Draw the item */
 }
 
-// Init the notification handler
+/* Init the notification handler */
 void InitNotifications(DisplayDevice* DDevice, Items* NotifyItemBankPointer){
     NotifyItemBank = NotifyItemBankPointer;
     notification = NULL;
@@ -21,7 +21,7 @@ void InitNotifications(DisplayDevice* DDevice, Items* NotifyItemBankPointer){
     ItemPos.h = 70;
 }
 
-// Add a notification
+/* Add a notification */
 void SummonNotification(unsigned int notifType, unsigned int ItemID){
     switch (notifType){
         case SHOW_ITEM_TO_COURT:
@@ -33,12 +33,12 @@ void SummonNotification(unsigned int notifType, unsigned int ItemID){
     }
 }
 
-// Remove any notification
+/* Remove any notification */
 void ClearNotifications(){
     notification = NULL;
 }
 
-// Draw the current notification on screen
+/* Draw the current notification on screen */
 void DrawNotifications(DisplayDevice* DDevice){
     if (notification)
         notification(DDevice);

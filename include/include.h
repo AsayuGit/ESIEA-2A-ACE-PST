@@ -1,7 +1,7 @@
 #ifndef _INCLUDE
 #define _INLCUDE
 
-    //#define _GNU_SOURCE // Maybe temporary
+    /*define _GNU_SOURCE*/  /*Maybe temporary*/
 
     #include <stdio.h>
     #include <stdlib.h>
@@ -21,7 +21,7 @@
     #ifdef _XBOX
     #define ROOT "D:\\"
     #define SL "\\"
-    #else // Linux
+    #else /* Linux */
     #define ROOT "./"
     #define SL "/"
     #endif

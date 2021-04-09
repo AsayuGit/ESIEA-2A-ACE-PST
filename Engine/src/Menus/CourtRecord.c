@@ -5,7 +5,7 @@
 #define NBOFITEMS 8
 #define NBOFBARS 2
 
-// Linked List
+/* Linked List */
 typedef struct ItemList_t{
     int ItemID;
     struct ItemList_t* next;
@@ -16,27 +16,27 @@ enum {
     DetailsMenu
 }MenuID;
 
-// Surfaces
+/* Surfaces */
 Surface* CourtRecordSpriteSheet;
 Surface* CourtDetailSpriteSheet;
 
-// Rects
-SDL_Rect CourtRecordBackground[2]; // [0] Src; [1] Dst
-SDL_Rect CourtDetailBackground[2]; // [0] Src; [1] Dst
+/* Rects */
+SDL_Rect CourtRecordBackground[2]; /* [0] Src; [1] Dst */
+SDL_Rect CourtDetailBackground[2]; /* [0] Src; [1] Dst */
 SDL_Rect SelectedSlotSrc;
 SDL_Rect SelectedSlotPos[NBOFITEMS];
 SDL_Rect DetailItemPos;
-SDL_Rect Bars[NBOFBARS][2]; // [0] Src; [1] Dst
-SDL_Rect Arrows[NBOFBARS][3]; // [0] Src; [1] Dst; [2] Dst2
+SDL_Rect Bars[NBOFBARS][2]; /* [0] Src; [1] Dst */
+SDL_Rect Arrows[NBOFBARS][3]; /* [0] Src; [1] Dst; [2] Dst2 */
 SDL_Rect ItemName;
 SDL_Rect DetailItemName;
 SDL_Rect ItemDescription;
 SDL_Rect ItemOrigin;
 
-// Sound Effects
+/* Sound Effects */
 Mix_Chunk* MoveCursor;
 
-// Fonts
+/* Fonts */
 BitmapFont* ItemNameFont;
 BitmapFont* DetailsFont;
 
@@ -59,15 +59,15 @@ char* ItemTypes[3] = {
 void InitCourtDetails(DisplayDevice* DDevice){
     Uint32 ColorKey, FontColorKey;
     
-    // Load textures
+    /* Load textures */
     ColorKey = 0x00ffff;
     FontColorKey = 0xff00ff;
     CourtDetailSpriteSheet = LoadSurface(ROOT""TEXTURES"Menus"SL"CourtDetails"TEX_EXT, DDevice, &ColorKey, false);
 
-    // LoadFonts
+    /* LoadFonts */
     DetailsFont = LoadBitmapFont(ROOT""FONTS"DetailsFont"TEX_EXT, DDevice, FontColorKey);
 
-    // SetRects
+    /* SetRects */
     CourtDetailBackground[0].x = 0; CourtDetailBackground[1].x = 0;
     CourtDetailBackground[0].y = 0; CourtDetailBackground[1].y = 32;
     CourtDetailBackground[0].w = CourtDetailBackground[1].w = 256;
@@ -96,29 +96,27 @@ void InitCourtDetails(DisplayDevice* DDevice){
     Arrows[1][2] = Arrows[1][1];
 
     Arrows[0][2].y = Arrows[1][2].y = 66;
-
-    //ItemDetails = NULL;
 }
 
-// Init the court Record menu for further use
+/* Init the court Record menu for further use */
 void InitCourtRecord(DisplayDevice* DDevice, Items* ItemBankPointer){
     Uint32 ColorKey, FontColorKey;
     Vector2i SlotOrigin;
     int SlotOffset;
     int i;
 
-    // Load textures
+    /* Load textures */
     ColorKey = 0x00ffff;
     CourtRecordSpriteSheet = LoadSurface(ROOT""TEXTURES"Menus"SL"CourtRecord"TEX_EXT, DDevice, &ColorKey, false);
 
-    // Load Fonts
+    /* Load Fonts */
     FontColorKey = 0xff00ff;
     ItemNameFont = LoadBitmapFont(ROOT""FONTS"ItemNameFont"TEX_EXT, DDevice, FontColorKey);
 
-    // Load Sound Effects
+    /* Load Sound Effects */
     MoveCursor = LoadSoundEffect(EffectPath[CHK_ButtonUpDown]);
 
-    // Set rects
+    /* Set rects */
     CourtRecordBackground[0].x = 0; CourtRecordBackground[1].x = 24;
     CourtRecordBackground[0].y = 0; CourtRecordBackground[1].y = 36;
     CourtRecordBackground[0].w = CourtRecordBackground[1].w = 208;
@@ -168,7 +166,7 @@ void InitCourtRecord(DisplayDevice* DDevice, Items* ItemBankPointer){
     StoredItemListPointer = &StoredItemList;
     ItemBank = ItemBankPointer;
 
-    InitCourtDetails(DDevice); // Once done with the court Record init, we init the court details
+    InitCourtDetails(DDevice); /* Once done with the court Record init, we init the court details */
 }
 
 void FreeCourtRecord(){
@@ -178,12 +176,12 @@ void AddItemToCourtRecord(int ItemID){
     ItemList** List;
 
     List = &StoredItemList;
-    while (*List){ // while it isn't empty
-        if ((*List)->ItemID == ItemID) // Check if the Item is already in the court record
+    while (*List){ /* while it isn't empty */
+        if ((*List)->ItemID == ItemID) /* Check if the Item is already in the court record */
             return;
         List = &((*List)->next);
     }
-    // Once we find a free spot we append the new Item to the list
+    /* Once we find a free spot we append the new Item to the list */
     (*List) = (ItemList*)malloc(sizeof(ItemList));
     (*List)->ItemID = ItemID;
     (*List)->next = NULL;
@@ -194,7 +192,7 @@ void RemoveItemFromCourtRecord(int ItemID){
     ItemList* ItemNext;
 
     List = &StoredItemList;
-    while (*List){ // while it isn't empty
+    while (*List){ /* while it isn't empty */
         if ((*List)->ItemID == ItemID){
             ItemNext = (*List)->next;
             free(*List);
@@ -243,8 +241,8 @@ Items* allocateItems(int nbOfItems, int ItemInRow){
     return loadedItem;
 }
 
-Items* LoadItemsFromFile(DisplayDevice* DDevice, char* filePath){ // TIPS : Maybe we should move that to Load.h
-    // Declaration
+Items* LoadItemsFromFile(DisplayDevice* DDevice, char* filePath){ /* TIPS : Maybe we should move that to Load.h */
+    /* Declaration */
     Items* loadedItem;
     xmlDoc* itemListFile;
     xmlNode *itemList, *property, *itemProperty;
@@ -255,21 +253,21 @@ Items* LoadItemsFromFile(DisplayDevice* DDevice, char* filePath){ // TIPS : Mayb
     int currentItem;
     char* buffer;
 
-    // Logic
+    /* Logic */
     loadedItem = NULL;
-    xmlKeepBlanksDefault(0); // Ignore white space
-    itemListFile = xmlReadFile(filePath, NULL, 0); // Load File into memory
-    itemList = xmlDocGetRootElement(itemListFile); // get the first chidlren
+    xmlKeepBlanksDefault(0); /* Ignore white space */
+    itemListFile = xmlReadFile(filePath, NULL, 0); /* Load File into memory */
+    itemList = xmlDocGetRootElement(itemListFile); /* get the first chidlren */
 
     if (strcmp((char*)itemList->name, "itemList") == 0){
-        nbOfItems = xmlChildElementCount(itemList); // Get the number of items
+        nbOfItems = xmlChildElementCount(itemList); /* Get the number of items */
         
         sscanf((char*)xmlGetProp(itemList, (xmlChar*)"colorKey"), "%x", &ColorKey);
         sscanf((char*)xmlGetProp(itemList, (xmlChar*)"ItemInRow"), "%d", &ItemInRow);
         buffer = (char*)xmlGetProp(itemList, (xmlChar*)"spriteSheet");
 
-        //printf("Allocate %d Items\n", nbOfItems);
-        loadedItem = allocateItems(nbOfItems, ItemInRow); // Allocate memory for the item bank
+        /*printf("Allocate %d Items\n", nbOfItems); */
+        loadedItem = allocateItems(nbOfItems, ItemInRow); /* Allocate memory for the item bank */
         loadedItem->ItemSpritesheet = LoadSurface(buffer, DDevice, &ColorKey, false);
         
         property = itemList->children;
@@ -278,7 +276,7 @@ Items* LoadItemsFromFile(DisplayDevice* DDevice, char* filePath){ // TIPS : Mayb
         while (property){
             if (strcmp((char*)property->name, "item") == 0){
                 itemProperty = property->children;
-                //printf("Current ITEM %d\n", currentItem);
+                /*printf("Current ITEM %d\n", currentItem); */
                 while (itemProperty){
                     
                     if (strcmp((char*)itemProperty->name, "name") == 0) {
@@ -415,14 +413,14 @@ void HandleCourtRecordEvents(SDL_Event* event){
     }
 }
 
-// Display the main court Record menu on scren
+/* Display the main court Record menu on scren */
 void DrawMainCourtRecordMenu(DisplayDevice* DDevice, BitmapFont* Font){
     int i;
     int ArrowAnim;
     SDL_Rect RightArrowAfterAnim, LeftArrowAfterAnim;
     ItemList* StoredItemListIterator;
 
-    // Arrow wiggle
+    /* Arrow wiggle */
     ArrowAnim = sin((double)SDL_GetTicks() / 50) * 2;
     
     RightArrowAfterAnim = Arrows[0][1];
@@ -431,12 +429,12 @@ void DrawMainCourtRecordMenu(DisplayDevice* DDevice, BitmapFont* Font){
     RightArrowAfterAnim.x += ArrowAnim;
     LeftArrowAfterAnim.x -= ArrowAnim;
 
-    SDL_RenderCopy(DDevice->Renderer, CourtRecordSpriteSheet, CourtRecordBackground, CourtRecordBackground + 1); // Draw the background
+    SDL_RenderCopy(DDevice->Renderer, CourtRecordSpriteSheet, CourtRecordBackground, CourtRecordBackground + 1); /* Draw the background */
 
-    SDL_RenderCopy(DDevice->Renderer, CourtRecordSpriteSheet, &(Bars[0][0]), &(Bars[0][1])); // Draw the bars
+    SDL_RenderCopy(DDevice->Renderer, CourtRecordSpriteSheet, &(Bars[0][0]), &(Bars[0][1])); /* Draw the bars */
     SDL_RenderCopy(DDevice->Renderer, CourtRecordSpriteSheet, &(Bars[1][0]), &(Bars[1][1]));
 
-    SDL_RenderCopy(DDevice->Renderer, CourtRecordSpriteSheet, &(Arrows[0][0]), &(RightArrowAfterAnim)); // Draw the arrows
+    SDL_RenderCopy(DDevice->Renderer, CourtRecordSpriteSheet, &(Arrows[0][0]), &(RightArrowAfterAnim)); /* Draw the arrows */
     SDL_RenderCopy(DDevice->Renderer, CourtRecordSpriteSheet, &(Arrows[1][0]), &(LeftArrowAfterAnim));
     
     i = 0;
@@ -444,22 +442,22 @@ void DrawMainCourtRecordMenu(DisplayDevice* DDevice, BitmapFont* Font){
     while (StoredItemListIterator){
         if (i == SelectedSlot){
             ItemName.x = (DDevice->ScreenResolution.x - gstrlen(ItemNameFont, ItemBank->NameArray[StoredItemListIterator->ItemID], 1)) / 2;
-            gprintf(DDevice, ItemNameFont, ItemBank->NameArray[StoredItemListIterator->ItemID], 1, &ItemName); // Draw the item's name
+            gprintf(DDevice, ItemNameFont, ItemBank->NameArray[StoredItemListIterator->ItemID], 1, &ItemName); /* Draw the item's name */
         }
 
-        SDL_RenderCopy(DDevice->Renderer, ItemBank->ItemSpritesheet, &(ItemBank->ItemSrcRectArray[StoredItemListIterator->ItemID]), &(SelectedSlotPos[i])); // Draw the item
+        SDL_RenderCopy(DDevice->Renderer, ItemBank->ItemSpritesheet, &(ItemBank->ItemSrcRectArray[StoredItemListIterator->ItemID]), &(SelectedSlotPos[i])); /* Draw the item */
         StoredItemListIterator = StoredItemListIterator->next;
         i++;
     }
 
-    SDL_RenderCopy(DDevice->Renderer, CourtRecordSpriteSheet, &SelectedSlotSrc, &(SelectedSlotPos[SelectedSlot])); // Draw the cursor
+    SDL_RenderCopy(DDevice->Renderer, CourtRecordSpriteSheet, &SelectedSlotSrc, &(SelectedSlotPos[SelectedSlot])); /* Draw the cursor */
 }
 
 void DrawCourtDetails(DisplayDevice* DDevice, BitmapFont* Font, int ItemID){
     int ArrowAnim;
     SDL_Rect RightArrowAfterAnim, LeftArrowAfterAnim;
 
-    // Arrow wiggle
+    /* Arrow wiggle */
     ArrowAnim = sin((double)SDL_GetTicks() / 50) * 2;
     
     RightArrowAfterAnim = Arrows[0][2];
@@ -470,15 +468,15 @@ void DrawCourtDetails(DisplayDevice* DDevice, BitmapFont* Font, int ItemID){
 
     DetailItemName.x = ((144 - gstrlen(ItemNameFont, ItemBank->NameArray[ItemID], 1)) / 2) + 91;
 
-    SDL_RenderCopy(DDevice->Renderer, CourtDetailSpriteSheet, CourtDetailBackground, CourtDetailBackground + 1); // Draw the background
-    SDL_RenderCopy(DDevice->Renderer, CourtRecordSpriteSheet, &(Arrows[0][0]), &(RightArrowAfterAnim)); // Draw the arrows
+    SDL_RenderCopy(DDevice->Renderer, CourtDetailSpriteSheet, CourtDetailBackground, CourtDetailBackground + 1); /* Draw the background */
+    SDL_RenderCopy(DDevice->Renderer, CourtRecordSpriteSheet, &(Arrows[0][0]), &(RightArrowAfterAnim)); /* Draw the arrows */
     SDL_RenderCopy(DDevice->Renderer, CourtRecordSpriteSheet, &(Arrows[1][0]), &(LeftArrowAfterAnim));
 
-    gprintf(DDevice, ItemNameFont, ItemBank->NameArray[ItemID], 1, &DetailItemName); // Draw the item's name
-    gprintf(DDevice, DetailsFont, ItemDetails, 1, &ItemOrigin); // Draw the item's origin
-    gprintf(DDevice, Font, ItemBank->DescriptionArray[ItemID], 1, &ItemDescription); // Draw the item's description
+    gprintf(DDevice, ItemNameFont, ItemBank->NameArray[ItemID], 1, &DetailItemName); /* Draw the item's name */
+    gprintf(DDevice, DetailsFont, ItemDetails, 1, &ItemOrigin); /* Draw the item's origin */
+    gprintf(DDevice, Font, ItemBank->DescriptionArray[ItemID], 1, &ItemDescription); /* Draw the item's description */
 
-    SDL_RenderCopy(DDevice->Renderer, ItemBank->ItemSpritesheet, &(ItemBank->ItemSrcRectArray[ItemID]), &(DetailItemPos)); // Draw the item
+    SDL_RenderCopy(DDevice->Renderer, ItemBank->ItemSpritesheet, &(ItemBank->ItemSrcRectArray[ItemID]), &(DetailItemPos)); /* Draw the item */
 }
 
 
@@ -486,11 +484,11 @@ void DrawCourtRecord(DisplayDevice* DDevice, BitmapFont* Font){
     switch (MenuSelect)
     {
     case MainCRMenu:
-        DrawMainCourtRecordMenu(DDevice, Font); // Draw the main menu
+        DrawMainCourtRecordMenu(DDevice, Font); /* Draw the main menu */
         break;
     
     case DetailsMenu:
-        DrawCourtDetails(DDevice, Font, SelectedItem); // Draw the CourtDetails menu
+        DrawCourtDetails(DDevice, Font, SelectedItem); /* Draw the CourtDetails menu */
         break;
     }
 }

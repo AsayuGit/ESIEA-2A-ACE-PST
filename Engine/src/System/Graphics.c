@@ -43,7 +43,7 @@ void FlipBlitSurface(SDL_Surface* SourceSurface, SDL_Rect* SrcRect, SDL_Surface*
     SDL_Rect LocalSrcRect;
     SDL_Rect LocalDstRect;
     
-    // Changing
+    /* Changing */
     SDL_Rect Src;
     SDL_Rect Dst;
 

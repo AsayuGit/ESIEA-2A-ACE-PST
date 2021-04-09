@@ -25,7 +25,7 @@ unsigned int getFontHeight(BitmapFont* Font){
     return FontHeight - 1;
 }
 
-int gstrlen(BitmapFont* Font, char* text, int intCharSpce){ // To update (offsets changed recently)
+int gstrlen(BitmapFont* Font, char* text, int intCharSpce){ /* To update (offsets changed recently) */
     int LastLineLen, StringLen;
     int i;
 
@@ -62,13 +62,13 @@ int gstrlen(BitmapFont* Font, char* text, int intCharSpce){ // To update (offset
                 letterY++;
             }
 
-            // Text Rendering
+            /* Text Rendering */
             SrcLetter.x = letterX + 1;
             SrcLetter.y = 1;
             SrcLetter.h = letterY - 1;
             SrcLetter.w = letterW;
 
-            // Display
+            /* Display */
             StringLen += SrcLetter.w + intCharSpce;
         } else {
             if (StringLen > LastLineLen)
@@ -92,7 +92,7 @@ SDL_Rect gputc(DisplayDevice* DDevice, BitmapFont* Font, char c, unsigned int x,
     if (intCharSpce < 0)
         intCharSpce = 2;
 
-    // Text processing
+    /* Text processing */
     if (c != '\n'){
         letterX = 0;
         letterY = 0;
@@ -116,7 +116,7 @@ SDL_Rect gputc(DisplayDevice* DDevice, BitmapFont* Font, char c, unsigned int x,
             letterY++;
         }
 
-        // Text Rendering
+        /* Text Rendering */
         SrcLetter.x = letterX + 1;
         SrcLetter.y = 1;
         SrcLetter.h = DstLetter.h = letterY - 1;
@@ -136,7 +136,7 @@ SDL_Rect gputc(DisplayDevice* DDevice, BitmapFont* Font, char c, unsigned int x,
         }
     }else{
         if (Bounds){
-            DstLetter.y += DstLetter.h + 1; // May change for a standard offset in the future
+            DstLetter.y += DstLetter.h + 1; /* May change for a standard offset in the future */
             DstLetter.x = Bounds->x;
         }
     }

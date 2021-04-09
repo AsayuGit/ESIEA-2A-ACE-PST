@@ -14,28 +14,28 @@
     } Cid;
 
     typedef struct{
-        const SDL_Rect SrcRect; // Character source rect
-        SDL_Rect DstRect; // Character destination
-        int NbOfFrames;   // Number of frames in an animation
-        int Framerate;  // Number of milliseconds between two frames
+        const SDL_Rect SrcRect; /* Character source rect */
+        SDL_Rect DstRect; /* Character destination */
+        int NbOfFrames;   /* Number of frames in an animation */
+        int Framerate;  /* Number of milliseconds between two frames */
     } Animation;
 
     typedef struct{
         char* DisplayName;
-        // Character Texture properties
-        Surface* Surface; // Character Surface
-        char *SurfacePath;// Character Surface path 
-        Uint32 ColorKey;  // Character color key
+        /* Character Texture properties */
+        Surface* Surface; /* Character Surface */
+        char *SurfacePath;/* Character Surface path */
+        Uint32 ColorKey;  /* Character color key */
 
-        // Background Interaction properties
+        /* Background Interaction properties */
         int* BackgroundOffset;
 
-        // Character Animation properties
-        Uint32 LastFrame; // Time at the last frame display
-        int CurrentFrame; // Frame currently being displayed
-        int PlayingAnimation; // The Animation currently playing
-        Animation* Anim; // Contains all the differents animations for a character
-    } Characters; // Sprite ?
+        /* Character Animation properties */
+        Uint32 LastFrame; /* Time at the last frame display */
+        int CurrentFrame; /* Frame currently being displayed */
+        int PlayingAnimation; /* The Animation currently playing */
+        Animation* Anim; /* Contains all the differents animations for a character */
+    } Characters; /* Sprite ? */
 
     typedef struct CharacterList_s{
         Characters* Character;
@@ -48,6 +48,6 @@
         CharacterList * CharaList;
         SDL_Rect* Viewport;
         char* Flipped;
-    } CharacterLayer; // "Context"
+    } CharacterLayer; /* "Context" */
 
 #endif

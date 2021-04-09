@@ -6,7 +6,7 @@ int main(int argc, char* argv[]){
 
     DisplayDevice* DDevice;
     InputDevice* IDevice;
-    //SoundDevice* SDevice;
+    /*SoundDevice* SDevice; */
 
     BitmapFont* MainFont;
     BitmapFont* NameFont;
@@ -19,7 +19,7 @@ int main(int argc, char* argv[]){
     InitSDL();
     DDevice = CreateDisplayDevice(256, 192, "Mia's Legacy");
     IDevice = InitInputs(false);
-    //SDevice = CreateSoundDevice(); // Always return null so we don't need to store it for now
+    /*SDevice = CreateSoundDevice();  */ /* Always return null so we don't need to store it for now */
     CreateSoundDevice();
 
     MainFont = LoadBitmapFont(ROOT""FONTS"AceAttorneyFont"TEX_EXT, DDevice, FontColorKey);
@@ -38,9 +38,9 @@ int main(int argc, char* argv[]){
         &CHAR_Desk
     };
 
-    // First we start the title screen
+    /* First we start the title screen */
     if (Scene_TitleScreen(DDevice, IDevice, MainMenuFont) == 0){
-        // We start the courtroom Scene
+        /* We start the courtroom Scene */
         Scene_Courtroom(DDevice, IDevice, CourtContext, CharactersIndex, CharactersCount);
     }
     

@@ -2,20 +2,20 @@
 
 Animation ANIM_Payne[2] = {
     {
-        {17, 26, 85, 134}, // SrcRect // Idle
-        {158, 26, 85, 134}, // DstRect
-        1,   // NbOfFrames
-        500 // Framerate
+        {17, 26, 85, 134}, /* SrcRect Idle */
+        {158, 26, 85, 134}, /* DstRect */
+        1,   /* NbOfFrames */
+        500 /* Framerate */
     },
     {
-        {111, 26, 85, 134}, // SrcRect // Talk
-        {158, 26, 85, 134}, // DstRect
-        4,   // NbOfFrames
-        125 // Framerate
+        {111, 26, 85, 134}, /* SrcRect Talk */
+        {158, 26, 85, 134}, /* DstRect */
+        4,   /* NbOfFrames */
+        125 /* Framerate */
     }
 };
 
-Characters CHAR_WinstonPayne = { // Winston Payne
+Characters CHAR_WinstonPayne = { /* Winston Payne */
     "Payne",
     NULL,
     ROOT""TEXTURES"Characters"SL"Winston_Payne"TEX_EXT,

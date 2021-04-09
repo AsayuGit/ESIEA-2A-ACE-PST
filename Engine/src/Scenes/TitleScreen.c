@@ -18,21 +18,21 @@ int Scene_TitleScreen(DisplayDevice* DDevice, InputDevice* IDevice, BitmapFont* 
     BContext = InitButtons(DDevice, SContext, Font, 148, NULL);
 
     AddButton(BContext, "New Game");
-    //AddButton(BContext, "Continue"); // When the save system is implemented
+    /* AddButton(BContext, "Continue"); When the save system is implemented */
     AddButton(BContext, "Back");
 
     MoveButtonsToCoordinates(BContext, DDevice->ScreenResolution.x, 0);
     SetButtonClkSndEffect(BContext, 0, CHK_Gravel);
     SetButtonClkSndEffect(BContext, 1, CHK_ButtonBack);
 
-    Slide = 0; // Which side of the slide we're on
-    AnimComplete = 0; // Wether the animation is done or not
-    Menu = 0; // Wether the menu should be activated or not
+    Slide = 0; /* Which side of the slide we're on */
+    AnimComplete = 0; /* Wether the animation is done or not */
+    Menu = 0; /* Wether the menu should be activated or not */
 
     ToMenu = LoadSoundEffect(EffectPath[CHK_ButtonClicked]);
 
     while (1){
-        // Events Loop
+        /* Events Loop */
         while(SDL_PollEvent(&event)){
             if (Menu)
                 HandleButtonsEvents(BContext, &event);
@@ -87,14 +87,14 @@ int Scene_TitleScreen(DisplayDevice* DDevice, InputDevice* IDevice, BitmapFont* 
             Menu = Slide;
         }
 
-        // Rendering
+        /* Rendering */
         #ifdef _SDL
-            DisplayBackground(DDevice, SContext); // Background
+            DisplayBackground(DDevice, SContext); /* Background */
             DrawButtons(BContext);
 
             SDL_Flip(DDevice->Screen);
         #else
-            DisplayBackground(DDevice, SContext); // Background
+            DisplayBackground(DDevice, SContext); /* Background */
             DrawButtons(BContext);
             
             SDL_RenderPresent(DDevice->Renderer);

@@ -20,31 +20,31 @@
     } BGAnimation;
 
     typedef struct{
-        const char* SurfacePath;// Background Surface path
+        const char* SurfacePath; /* Background Surface path */
         BGAnimation* Animation;
         unsigned int nbOfScenes;
         Vector2i* ScenesCoordinates;
     } Background;
 
     typedef struct{
-        // Background Texture properties
-        Surface* Surface; // Background Surface
+        /* Background Texture properties */
+        Surface* Surface; /* Background Surface */
         Vector2i SurfaceBounds;
         int TileID;
         SDL_Rect SrcRect;
         
-        // Background Animation properties
+        /* Background Animation properties */
         int PlayingAnimation;
         Uint32 StartFrame;
         int CurrentState;
         int AnimOffset;
         BGAnimation* Animation;
 
-        // Scenes index
+        /* Scenes index */
         unsigned int nbOfScenes;
         Vector2i* ScenesCoordinates;
 
-        // Metadata
+        /* Metadata */
         char* AnimState;
         char Flipped;
         int ObjectLayerOffset;

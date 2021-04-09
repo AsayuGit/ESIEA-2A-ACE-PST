@@ -9,7 +9,7 @@
 
 int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomContext* Context, Characters** CharacterIndex, int NbOfCharacters){
 
-    // Declaration
+    /* Declaration */
     SDL_Event event;
     char EventSelect;
 
@@ -23,7 +23,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
     SceneContext* SContext;
     CharacterLayer* CharaLayer;
 
-    // Button related variables
+    /* Button related variables */
     SceneContext* ButtonLayer;
     ButtonsContext* BContext;
     SDL_Rect ButtonsRect;
@@ -32,7 +32,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
     char* ButtonJumpLabels[4];
     char BGAnimComplete;
 
-    // CourtRecord related variables
+    /* CourtRecord related variables */
     char CourtRecordActivated;
 
     int CurrentCharacter;
@@ -44,7 +44,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
 
     Items* ItemBank;
 
-    // Initialisation
+    /* Initialisation */
     if (Context == NULL){
         fprintf(stderr, "Courtroom Context non initialised");
         return -1;
@@ -59,21 +59,21 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
     ButtonsRect.w = DDevice->ScreenResolution.x;
     ButtonsRect.h = DDevice->ScreenResolution.y - (DiagContext->TextBounds.h + DiagContext->NameBounds.h);
 
-    // Button Init
+    /* Button Init */
     ButtonLayer = InitScene(DDevice, S_Empty);
     BContext = InitButtons(DDevice, ButtonLayer, Context->ButtonFont, 224, &ButtonsRect);
     MoveButtonsToCoordinates(BContext, DDevice->ScreenResolution.x, 0);
     ButtonActivated = 0;
 
-    // Load the ItemBank in memory
+    /* Load the ItemBank in memory */
     ItemBank = LoadItemsFromFile(DDevice, ROOT""TEXTURES"Evidences"SL"Evidences.xml");
-    // CourtRecord Init
+    /* CourtRecord Init */
     InitCourtRecord(DDevice, ItemBank);
-    // Init the notification handler
+    /* Init the notification handler */
     InitNotifications(DDevice, ItemBank);
     CourtRecordActivated = 0;
 
-    InitCharacter(DDevice, &CHAR_PhoenixWright); // Initialise the character in memory
+    InitCharacter(DDevice, &CHAR_PhoenixWright); /* Initialise the character in memory */
     InitCharacter(DDevice, &CHAR_MiaFey);
     InitCharacter(DDevice, &CHAR_WinstonPayne);
     InitCharacter(DDevice, &CHAR_Judge);
@@ -94,7 +94,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
 
     BGAnimComplete = 1;
 
-    // Scene setup
+    /* Scene setup */
     #ifdef _DEBUG
         sceneFile = loadScene("Assets/Dialogue/debug.xml");
     #else
@@ -102,12 +102,12 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
     #endif
     scenePointer = xmlDocGetRootElement(sceneFile)->children;
     parseScene(&scenePointer, DiagContext, SContext, BContext, CharacterIndex, NbOfCharacters, &IdleAnimation, &ReturnToDefault, &CurrentCharacter, &BGAnimComplete, &ButtonActivated, ButtonJumpLabels);
-    //CourtroomScenarioA(SContext, ButtonLayer, DiagContext, BContext, &Plot, &CurrentCharacter, &IdleAnimation, &ReturnToDefault, &BGAnimComplete, &ButtonActivated, &ButtonInput);
-    // Main Loop
+    /*CourtroomScenarioA(SContext, ButtonLayer, DiagContext, BContext, &Plot, &CurrentCharacter, &IdleAnimation, &ReturnToDefault, &BGAnimComplete, &ButtonActivated, &ButtonInput); */
+    /* Main Loop */
     while (1){
-        // Events Loop
+        /* Events Loop */
         while(SDL_PollEvent(&event)){
-            // Global events
+            /* Global events */
             switch (event.type)
             {
             case SDL_QUIT:
@@ -115,18 +115,18 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                 break;
             }
 
-            // Animation tied events
+            /* Animation tied events */
             if (BGAnimComplete){
                 switch (EventSelect)
                 {
-                case MainEvents: // Regular events
+                case MainEvents: /* Regular events */
                     switch (event.type)
                     {
                     case SDL_KEYDOWN:
                         switch (PADKEY)
                         {
                         case PAD_SELECT:
-                            CharacterPlayAnimation(CharacterIndex[CurrentCharacter], IdleAnimation); // Mouaif
+                            CharacterPlayAnimation(CharacterIndex[CurrentCharacter], IdleAnimation); /* Mouaif */
                             parseScene(&scenePointer, DiagContext, SContext, BContext, CharacterIndex, NbOfCharacters, &IdleAnimation, &ReturnToDefault, &CurrentCharacter, &BGAnimComplete, &ButtonActivated, ButtonJumpLabels);
                             break;
                         case PAD_COURTRECORD:
@@ -147,12 +147,12 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                         switch (PADKEY)
                         {
                         case PAD_SELECT:
-                            ButtonInput = GetClkdButtonID(BContext); // Get the id of the currently selected button
+                            ButtonInput = GetClkdButtonID(BContext); /* Get the id of the currently selected button */
                             ButtonActivated = 0;
                             EventSelect = MainEvents;
                             scenePointer = searchSceneNode(&scenePointer, ButtonJumpLabels[ButtonInput]);
                             MoveTile(ButtonLayer, 0, 0);
-                            CharacterPlayAnimation(CharacterIndex[CurrentCharacter], IdleAnimation); // Mouaif
+                            CharacterPlayAnimation(CharacterIndex[CurrentCharacter], IdleAnimation); /* Mouaif */
                             parseScene(&scenePointer, DiagContext, SContext, BContext, CharacterIndex, NbOfCharacters, &IdleAnimation, &ReturnToDefault, &CurrentCharacter, &BGAnimComplete, &ButtonActivated, ButtonJumpLabels);
                             break;
                         case PAD_COURTRECORD:
@@ -193,34 +193,34 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
             }
         }
 
-        // Logic
+        /* Logic */
         if ((DiagContext->progress >= ReturnToDefault) && (ReturnToDefault != -1)){
             CharacterPlayAnimation(CharacterIndex[CurrentCharacter], IdleAnimation);
             ReturnToDefault = -1;
-            if (ButtonActivated){ // We do that here because we want to wait for the dialogue to end before showing the buttons
+            if (ButtonActivated){ /* We do that here because we want to wait for the dialogue to end before showing the buttons */
                 BackgroundPlayAnimation(ButtonLayer, 0, &BGAnimComplete);
                 EventSelect = ButtonEvents;
             }
         }
 
-        // Rendering (Back to front)
+        /* Rendering (Back to front) */
         #ifdef _SDL
-            DisplayBackground(DDevice, SContext); // Background
+            DisplayBackground(DDevice, SContext); /* Background */
             DisplayCharacterLayer(DDevice, CharaLayer);
-            //FlipBlitSurface(Desk, NULL, DDevice->Screen, &DeskRect, SceneFlip); // Desk
-            Dialogue(IDevice, DiagContext); // Dialog
+            /*FlipBlitSurface(Desk, NULL, DDevice->Screen, &DeskRect, SceneFlip);  */ /* Desk */
+            Dialogue(IDevice, DiagContext); /* Dialog */
             SDL_Flip(DDevice->Screen);
         #else
-            DisplayBackground(DDevice, SContext);        // Background
+            DisplayBackground(DDevice, SContext);        /* Background */
             DisplayCharacterLayer(DDevice, CharaLayer);
-            Dialogue(IDevice, DiagContext);              // Dialog
-            if (ButtonActivated){                        // Check if the buttons are actually on screen to save ressources
-                DisplayBackground(DDevice, ButtonLayer); // Animate the button layer
-                DrawButtons(BContext);                   // Draw the actual buttons (Maybe merge ?)
+            Dialogue(IDevice, DiagContext);              /* Dialog */
+            if (ButtonActivated){                        /* Check if the buttons are actually on screen to save ressources */
+                DisplayBackground(DDevice, ButtonLayer); /* Animate the button layer */
+                DrawButtons(BContext);                   /* Draw the actual buttons (Maybe merge ?) */
             }
             DrawNotifications(DDevice);
             if (CourtRecordActivated){
-                DrawCourtRecord(DDevice, Context->MainFont);               // Draw the court Record
+                DrawCourtRecord(DDevice, Context->MainFont);               /* Draw the court Record */
             }
             SDL_RenderPresent(DDevice->Renderer);
         #endif
@@ -228,7 +228,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
 
 
 Exit:
-    // Cleaning memory
+    /* Cleaning memory */
 /*
     #ifdef _SDL
     SDL_FreeSurface(Courtroom);
@@ -236,9 +236,9 @@ Exit:
     SDL_DestroyTexture(Courtroom);
     #endif
 */
-    //free(DiagContext);
+    /*free(DiagContext); */
     if (sceneFile)
-        xmlFreeDoc(sceneFile); // Free memory
+        xmlFreeDoc(sceneFile); /* Free memory */
 
     return 0;
 }

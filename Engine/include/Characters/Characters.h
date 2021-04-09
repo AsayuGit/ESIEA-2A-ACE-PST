@@ -7,9 +7,9 @@
 
     void InitCharacter(DisplayDevice* DisplayDevice, Characters* Character);
     void CharacterPlayAnimation(Characters* Character, int AnimationID);
-    //char* GetCharacterName(Characters* Character);
+    /* char* GetCharacterName(Characters* Character);  */
 
-    // Character Layer Management
+    /* Character Layer Management */
     void InitCharacterLayer(CharacterLayer** CharaLayer, SceneContext* SContext);
     void AddCharacterToLayer(CharacterLayer* CharaLayer, Characters* Character, SceneContext* SContext, int TileID, char Flip, DisplayDevice* DDevice, Vector2i BackgroundBounds);
     void DeleteCharacterFromLayer(CharacterLayer* CharaLayer, Characters* Character);
