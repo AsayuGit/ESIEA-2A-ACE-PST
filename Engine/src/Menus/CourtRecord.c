@@ -1,5 +1,5 @@
 #include "CourtRecord.h"
-#include "Notifications.h"
+#include "UI.h"
 #include <libxml2/libxml/parser.h>
 
 #define NBOFITEMS 8
@@ -338,7 +338,7 @@ void HandleCourtRecordEvents(SDL_Event* event){
         switch (event->type)
         {
         case SDL_KEYDOWN:
-            switch (P_PADKEY)
+            switch (event->PADKEY)
             {
             case PAD_UP:
             case PAD_DOWN:
@@ -350,7 +350,7 @@ void HandleCourtRecordEvents(SDL_Event* event){
                 Mix_PlayChannel(-1, MoveCursor, 0);
                 break;
             case PAD_RIGHT:
-                SelectedSlot = (SelectedSlot + 1) % 4 + ((SelectedSlot / 4) * 4);
+                SelectedSlot = ((SelectedSlot + 1) % 4) + ((SelectedSlot / 4) * 4);
                 Mix_PlayChannel(-1, MoveCursor, 0);
                 break;
             case PAD_SELECT:
@@ -374,7 +374,7 @@ void HandleCourtRecordEvents(SDL_Event* event){
         switch (event->type)
         {
         case SDL_KEYDOWN:
-            switch (P_PADKEY)
+            switch (event->PADKEY)
             {
             case PAD_LEFT:
                 SlotSearch = GetSelectedItem(SelectedSlot - 1);

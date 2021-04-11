@@ -44,7 +44,7 @@
     unsigned char GetNbOfButtons(ButtonsContext* ButtonObject);
     
     void MoveButtonsToCoordinates(ButtonsContext* ButtonObject, int x, int y);
-    void HandleButtonsEvents(ButtonsContext* ButtonObject, SDL_Event* event);
+    void HandleButtonsEvents(ButtonsContext* ButtonObject, InputDevice* IDevice);
     unsigned char GetClkdButtonID(ButtonsContext* ButtonObject);
     void SetSlkdButtonID(ButtonsContext* ButtonObject, unsigned char ButtonID);
     void DrawButtons(ButtonsContext* ButtonObject);

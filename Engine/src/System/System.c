@@ -8,7 +8,9 @@ void InitSDL(){
 }
 
 InputDevice* InitInputs(bool JoyEnabled){
-    InputDevice* Inputs = (InputDevice*)malloc(sizeof(InputDevice));
+    InputDevice* Inputs;
+    
+    Inputs = (InputDevice*)malloc(sizeof(InputDevice));
     Inputs->Joy1 = NULL;
     if (SDL_NumJoysticks() && JoyEnabled){
         Inputs->Joy1 = SDL_JoystickOpen(0); /* Open Joystick */
@@ -19,6 +21,7 @@ InputDevice* InitInputs(bool JoyEnabled){
     }else{
         Inputs->JoyEnabled = true;
     }
+    Inputs->EventEnabled = true;
     return Inputs;
 }
 

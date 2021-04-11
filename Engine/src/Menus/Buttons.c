@@ -97,11 +97,11 @@ void MoveButtonsToCoordinates(ButtonsContext* ButtonObject, int x, int y){
     ButtonObject->ObjectDimensions.y = y;
 }
 
-void HandleButtonsEvents(ButtonsContext* ButtonObject, SDL_Event* event){
-    switch (event->type)
+void HandleButtonsEvents(ButtonsContext* ButtonObject, InputDevice* IDevice){
+    switch (IDevice->event.type)
     {
     case SDL_KEYDOWN:
-        switch (P_PADKEY)
+        switch (IDevice->event.PADKEY)
         {
         case PAD_UP:
             if (ButtonObject->selButtonID > 0){

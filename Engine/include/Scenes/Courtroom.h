@@ -10,6 +10,6 @@
         BitmapFont* ButtonFont;
     } CourtroomContext;
 
-    int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomContext* Context, Characters** CharacterIndex, int NbOfCharacters);
+    int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomContext* Context, Characters** CharacterIndex, int NbOfCharacters, char* DialogPath);
 
 #endif

@@ -28,23 +28,31 @@ OBJ_DIR = $(call uniq, $(dir $(OBJ)))
 # List of all includes directory
 INCLUDES = $(patsubst %, -I %, $(call uniq, $(dir $(call rwildcard,,*.h)))) $$(sdl2-config --cflags) $$(xml2-config --cflags)
 
+# Number of therads available 
+CPUS = $(nproc)
+
+multi:
+	@$(MAKE) -j$(CPUS) -s all
+
 all: $(OBJ_DIR) $(OUT)
 
 $(OBJ_DIR):
-	mkdir -p $@
+	@mkdir -p $@
 
 $(BUILD_DIR)/%.o: %.c
 	@echo "Compiling $<"
-	$(CC) $(CFLAGS) $< $(INCLUDES) -o $@
+	@$(CC) $(CFLAGS) $< $(INCLUDES) -o $@
 
 $(OUT): $(OBJ)
-	@echo "Linking $<"
-	$(CC) -o $(OUT) $^ $(LDFLAGS)
+	@echo "Linking $@"
+	@$(CC) -o $(OUT) $^ $(LDFLAGS)
 
 clean:
-	rm -rf $(BUILD_DIR) $(OUT)
+	@echo "Cleaning Build"
+	@rm -rf $(BUILD_DIR) $(OUT)
 
-rebuild: clean all
+rebuild: clean
+	@$(MAKE) -j$(CPUS) -s all
 
 run:
 	./$(OUT)

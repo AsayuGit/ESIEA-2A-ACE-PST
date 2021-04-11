@@ -33,9 +33,12 @@ SDL_Surface* LoadSDLSurface(char FilePath[], DisplayDevice* Device, Uint32* Colo
     #endif
 }
 
+/* FIXME: ColorKey shouldn't be a pointer, ideally we would want a flag system to state how we want to load a said texture */
 Surface* LoadSurface(char FilePath[], DisplayDevice* Device, Uint32* ColorKey, char AlphaChannel){
     SDL_Surface* loadingSurface;
     
+    if (!FilePath) /* Don't bother loading a surface if the path isn't provided */
+        return NULL;
     loadingSurface = LoadSDLSurface(FilePath, Device, ColorKey);
     if (loadingSurface){
         #ifdef _SDL

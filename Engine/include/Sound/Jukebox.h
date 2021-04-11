@@ -5,6 +5,8 @@
 
     typedef enum{
         TRK_Courtroom,
+        TRK_Moderato,
+        TRK_Telling_the_Truth,
         NumberOfMusicTracks
     } MusicPlaylistID;
 
@@ -17,6 +19,7 @@
         CHK_HPLetter,
         CHK_NextLine,
         CHK_LineComplete,
+        CHK_TestimonySwoosh,
         NumberOfEffectTracks
     } EffectsPlaylistID;
 

@@ -45,7 +45,7 @@
         Vector2i* ScenesCoordinates;
 
         /* Metadata */
-        char* AnimState;
+        bool* AnimState;
         char Flipped;
         int ObjectLayerOffset;
     } SceneContext;

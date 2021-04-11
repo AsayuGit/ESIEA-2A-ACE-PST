@@ -10,6 +10,7 @@
         Judge,
         Winston_Payne,
         Court_Desk,
+        FrankShawit,
         CharactersCount
     } Cid;
 

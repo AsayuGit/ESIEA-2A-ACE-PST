@@ -164,3 +164,13 @@ SDL_Rect gprintf(DisplayDevice* DDevice, BitmapFont* Font, char* text, int intCh
 
     return DstLetter;
 }
+
+int map(int DstA, int DstB, int SrcA, int SrcB, int Value){
+    int mappedValue = DstA + ((DstB - DstA) / (SrcB - SrcA)) * (Value - SrcA);
+    return (mappedValue < DstB) ? mappedValue : DstB;
+}
+
+double dmap(double DstA, double DstB, double SrcA, double SrcB, double Value){
+    double mappedValue = DstA + ((DstB - DstA) / (SrcB - SrcA)) * (Value - SrcA);
+    return (mappedValue < DstB) ? mappedValue : DstB;
+}

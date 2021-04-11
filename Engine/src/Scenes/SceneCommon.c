@@ -1,7 +1,9 @@
 #include "SceneCommon.h"
 #include "Characters.h"
 #include "CourtRecord.h"
-#include "Notifications.h"
+#include "UI.h"
+
+/* FIXME: We probably need to move the constants someplace else */
 
 /* First background animation (90° turn) */
 Vector2d CourtAnim1States[3] = {
@@ -167,12 +169,12 @@ BGAnimation TitleScreenAnim[2] = {
 };
 
 Vector2i CourtScenes[6] = {
-    {0, 0}, 
-    {1040, 0},
-    {519, 0},
-    {0, 192},
-    {256, 192},
-    {512, 192}
+    {0, 0},     /* Defence Side     (0) */
+    {1040, 0},  /* Prosecution side (1) */
+    {520, 0},   /* Defendant        (2) */
+    {0, 192},   /* Court View       (3) */
+    {256, 192}, /* Judge Side       (4) */
+    {512, 192}  /* Assistant Side   (5) */
 };
 
 Vector2i EmptyScenes[1] = {
@@ -245,11 +247,11 @@ void MoveTile(SceneContext* Context, int TileID, char Effect){ /* Change the bac
     }
 }
 
-void BackgroundPlayAnimation(SceneContext* Context, int AnimationID, char* AnimState){ /* Start the background animation */
+void BackgroundPlayAnimation(SceneContext* Context, int AnimationID, bool* AnimState){ /* Start the background animation */
     Context->PlayingAnimation = AnimationID;
     Context->StartFrame = Context->CurrentState = Context->AnimOffset = 0;
     Context->ObjectLayerOffset = 0;
-    (*AnimState) = 0;
+    (*AnimState) = false;
     Context->AnimState = AnimState;
 }
 
@@ -368,7 +370,7 @@ xmlNode* searchSceneNode(xmlNode** entry, char* label){
     return NULL;
 }
 
-void parseScene(xmlNode** entry, DialogueContext* DiagContext, SceneContext* SContext, ButtonsContext* BContext, Characters** CharactersIndex, int NbOfCharacters, int* IdleAnimation, int* ReturnToDefault, int* CurrentCharacter, char* BGAnimComplete, char* ButtonActivated, char** ButtonJumpLabels){
+void parseScene(xmlNode** entry, InputDevice* IDevice, DialogueContext* DiagContext, SceneContext* SContext, ButtonsContext* BContext, Characters** CharactersIndex, int NbOfCharacters, int* IdleAnimation, int* ReturnToDefault, int* CurrentCharacter, char* ButtonActivated, char** ButtonJumpLabels){
     /* Declaration */
     xmlNode *searchNode, *property, *element, *next;
     /* diag */
@@ -384,6 +386,8 @@ void parseScene(xmlNode** entry, DialogueContext* DiagContext, SceneContext* SCo
     int buttonJumpIndex;
     /* Item */
     int ItemBuffer;
+    /* Music */
+    int TrackID;
     /* Logic */
     next = ((*entry)->next) ? (*entry)->next : (*entry);
     property = (*entry)->children;
@@ -427,12 +431,12 @@ void parseScene(xmlNode** entry, DialogueContext* DiagContext, SceneContext* SCo
                 }
                 element = element->next;
             }
-            (*BGAnimComplete) = 0;
+            IDevice->EventEnabled = false;
             (*ButtonActivated) = 1;
         } else if (strcmp((char*)property->name, "setBackground") == 0) {
             MoveTile(SContext, atoi((char*)xmlNodeGetContent(property)), 0);
         } else if (strcmp((char*)property->name, "backgroundAnim") == 0) {
-            BackgroundPlayAnimation(SContext, atoi((char*)xmlNodeGetContent(property)), BGAnimComplete);
+            BackgroundPlayAnimation(SContext, atoi((char*)xmlNodeGetContent(property)), &IDevice->EventEnabled);
         } else if (strcmp((char*)property->name, "jump") == 0) {
             jumpLabel = (char*)xmlNodeGetContent(property);
             searchNode = searchSceneNode(entry, jumpLabel);
@@ -448,11 +452,18 @@ void parseScene(xmlNode** entry, DialogueContext* DiagContext, SceneContext* SCo
                 EmptyCourtRecord();
             }
         } else if (strcmp((char*)property->name, "playBGM") == 0){
-            PlayTrackID(atoi((char*)xmlNodeGetContent(property)));
-        } else if (strcmp((char*)property->name, "presentItem") == 0){
-            SummonNotification(SHOW_ITEM_TO_COURT, atoi((char*)xmlNodeGetContent(property)));
-        } else if (strcmp((char*)property->name, "clearNotif") == 0){
-            ClearNotifications();
+            TrackID = atoi((char*)xmlNodeGetContent(property));
+            if (TrackID >= 0){
+                PlayTrackID(TrackID);
+            } else {
+                Mix_HaltMusic();
+            }
+        } else if (strcmp((char*)property->name, "presentItem") == 0){ /* FIXME: We should probably not do that that way*/
+            setUI(SHOW_ITEM_TO_COURT, atoi((char*)xmlNodeGetContent(property)));
+        } else if (strcmp((char*)property->name, "setUI") == 0){
+            /* setUI(atoi((char*)xmlNodeGetContent(property)), 0); */
+            setUI((unsigned int)atoi((char*)xmlGetProp(property, (xmlChar*)"type")), atoi((char*)xmlNodeGetContent(property)));
+
         }
         property = property->next;
     }

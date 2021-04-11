@@ -119,7 +119,7 @@ DialogueContext* InitDialog(DisplayDevice* DDevice, BitmapFont* MainFont, Bitmap
 }
 
 /* Fonction non bloquante gérant les dialogues */
-void Dialogue(InputDevice* InputDevice, DialogueContext* Context){
+void Dialogue(DialogueContext* Context){
     SDL_Rect InLayerTextBounds;
 
     InLayerTextBounds = Context->TextBounds;

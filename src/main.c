@@ -35,13 +35,18 @@ int main(int argc, char* argv[]){
         &CHAR_MilesEdgeworth,
         &CHAR_Judge,
         &CHAR_WinstonPayne,
-        &CHAR_Desk
+        &CHAR_Desk,
+        &CHAR_FrankShawit
     };
 
     /* First we start the title screen */
     if (Scene_TitleScreen(DDevice, IDevice, MainMenuFont) == 0){
         /* We start the courtroom Scene */
-        Scene_Courtroom(DDevice, IDevice, CourtContext, CharactersIndex, CharactersCount);
+        if (argc > 1){
+            Scene_Courtroom(DDevice, IDevice, CourtContext, CharactersIndex, CharactersCount, argv[1]);
+        } else {
+            Scene_Courtroom(DDevice, IDevice, CourtContext, CharactersIndex, CharactersCount, "Assets/Dialogue/court.xml");
+        }
     }
     
     free(CourtContext);

@@ -4,12 +4,10 @@
 
 int Scene_TitleScreen(DisplayDevice* DDevice, InputDevice* IDevice, BitmapFont* Font){
     int ReturnValue;
-    SDL_Event event;
     SceneContext* SContext;
     ButtonsContext* BContext;
 
     int Slide;
-    char AnimComplete;
     char Menu;
 
     Mix_Chunk* ToMenu;
@@ -26,17 +24,16 @@ int Scene_TitleScreen(DisplayDevice* DDevice, InputDevice* IDevice, BitmapFont* 
     SetButtonClkSndEffect(BContext, 1, CHK_ButtonBack);
 
     Slide = 0; /* Which side of the slide we're on */
-    AnimComplete = 0; /* Wether the animation is done or not */
     Menu = 0; /* Wether the menu should be activated or not */
 
     ToMenu = LoadSoundEffect(EffectPath[CHK_ButtonClicked]);
 
     while (1){
         /* Events Loop */
-        while(SDL_PollEvent(&event)){
+        while(SDL_PollEvent(&IDevice->event)){
             if (Menu)
-                HandleButtonsEvents(BContext, &event);
-            switch (event.type)
+                HandleButtonsEvents(BContext, IDevice);
+            switch (IDevice->event.type)
             {
             case SDL_QUIT:
                 ReturnValue = -1;
@@ -44,13 +41,13 @@ int Scene_TitleScreen(DisplayDevice* DDevice, InputDevice* IDevice, BitmapFont* 
                 break;
 
             case SDL_KEYDOWN:
-                switch (PADKEY)
+                switch (IDevice->event.PADKEY)
                 {
                 case PAD_SELECT:
                     if (Slide == 0){
                         Mix_PlayChannel(-1, ToMenu, 0);
                         SetSlkdButtonID(BContext, 0);
-                        BackgroundPlayAnimation(SContext, 0, &AnimComplete);
+                        BackgroundPlayAnimation(SContext, 0, &IDevice->EventEnabled);
                         Slide = 1;
                     } else {
                         switch (GetClkdButtonID(BContext))
@@ -60,7 +57,7 @@ int Scene_TitleScreen(DisplayDevice* DDevice, InputDevice* IDevice, BitmapFont* 
                             goto Exit;
                             break;
                         case 1:
-                            BackgroundPlayAnimation(SContext, 1, &AnimComplete);
+                            BackgroundPlayAnimation(SContext, 1, &IDevice->EventEnabled);
                             Slide = 0;
                             Menu = 0;
                             break;
@@ -82,8 +79,7 @@ int Scene_TitleScreen(DisplayDevice* DDevice, InputDevice* IDevice, BitmapFont* 
             
         }
 
-        if (AnimComplete){
-            AnimComplete = 0;
+        if (IDevice->EventEnabled){
             Menu = Slide;
         }
 
