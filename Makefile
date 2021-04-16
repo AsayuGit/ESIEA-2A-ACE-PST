@@ -12,6 +12,8 @@ WINCC = x86_64-w64-mingw32-gcc
 CFLAGS += -c -Wall -std=c89
 LDFLAGS = $$(sdl2-config --libs) $$(xml2-config --libs) -lSDL2_image -lSDL2_mixer
 
+WINLDFLAGS = "-L /usr/x86_64-w64-mingw32/lib/ -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_mixer -lxml2 -lz -llzma -lm -mwindows"
+
 # Main target and filename of the executable
 OUT = ACE
 
@@ -26,7 +28,10 @@ OBJ = $(patsubst %,$(BUILD_DIR)/%,$(SRC:%.c=%.o))
 OBJ_DIR = $(call uniq, $(dir $(OBJ)))
 
 # List of all includes directory
-INCLUDES = $(patsubst %, -I %, $(call uniq, $(dir $(call rwildcard,,*.h)))) $$(sdl2-config --cflags) $$(xml2-config --cflags)
+INCLUDES = $(patsubst %, -I %, $(call uniq, $(dir $(call rwildcard,,*.h))))
+LIBS = $$(sdl2-config --cflags) $$(xml2-config --cflags)
+
+WINLIBS = "-I /usr/x86_64-w64-mingw32/include/libxml2/"
 
 # Number of therads available 
 CPUS = $(nproc)
@@ -41,7 +46,7 @@ $(OBJ_DIR):
 
 $(BUILD_DIR)/%.o: %.c
 	@echo "Compiling $<"
-	@$(CC) $(CFLAGS) $< $(INCLUDES) -o $@
+	@$(CC) $(CFLAGS) $< $(INCLUDES) $(LIBS) -o $@
 
 $(OUT): $(OBJ)
 	@echo "Linking $@"
@@ -49,10 +54,13 @@ $(OUT): $(OBJ)
 
 clean:
 	@echo "Cleaning Build"
-	@rm -rf $(BUILD_DIR) $(OUT)
+	@rm -rf $(BUILD_DIR) $(OUT) $(OUT).exe
 
 rebuild: clean
 	@$(MAKE) -j$(CPUS) -s all
 
 run:
 	./$(OUT)
+
+windows:
+	@$(MAKE) -s rebuild CC=$(WINCC) OUT=ACE.exe LIBS=$(WINLIBS) LDFLAGS+=$(WINLDFLAGS)
