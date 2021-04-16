@@ -15,12 +15,6 @@
         #define PADKEY key.keysym.scancode
     #endif
 
-/*
-    typedef enum{
-        false,
-        true
-    } bool;
-*/
     typedef struct{
         int x;
         int y;
@@ -30,6 +24,13 @@
         double x;
         double y;
     } Vector2d;
+
+    typedef struct{
+        char* PicsPath;
+        Surface* PicsSurface;
+        unsigned int SizeX;
+        unsigned int SizeY;
+    } Pics;
 
     typedef struct{
         SDL_Window *Screen;

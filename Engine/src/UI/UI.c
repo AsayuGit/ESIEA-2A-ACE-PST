@@ -132,9 +132,6 @@ void UI_TestimonyIntro(DisplayDevice* DDevice, InputDevice* IDevice){ /* Timings
 
 /* Init the notification handler */
 void InitUI(DisplayDevice* DDevice, Items* UIItemBankPointer){
-    Uint32 ColorKey;
-
-    ColorKey = 0xff00ff;
     UIItemBank = UIItemBankPointer;
     currentUI = NULL;
     StoredItemID = 0;
@@ -144,14 +141,14 @@ void InitUI(DisplayDevice* DDevice, Items* UIItemBankPointer){
     ItemPos.w = 70;
     ItemPos.h = 70;
 
-    UISurface = LoadSurface(ROOT""TEXTURES"UI"SL"UI.bmp", DDevice, &ColorKey, false);
+    UISurface = LoadSurface(ROOT""TEXTURES"UI"SL"UI.bmp", DDevice, 0xff00ff, SURFACE_KEYED);
     UITestimonyRect.x = 0;
     UITestimonyRect.y = 0;
     UITestimonyRect.w = 64;
     UITestimonyRect.h = 32;
     /* FIXME : We should really check for the validity of UISurface */
 
-    UIWitnessTestimony = LoadSurface(ROOT""TEXTURES"UI"SL"WitnessTestimony.bmp", DDevice, &ColorKey, false);
+    UIWitnessTestimony = LoadSurface(ROOT""TEXTURES"UI"SL"WitnessTestimony.bmp", DDevice, 0xff00ff, SURFACE_KEYED);
     
     UIWTASrcRect.x = 768;
     UIWTASrcRect.y = 0;

@@ -61,7 +61,7 @@ DialogueContext* InitDialog(DisplayDevice* DDevice, BitmapFont* MainFont, Bitmap
     DiagContext->LastLetter = 0;
 
     DiagContext->DialogBox = NULL;
-    DiagContext->DialogBox = LoadSurface(ROOT""TEXTURES"Menus"SL"Dialog"TEX_EXT, DDevice, NULL, true);
+    DiagContext->DialogBox = LoadSurface(ROOT""TEXTURES"Menus"SL"Dialog"TEX_EXT, DDevice, 0x0, SURFACE_ALPHA);
     if (DiagContext->DialogBox == NULL){
         fprintf(stderr, "Can't load texture %s\n", SDL_GetError());
     }

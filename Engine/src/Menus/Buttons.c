@@ -4,13 +4,11 @@
 
 ButtonsContext* InitButtons(DisplayDevice* DDevice, SceneContext* SContext, BitmapFont* Font, int buttonLength, SDL_Rect* ButtonObjectDimensions){
     ButtonsContext* BContext;
-    Uint32 ColorKey;
     unsigned char i;
 
     /* Buttons Texture */
-    ColorKey = 0xff00ff;
     BContext = (ButtonsContext*)malloc(sizeof(ButtonsContext));
-    BContext->ButtonsSurface = LoadSurface(ROOT""TEXTURES"Menus"SL"Buttons"TEX_EXT, DDevice, &ColorKey, false);
+    BContext->ButtonsSurface = LoadSurface(ROOT""TEXTURES"Menus"SL"Buttons"TEX_EXT, DDevice, 0xff00ff, SURFACE_KEYED);
 
     /* Buttons Font */
     BContext->Font = Font;

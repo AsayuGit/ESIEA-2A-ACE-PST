@@ -57,15 +57,11 @@ char* ItemTypes[3] = {
 };
 
 void InitCourtDetails(DisplayDevice* DDevice){
-    Uint32 ColorKey, FontColorKey;
-    
     /* Load textures */
-    ColorKey = 0x00ffff;
-    FontColorKey = 0xff00ff;
-    CourtDetailSpriteSheet = LoadSurface(ROOT""TEXTURES"Menus"SL"CourtDetails"TEX_EXT, DDevice, &ColorKey, false);
+    CourtDetailSpriteSheet = LoadSurface(ROOT""TEXTURES"Menus"SL"CourtDetails"TEX_EXT, DDevice, 0x00ffff, SURFACE_KEYED);
 
     /* LoadFonts */
-    DetailsFont = LoadBitmapFont(ROOT""FONTS"DetailsFont"TEX_EXT, DDevice, FontColorKey);
+    DetailsFont = LoadBitmapFont(ROOT""FONTS"DetailsFont"TEX_EXT, DDevice, 0xff00ff);
 
     /* SetRects */
     CourtDetailBackground[0].x = 0; CourtDetailBackground[1].x = 0;
@@ -100,18 +96,15 @@ void InitCourtDetails(DisplayDevice* DDevice){
 
 /* Init the court Record menu for further use */
 void InitCourtRecord(DisplayDevice* DDevice, Items* ItemBankPointer){
-    Uint32 ColorKey, FontColorKey;
     Vector2i SlotOrigin;
     int SlotOffset;
     int i;
 
     /* Load textures */
-    ColorKey = 0x00ffff;
-    CourtRecordSpriteSheet = LoadSurface(ROOT""TEXTURES"Menus"SL"CourtRecord"TEX_EXT, DDevice, &ColorKey, false);
+    CourtRecordSpriteSheet = LoadSurface(ROOT""TEXTURES"Menus"SL"CourtRecord"TEX_EXT, DDevice, 0x00ffff, SURFACE_KEYED);
 
     /* Load Fonts */
-    FontColorKey = 0xff00ff;
-    ItemNameFont = LoadBitmapFont(ROOT""FONTS"ItemNameFont"TEX_EXT, DDevice, FontColorKey);
+    ItemNameFont = LoadBitmapFont(ROOT""FONTS"ItemNameFont"TEX_EXT, DDevice, 0xff00ff);
 
     /* Load Sound Effects */
     MoveCursor = LoadSoundEffect(EffectPath[CHK_ButtonUpDown]);
@@ -268,7 +261,7 @@ Items* LoadItemsFromFile(DisplayDevice* DDevice, char* filePath){ /* TIPS : Mayb
 
         /*printf("Allocate %d Items\n", nbOfItems); */
         loadedItem = allocateItems(nbOfItems, ItemInRow); /* Allocate memory for the item bank */
-        loadedItem->ItemSpritesheet = LoadSurface(buffer, DDevice, &ColorKey, false);
+        loadedItem->ItemSpritesheet = LoadSurface(buffer, DDevice, ColorKey, SURFACE_KEYED);
         
         property = itemList->children;
         currentItem = 0;

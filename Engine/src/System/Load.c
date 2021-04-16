@@ -9,7 +9,7 @@
     }
 #endif
 
-SDL_Surface* LoadSDLSurface(char FilePath[], DisplayDevice* Device, Uint32* ColorKey){
+SDL_Surface* LoadSDLSurface(char FilePath[], DisplayDevice* Device){
     SDL_Surface* LoadingSurface;
     
     #ifdef _SDL
@@ -20,32 +20,38 @@ SDL_Surface* LoadSDLSurface(char FilePath[], DisplayDevice* Device, Uint32* Colo
     #ifdef _SDL
         AcceleratedSurface = SDL_DisplayFormat(LoadingSurface);
         SDL_FreeSurface(LoadingSurface);
-        if (ColorKey != NULL){
-            SDL_SetColorKey(AcceleratedSurface, SDL_SRCCOLORKEY | SDL_RLEACCEL, *ColorKey);
-        }else{
-            
-        }
         return AcceleratedSurface;
     #else
-        if (ColorKey != NULL)
-            SDL_SetColorKey(LoadingSurface, true, *ColorKey);
         return LoadingSurface;
     #endif
 }
 
-/* FIXME: ColorKey shouldn't be a pointer, ideally we would want a flag system to state how we want to load a said texture */
-Surface* LoadSurface(char FilePath[], DisplayDevice* Device, Uint32* ColorKey, char AlphaChannel){
+void KeySurface(SDL_Surface* SurfaceToKey, Uint32 ColorKey){
+    #ifdef _SDL
+        SDL_SetColorKey(SurfaceToKey, SDL_SRCCOLORKEY | SDL_RLEACCEL, ColorKey);
+    #else
+        SDL_SetColorKey(SurfaceToKey, true, ColorKey);
+    #endif
+}
+
+Surface* LoadSurface(char FilePath[], DisplayDevice* Device, Uint32 ColorKey, char flags){
     SDL_Surface* loadingSurface;
     
     if (!FilePath) /* Don't bother loading a surface if the path isn't provided */
         return NULL;
-    loadingSurface = LoadSDLSurface(FilePath, Device, ColorKey);
+    loadingSurface = LoadSDLSurface(FilePath, Device);
     if (loadingSurface){
+
+        if (SURFACE_KEYED & flags){
+            KeySurface(loadingSurface, ColorKey);
+        }
+
         #ifdef _SDL
-            return (AlphaChannel) ? UseAlphaChannel(loadingSurface) : loadingSurface;
+            return (SURFACE_ALPHA & flags) ? UseAlphaChannel(loadingSurface) : loadingSurface;
         #else
             return SDL_CreateTextureFromSurface(Device->Renderer, loadingSurface);
         #endif
+
     } else {
         printf("ERROR! : Couldn't load %s !\n", FilePath);
     }
@@ -57,7 +63,8 @@ BitmapFont* LoadBitmapFont(char FilePath[], DisplayDevice* DDevice, Uint32 FontC
 
     LoadingFont = (BitmapFont*)malloc(sizeof(BitmapFont));
     LoadingFont->FontSurface = NULL;
-    LoadingFont->FontSurface = LoadSDLSurface(FilePath, DDevice, &FontColorKey);
+    LoadingFont->FontSurface = LoadSDLSurface(FilePath, DDevice);
+    KeySurface(LoadingFont->FontSurface, FontColorKey);
     if (LoadingFont->FontSurface == NULL){
         fprintf(stderr, "Can't load font %s\n", SDL_GetError());
     }

@@ -2,6 +2,7 @@
 #include "Characters.h"
 #include "CourtRecord.h"
 #include "UI.h"
+#include "pictures.h"
 
 /* FIXME: We probably need to move the constants someplace else */
 
@@ -208,7 +209,7 @@ SceneContext* InitScene(DisplayDevice* DDevice, int BackgroundID){
     LoadingContext = (SceneContext*)malloc(sizeof(SceneContext));
     LoadingContext->PlayingAnimation = -1;
     LoadingContext->TileID = LoadingContext->SrcRect.x = LoadingContext->SrcRect.y = LoadingContext->ObjectLayerOffset = LoadingContext->Flipped = 0;
-    LoadingContext->Surface = LoadSurface((char*)Scenes[BackgroundID].SurfacePath, DDevice, NULL, false);
+    LoadingContext->Surface = LoadSurface((char*)Scenes[BackgroundID].SurfacePath, DDevice, 0x0, SURFACE_OPAQUE);
     #ifdef _SDL
         LoadingContext->SurfaceBounds.x = LoadingContext->Surface->w;
         LoadingContext->SurfaceBounds.y = LoadingContext->Surface->h;
@@ -437,6 +438,8 @@ void parseScene(xmlNode** entry, InputDevice* IDevice, DialogueContext* DiagCont
             MoveTile(SContext, atoi((char*)xmlNodeGetContent(property)), 0);
         } else if (strcmp((char*)property->name, "backgroundAnim") == 0) {
             BackgroundPlayAnimation(SContext, atoi((char*)xmlNodeGetContent(property)), &IDevice->EventEnabled);
+        } else if (strcmp((char*)property->name, "setPicture") == 0) {
+            SetPicture(atoi((char*)xmlNodeGetContent(property)));
         } else if (strcmp((char*)property->name, "jump") == 0) {
             jumpLabel = (char*)xmlNodeGetContent(property);
             searchNode = searchSceneNode(entry, jumpLabel);
@@ -458,10 +461,7 @@ void parseScene(xmlNode** entry, InputDevice* IDevice, DialogueContext* DiagCont
             } else {
                 Mix_HaltMusic();
             }
-        } else if (strcmp((char*)property->name, "presentItem") == 0){ /* FIXME: We should probably not do that that way*/
-            setUI(SHOW_ITEM_TO_COURT, atoi((char*)xmlNodeGetContent(property)));
         } else if (strcmp((char*)property->name, "setUI") == 0){
-            /* setUI(atoi((char*)xmlNodeGetContent(property)), 0); */
             setUI((unsigned int)atoi((char*)xmlGetProp(property, (xmlChar*)"type")), atoi((char*)xmlNodeGetContent(property)));
 
         }

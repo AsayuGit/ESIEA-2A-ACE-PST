@@ -3,8 +3,15 @@
 
     #include "include.h"
 
-    SDL_Surface* LoadSDLSurface(char FilePath[], DisplayDevice* Device, Uint32* ColorKey);
-    Surface* LoadSurface(char FilePath[], DisplayDevice* Device, Uint32* ColorKey, char AlphaChannel);
+    enum {
+        SURFACE_OPAQUE = 0,
+        SURFACE_ALPHA = 1,
+        SURFACE_KEYED = 2
+    };
+
+    SDL_Surface* LoadSDLSurface(char FilePath[], DisplayDevice* Device);
+    void KeySurface(SDL_Surface* SurfaceToKey, Uint32 ColorKey);
+    Surface* LoadSurface(char FilePath[], DisplayDevice* Device, Uint32 ColorKey, char flags);
     BitmapFont* LoadBitmapFont(char FilePath[], DisplayDevice* DDevice, Uint32 FontColorKey);
 
     Surface* CreateTargetSurface(DisplayDevice* DDevice, int w, int h);

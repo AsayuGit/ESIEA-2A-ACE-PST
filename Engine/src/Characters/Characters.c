@@ -2,7 +2,7 @@
 #include "CHAR_Index.h"
 
 void InitCharacter(DisplayDevice* DDevice, Characters* Character){
-    Character->Surface = LoadSurface(Character->SurfacePath, DDevice, &Character->ColorKey, false);
+    Character->Surface = LoadSurface(Character->SurfacePath, DDevice, Character->ColorKey, SURFACE_KEYED);
 }
 
 void CharacterPlayAnimation(Characters* Character, int AnimationID){
