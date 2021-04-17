@@ -85,7 +85,8 @@ void DisplayCharacter(DisplayDevice* DDevice, Characters* Character, SDL_Rect Vi
 
     /* On affiche la frame d'animation a l'écran */
     #ifdef _SDL
-        SDL_BlitSurface(Character->Surface, &SpriteWindow, DDevice->Screen, &SpriteLayer); /* Curent Character on screen */
+        /*SDL_BlitSurface(Character->Surface, &SpriteWindow, DDevice->Screen, &SpriteLayer);*/
+        FlipBlitSurface(Character->Surface, &SpriteWindow, DDevice->Screen, &SpriteLayer, Flip); /* Curent Character on screen */
     #else
         SDL_RenderCopyEx(DDevice->Renderer, Character->Surface, &SpriteWindow, &SpriteLayer, 0, 0, Flip);
     #endif

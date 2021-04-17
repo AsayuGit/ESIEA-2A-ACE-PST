@@ -4,7 +4,7 @@
     SDL_Surface* UseAlphaChannel(SDL_Surface* AlphaSurface){
         SDL_SetAlpha(AlphaSurface, SDL_SRCALPHA, SDL_ALPHA_OPAQUE);
         AlphaSurface->format->Amask = 0xFF000000;
-        //AlphaSurface->format->Ashift = 24;
+        /* AlphaSurface->format->Ashift = 24; */
         return AlphaSurface;
     }
 #endif
@@ -18,7 +18,7 @@ SDL_Surface* LoadSDLSurface(char FilePath[], DisplayDevice* Device){
 
     LoadingSurface = SDL_LoadBMP(FilePath);
     #ifdef _SDL
-        AcceleratedSurface = SDL_DisplayFormat(LoadingSurface);
+        AcceleratedSurface = SDL_DisplayFormat(LoadingSurface); /* Optimize the surface for blitting */
         SDL_FreeSurface(LoadingSurface);
         return AcceleratedSurface;
     #else
@@ -34,7 +34,7 @@ void KeySurface(SDL_Surface* SurfaceToKey, Uint32 ColorKey){
     #endif
 }
 
-Surface* LoadSurface(char FilePath[], DisplayDevice* Device, Uint32 ColorKey, char flags){
+SDL_Texture* LoadSurface(char FilePath[], DisplayDevice* Device, Uint32 ColorKey, char flags){
     SDL_Surface* loadingSurface;
     
     if (!FilePath) /* Don't bother loading a surface if the path isn't provided */
@@ -53,31 +53,73 @@ Surface* LoadSurface(char FilePath[], DisplayDevice* Device, Uint32 ColorKey, ch
         #endif
 
     } else {
-        printf("ERROR! : Couldn't load %s !\n", FilePath);
+        printf("ERROR: (loadSurface) Couldn't load %s !\n", FilePath);
     }
     return NULL;
 }
 
 BitmapFont* LoadBitmapFont(char FilePath[], DisplayDevice* DDevice, Uint32 FontColorKey){
+    /* Declaration */
     BitmapFont* LoadingFont;
+    SDL_Surface* LoadingSurface;
+    unsigned int FontPixX, FontPixY;
+    unsigned int LetterIndex;
+    int FontTexW, FontTexH;
 
+    /* Init */
+    LetterIndex = 0;
+    FontPixX = 1;
+
+    /* Load font surface*/
     LoadingFont = (BitmapFont*)malloc(sizeof(BitmapFont));
-    LoadingFont->FontSurface = NULL;
-    LoadingFont->FontSurface = LoadSDLSurface(FilePath, DDevice);
-    KeySurface(LoadingFont->FontSurface, FontColorKey);
-    if (LoadingFont->FontSurface == NULL){
-        fprintf(stderr, "Can't load font %s\n", SDL_GetError());
+    LoadingSurface = LoadSDLSurface(FilePath, DDevice);
+    if (!LoadingSurface){
+        printf("ERROR: (LoadBitmapFont) Can't load font %s\n", SDL_GetError());
     }
-    #ifndef _SDL
-        LoadingFont->FontTexture = SDL_CreateTextureFromSurface(DDevice->Renderer, LoadingFont->FontSurface);
+    KeySurface(LoadingSurface, FontColorKey);
+    
+    FontTexW = LoadingSurface->w;
+    FontTexH = LoadingSurface->h;
+
+    /* Fill-in rects for each letter */
+    SDL_LockSurface(LoadingSurface); /* Ensure that the pixel data is available for hw surfaces */ /* VERRRY SLOW AND INEFICIENT */
+    while (FontPixX < FontTexW){
+
+        /* Get letter coordinates */
+        FontPixY = 0;
+        LoadingFont->Rects[LetterIndex].x = FontPixX;
+        LoadingFont->Rects[LetterIndex].y = 1;
+
+        /* Get letter width */
+        while ((getpixel(LoadingSurface, FontPixX, FontPixY) != 0x0) && (FontPixX < FontTexW)){
+            FontPixX++;
+        }
+        LoadingFont->Rects[LetterIndex].w = FontPixX - LoadingFont->Rects[LetterIndex].x;
+        
+        /* Get letter height */
+        FontPixY = 1;
+        while ((getpixel(LoadingSurface, FontPixX, FontPixY) != 0x0) && (FontPixY < FontTexH)){
+            FontPixY++;
+        }
+        LoadingFont->Rects[LetterIndex].h = FontPixY - LoadingFont->Rects[LetterIndex].y;
+
+        FontPixX++;
+        LetterIndex++;
+    }
+    SDL_UnlockSurface(LoadingSurface);
+
+    #ifdef _SDL
+        LoadingFont->FontSurface = LoadingSurface;
+    #else
+        LoadingFont->FontSurface = SDL_CreateTextureFromSurface(DDevice->Renderer, LoadingSurface);
+        SDL_FreeSurface(LoadingSurface);
     #endif
-    LoadingFont->FontHeight = getFontHeight(LoadingFont);
 
     return LoadingFont;
 }
 
-Surface* CreateTargetSurface(DisplayDevice* DDevice, int w, int h){
-    Surface* LoadingSurface;
+SDL_Texture* CreateTargetSurface(DisplayDevice* DDevice, int w, int h){
+    SDL_Texture* LoadingSurface;
 
     LoadingSurface = NULL;
 #ifdef _SDL

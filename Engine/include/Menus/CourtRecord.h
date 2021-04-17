@@ -4,7 +4,7 @@
     #include "include.h"
 
     typedef struct{
-        Surface* ItemSpritesheet;
+        SDL_Texture* ItemSpritesheet;
         SDL_Rect* ItemSrcRectArray;
         char** NameArray;
         char** OrignArray;

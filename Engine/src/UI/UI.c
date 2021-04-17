@@ -7,13 +7,13 @@ static unsigned int StoredItemID;
 static SDL_Rect ItemPos;
 
 /* Surface and rects */
-static Surface* UISurface;
+static SDL_Texture* UISurface;
 static SDL_Rect UITestimonyRect;
 static unsigned int UILastBlink;
 static bool UIBlink;
 static unsigned int UIBlinkDelay;
 
-static Surface* UIWitnessTestimony;
+static SDL_Texture* UIWitnessTestimony;
 static SDL_Rect UIWTASrcRect;
 static SDL_Rect UIWTBSrcRect;
 static SDL_Rect UIWTADstRect;
@@ -38,12 +38,22 @@ static bool SwooshPlaying;
 #define UI_WT_PAUSE 1000
 
 void UI_ShowToCourt(DisplayDevice* DDevice, InputDevice* IDevice){
-    SDL_RenderCopy(DDevice->Renderer, UIItemBank->ItemSpritesheet, &(UIItemBank->ItemSrcRectArray[StoredItemID]), &(ItemPos)); /* Draw the item */
+    #ifdef _SDL
+        SDL_BlitSurface(UIItemBank->ItemSpritesheet, &(UIItemBank->ItemSrcRectArray[StoredItemID]), DDevice->Renderer, &(ItemPos));
+    #else
+        SDL_RenderCopy(DDevice->Renderer, UIItemBank->ItemSpritesheet, &(UIItemBank->ItemSrcRectArray[StoredItemID]), &(ItemPos)); /* Draw the item */
+    #endif
 }
 
 void UI_Testimony(DisplayDevice* DDevice, InputDevice* IDevice){
     if (UIBlink){
-        SDL_RenderCopy(DDevice->Renderer, UISurface, &UITestimonyRect, &UITestimonyRect); /* Draw the Icon*/
+
+        #ifdef _SDL
+            SDL_BlitSurface(UISurface, &UITestimonyRect, DDevice->Renderer, &UITestimonyRect);
+        #else
+            SDL_RenderCopy(DDevice->Renderer, UISurface, &UITestimonyRect, &UITestimonyRect); /* Draw the Icon*/
+        #endif
+
         UIBlinkDelay = UI_BLINK_SHOWN_DELAY;
     } else {
         UIBlinkDelay = UI_BLINK_HIDDEN_DELAY;
@@ -126,8 +136,13 @@ void UI_TestimonyIntro(DisplayDevice* DDevice, InputDevice* IDevice){ /* Timings
         break;
     }
 
-    SDL_RenderCopy(DDevice->Renderer, UIWitnessTestimony, &UIWTASrcRect, &UIWTADstRect);
-    SDL_RenderCopy(DDevice->Renderer, UIWitnessTestimony, &UIWTBSrcRect, &UIWTBDstRect);
+    #ifdef _SDL
+        SDL_BlitSurface(UIWitnessTestimony, &UIWTASrcRect, DDevice->Renderer, &UIWTADstRect);
+        SDL_BlitSurface(UIWitnessTestimony, &UIWTBSrcRect, DDevice->Renderer, &UIWTBDstRect);
+    #else
+        SDL_RenderCopy(DDevice->Renderer, UIWitnessTestimony, &UIWTASrcRect, &UIWTADstRect);
+        SDL_RenderCopy(DDevice->Renderer, UIWitnessTestimony, &UIWTBSrcRect, &UIWTBDstRect);
+    #endif
 }
 
 /* Init the notification handler */

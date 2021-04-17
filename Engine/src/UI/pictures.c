@@ -7,6 +7,7 @@ static int currentPicture;
 #define PIC_SIZEY 192
 
 /* FIXME: Please make a file format for this*/
+/* FIXME: We should use backgrounds instead of this */
 
 void InitPictures(DisplayDevice* DDevice){
     loadedScene.PicsPath = "Assets/Textures/Scenes/Scene1.bmp"; /* FIXME: Maybe useless in this context*/
@@ -29,6 +30,10 @@ void DrawPictures(DisplayDevice* DDevice){
         picSrdRect.w = PIC_SIZEX;
         picSrdRect.h = PIC_SIZEY;
 
-        SDL_RenderCopy(DDevice->Renderer, loadedScene.PicsSurface, &picSrdRect, NULL);
+        #ifdef _SDL
+            SDL_BlitSurface(loadedScene.PicsSurface, &picSrdRect, DDevice->Renderer, NULL);
+        #else
+            SDL_RenderCopy(DDevice->Renderer, loadedScene.PicsSurface, &picSrdRect, NULL);
+        #endif
     }
 }

@@ -9,9 +9,10 @@ CC = gcc
 WINCC = x86_64-w64-mingw32-gcc
 
 # Compile / Link Flags
-CFLAGS += -c -Wall -std=c89
+CFLAGS += -c -Wall -std=c89 -g
 LDFLAGS = $$(sdl2-config --libs) $$(xml2-config --libs) -lSDL2_image -lSDL2_mixer
 
+LEGACYLDFLAGS = "$$(sdl-config --libs) $$(xml2-config --libs) -lSDL_image -lSDL_mixer"
 WINLDFLAGS = "-L /usr/x86_64-w64-mingw32/lib/ -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_mixer -lxml2 -lz -llzma -lm -mwindows"
 
 # Main target and filename of the executable
@@ -37,7 +38,7 @@ WINLIBS = "-I /usr/x86_64-w64-mingw32/include/libxml2/"
 CPUS = $(nproc)
 
 multi:
-	@$(MAKE) -j$(CPUS) -s all
+	@$(MAKE) -j$(CPUS) --no-print-directory all
 
 all: $(OBJ_DIR) $(OUT)
 
@@ -57,10 +58,13 @@ clean:
 	@rm -rf $(BUILD_DIR) $(OUT) $(OUT).exe
 
 rebuild: clean
-	@$(MAKE) -j$(CPUS) -s all
+	@$(MAKE) -j$(CPUS) --no-print-directory all
 
 run:
 	./$(OUT)
 
+legacy:
+	@$(MAKE) --no-print-directory rebuild CFLAGS="-c -Wall -std=c89 -D _SDL -g" LDFLAGS=$(LEGACYLDFLAGS)
+
 windows:
-	@$(MAKE) -s rebuild CC=$(WINCC) OUT=ACE.exe LIBS=$(WINLIBS) LDFLAGS+=$(WINLDFLAGS)
+	@$(MAKE) --no-print-directory rebuild CC=$(WINCC) OUT=ACE.exe LIBS=$(WINLIBS) LDFLAGS+=$(WINLDFLAGS)

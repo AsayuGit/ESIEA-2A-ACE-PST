@@ -5,7 +5,7 @@
     #include "SceneCommonStructs.h"
 
     typedef struct{
-        Surface* ButtonsSurface;        /* Store the button's spritesheet */
+        SDL_Texture* ButtonsSurface;        /* Store the button's spritesheet */
         char* Label[4];                 /* Text printed on the buttons */
         BitmapFont* Font;               /* Font used to display the text */
         Mix_Chunk* ButtonUpDown;        /* Sound effect played when moving the cursor */

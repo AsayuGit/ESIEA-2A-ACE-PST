@@ -24,7 +24,7 @@
     typedef struct{
         char* DisplayName;
         /* Character Texture properties */
-        Surface* Surface; /* Character Surface */
+        SDL_Texture* Surface; /* Character Surface */
         char *SurfacePath;/* Character Surface path */
         Uint32 ColorKey;  /* Character color key */
 

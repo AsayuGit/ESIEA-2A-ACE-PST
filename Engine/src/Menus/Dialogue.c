@@ -22,18 +22,14 @@ int SetDialogueText(DialogueContext* Context, char* Name, char* Text, char SndEf
     Context->DstLetter.y = 0;
     ClearDialogueText(Context);
 
-    #ifndef _SDL
-        SDL_SetRenderTarget(Context->DDevice->Renderer, Context->nameLayer);
-    #endif
-        NameDest.w = gstrlen(Context->NameFont, Name, 1);
-        NameDest.x = ((Context->NameBounds.w - Context->NameBounds.x) - NameDest.w) / 2;
-        NameDest.h = Context->NameFont->FontHeight;
-        NameDest.y = (Context->NameBounds.h - NameDest.h) / 2;
-        NameDest.y = 0;
-        gprintf(Context->DDevice, Context->NameFont, Name, -1, &NameDest);
-    #ifndef _SDL
-        SDL_SetRenderTarget(Context->DDevice->Renderer, NULL);
-    #endif
+    SetRenderTarget(Context->DDevice, Context->nameLayer);
+    NameDest.w = gstrlen(Context->NameFont, Name, 1).x;
+    NameDest.x = ((Context->NameBounds.w - Context->NameBounds.x) - NameDest.w) / 2;
+    NameDest.h = Context->NameFont->Rects[0].h;
+    NameDest.y = (Context->NameBounds.h - NameDest.h) / 2;
+    NameDest.y = 0;
+    gprintf(Context->DDevice, Context->NameFont, Name, 1, &NameDest);
+    SetRenderTarget(Context->DDevice, NULL);
 
     switch (SndEffType){
         case 0:
@@ -114,6 +110,9 @@ DialogueContext* InitDialog(DisplayDevice* DDevice, BitmapFont* MainFont, Bitmap
     DiagContext->MainFont = MainFont;
     DiagContext->NameFont = NameFont;
     DiagContext->DDevice = DDevice;
+
+    DiagContext->DstLetter.h = MainFont->Rects[0].h;
+
     SetDialogueText(DiagContext, "", "", 0);
     return DiagContext;
 }
@@ -134,29 +133,33 @@ void Dialogue(DialogueContext* Context){
 
     /* Write text */
     if ((Context->Text[Context->progress] != '\0') && (SDL_GetTicks() >= Context->LastLetter + Context->TextSpeed)){
-        #ifndef _SDL
-            SDL_SetRenderTarget(Context->DDevice->Renderer, Context->textLayer);
-        #endif
+        SetRenderTarget(Context->DDevice, Context->textLayer);
         if (!Context->letterLag){
             Mix_PlayChannel(-1, Context->Letter, 0);
             Context->letterLag = 1;
         }else{
             Context->letterLag--;
         }
-        /* Here we use gputc() instead than gprintf() because we want to be able to print out the dialogue character by character */
-        Context->DstLetter = gputc(Context->DDevice, Context->MainFont, Context->Text[Context->progress], Context->DstLetter.x, Context->DstLetter.y, Context->DstLetter.h + 2, -1, &(InLayerTextBounds));
+
+        /* Print the next letter */
+        if ((Context->DstLetter.x + Context->MainFont->Rects[MAX(Context->Text[Context->progress] - 32, 0)].w < InLayerTextBounds.x + InLayerTextBounds.w) && (Context->Text[Context->progress] != '\n')){
+            Context->DstLetter.x += gputc(Context->DDevice, Context->MainFont, Context->Text[Context->progress], Context->DstLetter.x, Context->DstLetter.y) + 2;
+        } else {
+            Context->DstLetter.x = InLayerTextBounds.x;
+            Context->DstLetter.y += Context->MainFont->Rects[0].h;
+        }
+        
+        
         Context->progress++;
         Context->LastLetter = SDL_GetTicks();
-        #ifndef _SDL
-            SDL_SetRenderTarget(Context->DDevice->Renderer, NULL);
-        #endif
+        SetRenderTarget(Context->DDevice, NULL);
     }
 
     #ifdef _SDL
         SDL_BlitSurface(Context->textLayer, NULL, Context->DDevice->Screen, &(Context->TextBounds));
+        SDL_BlitSurface(Context->nameLayer, NULL, Context->DDevice->Screen, &(Context->NameBounds));
     #else
         SDL_RenderCopy(Context->DDevice->Renderer, Context->textLayer, NULL, &(Context->TextBounds));
-        /*printf("Name bounds %d %d %d %d\n", Context->NameBounds.x, Context->NameBounds.y, Context->NameBounds.w, Context->NameBounds.h); */
         SDL_RenderCopy(Context->DDevice->Renderer, Context->nameLayer, NULL, &(Context->NameBounds));
     #endif
 }

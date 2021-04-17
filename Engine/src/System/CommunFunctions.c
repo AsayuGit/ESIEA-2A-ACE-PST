@@ -1,168 +1,92 @@
 #include "CommunFunctions.h"
 
-Vector2i RectTileToCorrdinate(SDL_Rect SrcRect, Vector2i SurfaceBounds, int TileX, int TileY){
-    Vector2i Coordinates;
-/*
-    SrcRect.y = ((TileID * SrcRect.w) / SurfaceBounds.x);
-    SrcRect.x = (TileID - (SrcRect.y * (SurfaceBounds.x / SrcRect.w))) * SrcRect.w;
-    SrcRect.y *= SrcRect.h;
+int gputc(DisplayDevice* DDevice, BitmapFont* Font, char c, unsigned int x, unsigned int y){
+    /* Declaration */
+    SDL_Rect DstLetter;
 
-    Coordinates.y = SrcRect.y;
-    Coordinates.x = SrcRect.x; */
-
-    Coordinates.x = TileX * SrcRect.w;
-    Coordinates.y = TileY * SrcRect.h;
-
-    return Coordinates;
-}
-
-unsigned int getFontHeight(BitmapFont* Font){
-    unsigned int FontHeight = 1;
-    while(getpixel(Font->FontSurface, 0, FontHeight) != 0x0){
-        FontHeight++;
+    /* Init */
+    if (!DDevice){ /* DDevice check */
+        printf("ERROR: Invalid DisplayDevice !\n");
+        goto Exit;
     }
-
-    return FontHeight - 1;
-}
-
-int gstrlen(BitmapFont* Font, char* text, int intCharSpce){ /* To update (offsets changed recently) */
-    int LastLineLen, StringLen;
-    int i;
-
-    SDL_Rect SrcLetter;
-    unsigned int letterX, letterY, letterW, letterID;
-
-    if (intCharSpce < 0)
-        intCharSpce = 2;
-
-    i = 0;
-    StringLen = 0;
-    LastLineLen = 0;
-    while (text[i] != '\0'){
-        if (text[i] != '\n'){
-            letterX = 0;
-            letterY = 0;
-            
-            for (letterID = 0; letterID < text[i] - 31; letterX++){
-                if (getpixel(Font->FontSurface, letterX, letterY) == 0x0){
-                    letterID++;
-                }
-            }
-            letterW = letterX;
-            while (letterID < text[i] - 30){
-                if (getpixel(Font->FontSurface, letterW, letterY) == 0x0){
-                    letterID++;
-                }
-                letterW++;
-            }
-            letterW -= letterX + 1;
-            letterX--;
-            letterY = 1;
-            while(getpixel(Font->FontSurface, letterX, letterY) != 0x0){
-                letterY++;
-            }
-
-            /* Text Rendering */
-            SrcLetter.x = letterX + 1;
-            SrcLetter.y = 1;
-            SrcLetter.h = letterY - 1;
-            SrcLetter.w = letterW;
-
-            /* Display */
-            StringLen += SrcLetter.w + intCharSpce;
-        } else {
-            if (StringLen > LastLineLen)
-                LastLineLen = StringLen;
-            StringLen = 0;
-        }
-        i++;
+    if (!Font){ /* Font check */
+        printf("ERROR: No Font to print with!\n");
+        goto Exit;
     }
-
-    return (StringLen > LastLineLen) ? StringLen : LastLineLen;
-}
-
-SDL_Rect gputc(DisplayDevice* DDevice, BitmapFont* Font, char c, unsigned int x, unsigned int y, unsigned int intLineSpce, int intCharSpce, SDL_Rect* Bounds){
-    SDL_Rect SrcLetter, DstLetter;
-    unsigned int letterX, letterY, letterW, letterID;
+    c -= 32; /* We only want the printable characters*/
+    
+    if (c < 0)
+        c = 0;
 
     DstLetter.x = x;
     DstLetter.y = y;
-    DstLetter.h = intLineSpce;
+    DstLetter.h = Font->Rects[(int)c].h;
+    DstLetter.w = Font->Rects[(int)c].w;
 
-    if (intCharSpce < 0)
-        intCharSpce = 2;
+    /* Logic */
+    #ifdef _SDL
+        SDL_BlitSurface(Font->FontSurface, &Font->Rects[(int)c], DDevice->Renderer, &DstLetter);
+    #else
+        SDL_RenderCopy(DDevice->Renderer, Font->FontSurface, &Font->Rects[(int)c], &DstLetter);
+    #endif
 
-    /* Text processing */
-    if (c != '\n'){
-        letterX = 0;
-        letterY = 0;
-        
-        for (letterID = 0; letterID < c - 31; letterX++){
-            if (getpixel(Font->FontSurface, letterX, letterY) == 0x0){
-                letterID++;
-            }
-        }
-        letterW = letterX;
-        while (letterID < c - 30){
-            if (getpixel(Font->FontSurface, letterW, letterY) == 0x0){
-                letterID++;
-            }
-            letterW++;
-        }
-        letterW -= letterX + 1;
-        letterX--;
-        letterY = 1;
-        while(getpixel(Font->FontSurface, letterX, letterY) != 0x0){
-            letterY++;
-        }
-
-        /* Text Rendering */
-        SrcLetter.x = letterX + 1;
-        SrcLetter.y = 1;
-        SrcLetter.h = DstLetter.h = letterY - 1;
-        SrcLetter.w = DstLetter.w = letterW;
-
-        #ifdef _SDL
-            SDL_BlitSurface(Context->Font->FontSurface, &SrcLetter, Context->textLayer, &Context->DstLetter);
-        #else
-            SDL_RenderCopy(DDevice->Renderer, Font->FontTexture, &SrcLetter, &DstLetter);
-        #endif
-
-        if ((Bounds) && (DstLetter.x + SrcLetter.w > Bounds->w + Bounds->x)){
-            DstLetter.y += SrcLetter.h + intLineSpce;
-            DstLetter.x = Bounds->x;
-        } else {
-            DstLetter.x += SrcLetter.w + intCharSpce;
-        }
-    }else{
-        if (Bounds){
-            DstLetter.y += DstLetter.h + 1; /* May change for a standard offset in the future */
-            DstLetter.x = Bounds->x;
-        }
-    }
-
-    return DstLetter;
+Exit:
+    return DstLetter.w;
 }
 
-SDL_Rect gprintf(DisplayDevice* DDevice, BitmapFont* Font, char* text, int intCharSpce, SDL_Rect* Bounds){
-    int CharID;
-    SDL_Rect DstLetter;
+Vector2i gstrlen(BitmapFont* Font, char* text, int intCharSpce){
+    return gprintf(NULL, Font, text, intCharSpce, NULL);
+}
 
-    if (Bounds) {
-        DstLetter.x = Bounds->x;
-        DstLetter.y = Bounds->y;
+
+Vector2i gprintf(DisplayDevice* DDevice, BitmapFont* Font, char* text, int intCharSpce, SDL_Rect* Bounds){
+    /* Declaration */
+    unsigned int CharID, sizeTmp, DimX;
+    Vector2i CharCoords;
+    Vector2i Dimensions;
+ 
+
+    /* Init */
+    Dimensions.x = 0;
+    Dimensions.y = 0;
+    DimX = 0;
+    if (Bounds) { /* Bounds check */
+        CharCoords.x = Bounds->x;
+        CharCoords.y = Bounds->y;
     } else {
-        DstLetter.x = 0;
-        DstLetter.y = 0;
+        CharCoords.x = 0;
+        CharCoords.y = 0;
     }
-
     CharID = 0;
+
+    /* Logic */
     while (text[CharID] != '\0'){
-        DstLetter = gputc(DDevice, Font, text[CharID], DstLetter.x, DstLetter.y, DstLetter.h, intCharSpce, Bounds);
+        if (text[CharID] != '\n'){
+            if (DDevice){
+                sizeTmp = gputc(DDevice, Font, text[CharID], CharCoords.x, CharCoords.y) + intCharSpce;
+            } else {
+                sizeTmp = Font->Rects[MAX(text[CharID] - 32, 0)].w + intCharSpce;
+            }
+            CharCoords.x += sizeTmp;
+            DimX += sizeTmp;
+        } else {
+            /* New line */
+            sizeTmp = Font->Rects[0].h + 1;
+            Dimensions.y += sizeTmp;
+            CharCoords.y += sizeTmp;
+            CharCoords.x -= DimX;
+            
+            if (DimX > Dimensions.x){
+                Dimensions.x = DimX - intCharSpce;
+                DimX = 0;
+            }
+        }
         CharID++;
     }
 
-    return DstLetter;
+    if (DimX > Dimensions.x) Dimensions.x = DimX - intCharSpce; /* Because we don't count the lase inter char space*/
+
+    return Dimensions;
 }
 
 int map(int DstA, int DstB, int SrcA, int SrcB, int Value){

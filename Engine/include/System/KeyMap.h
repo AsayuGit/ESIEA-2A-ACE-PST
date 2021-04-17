@@ -5,7 +5,7 @@
         /* Actions */
         #define PAD_SELECT SDLK_SPACE
         #define PAD_BACK SDLK_LCTRL
-        #define PAD_COURTRECORD SDLK_E
+        #define PAD_COURTRECORD SDLK_e
 
         /* Directions */
         #define PAD_UP SDLK_UP

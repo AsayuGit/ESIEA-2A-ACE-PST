@@ -204,6 +204,7 @@ Background Scenes[BackgroundsCount] = {
 };
 
 /* Idée : Remplacer BackgroundID avec un "Background*" de cette façon les scènes gêrent elles meme leurs bg */
+/* Bonne idée mais on va refaire le système de loading des bg de tout façon 17/04 */
 SceneContext* InitScene(DisplayDevice* DDevice, int BackgroundID){
     SceneContext* LoadingContext;
     LoadingContext = (SceneContext*)malloc(sizeof(SceneContext));
@@ -211,8 +212,10 @@ SceneContext* InitScene(DisplayDevice* DDevice, int BackgroundID){
     LoadingContext->TileID = LoadingContext->SrcRect.x = LoadingContext->SrcRect.y = LoadingContext->ObjectLayerOffset = LoadingContext->Flipped = 0;
     LoadingContext->Surface = LoadSurface((char*)Scenes[BackgroundID].SurfacePath, DDevice, 0x0, SURFACE_OPAQUE);
     #ifdef _SDL
-        LoadingContext->SurfaceBounds.x = LoadingContext->Surface->w;
-        LoadingContext->SurfaceBounds.y = LoadingContext->Surface->h;
+        if (LoadingContext->Surface) {
+            LoadingContext->SurfaceBounds.x = LoadingContext->Surface->w;
+            LoadingContext->SurfaceBounds.y = LoadingContext->Surface->h;
+        }       
     #else
         SDL_QueryTexture(LoadingContext->Surface, NULL, NULL, &LoadingContext->SurfaceBounds.x, &LoadingContext->SurfaceBounds.y);
     #endif

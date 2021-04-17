@@ -32,6 +32,7 @@ DisplayDevice* CreateDisplayDevice(int ScreenWidth, int ScreenHeight, char* Titl
         Device->Screen = SDL_SetVideoMode(ScreenWidth, ScreenHeight, 32, SDL_HWSURFACE); /* | SDL_RESIZABLE */
         SDL_WM_SetCaption(Title, NULL);
 	    SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 1); /* VSync */
+        Device->Renderer = Device->Screen;
     #else
         Device->Screen = SDL_CreateWindow(Title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, ScreenWidth, ScreenHeight, SDL_WINDOW_SHOWN);
     #endif
@@ -56,9 +57,18 @@ DisplayDevice* CreateDisplayDevice(int ScreenWidth, int ScreenHeight, char* Titl
 
 SoundDevice* CreateSoundDevice(){
     if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 512) < 0){
-        fprintf(stderr, "Can't create main renderer\n - %s\n", SDL_GetError());
+        fprintf(stderr, "Can't create sound device\n - %s\n", SDL_GetError());
         exit(EXIT_INIT);
     }
     InitJukebox();
     return NULL;
+}
+
+int SetRenderTarget(DisplayDevice* DDevice, SDL_Texture* surface){
+#ifdef _SDL
+    DDevice->Renderer = (surface) ? surface : DDevice->Screen;
+    return 0;
+#else
+    return SDL_SetRenderTarget(DDevice->Renderer, surface);
+#endif
 }

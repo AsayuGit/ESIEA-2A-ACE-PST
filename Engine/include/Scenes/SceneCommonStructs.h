@@ -28,7 +28,7 @@
 
     typedef struct{
         /* Background Texture properties */
-        Surface* Surface; /* Background Surface */
+        SDL_Texture* Surface; /* Background Surface */
         Vector2i SurfaceBounds;
         int TileID;
         SDL_Rect SrcRect;

@@ -47,4 +47,7 @@
     #define EFFECTS "Assets" SL "Sound" SL "Effects" SL
     #define MUS_EXT ".wav"
 
+    #define MAX(x, y) (((x) > (y)) ? (x) : (y))
+    #define MIN(x, y) (((x) < (y)) ? (x) : (y))
+
 #endif

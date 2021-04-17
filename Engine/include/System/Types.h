@@ -6,11 +6,11 @@
     /* Uniformity between SDL1.2 and SDL2 */
     #ifdef _SDL
         typedef SDL_Surface SDL_Window;
-        typedef SDL_Surface Surface;
+        typedef SDL_Surface SDL_Texture;
         #define SDL_GetKeyboardState SDL_GetKeyState
         #define PADKEY key.keysym.sym
     #else
-        typedef SDL_Texture Surface;
+        /*typedef SDL_Texture Surface;*/
         #define SDL_HWSURFACE SDL_SWSURFACE
         #define PADKEY key.keysym.scancode
     #endif
@@ -27,14 +27,16 @@
 
     typedef struct{
         char* PicsPath;
-        Surface* PicsSurface;
+        SDL_Texture* PicsSurface;
         unsigned int SizeX;
         unsigned int SizeY;
     } Pics;
 
     typedef struct{
         SDL_Window *Screen;
-        #ifndef _SDL
+        #ifdef _SDL
+            SDL_Surface* Renderer;
+        #else
             SDL_Renderer *Renderer;
         #endif
         Vector2i ScreenResolution;
@@ -58,11 +60,8 @@
     } SoundDevice;
 
     typedef struct{
-        SDL_Surface* FontSurface;
-        #ifndef _SDL
-            SDL_Texture* FontTexture;
-        #endif
-        unsigned int FontHeight;
+        SDL_Texture* FontSurface;
+        SDL_Rect Rects[95]; /* Array containing one rect per printable ascii character */
     } BitmapFont;
 
 #endif

@@ -53,6 +53,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
     SContext = InitScene(DDevice, S_Courtroom);
 
     EventSelect = MainEvents;
+    IDevice->EventEnabled = true;
 
     ButtonsRect.x = 0;
     ButtonsRect.y = 0;
@@ -204,28 +205,22 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
         }
 
         /* Rendering (Back to front) */
+        DisplayBackground(DDevice, SContext);               /* Background */
+        DisplayCharacterLayer(DDevice, CharaLayer);         /* Character Layer */
+        DrawPictures(DDevice);                              /* Exposition Pictures */
+        Dialogue(DiagContext);                              /* Dialog */
+        if (ButtonActivated){                               /* Check if the buttons are actually on screen to save ressources */
+            DisplayBackground(DDevice, ButtonLayer);        /* Animate the button layer */
+            DrawButtons(BContext);                          /* Draw the actual buttons (Maybe merge ?) */
+        }
+        DrawUI(DDevice, IDevice);                           /* Draw teh user interface */
+        if (CourtRecordActivated){
+            DrawCourtRecord(DDevice, Context->MainFont);    /* Draw the court Record */
+        }
         #ifdef _SDL
-            DisplayBackground(DDevice, SContext); /* Background */
-            DisplayCharacterLayer(DDevice, CharaLayer);
-            /*FlipBlitSurface(Desk, NULL, DDevice->Screen, &DeskRect, SceneFlip);  */ /* Desk */
-            Dialogue(DiagContext); /* Dialog */
             SDL_Flip(DDevice->Screen);
         #else
-            DisplayBackground(DDevice, SContext);        /* Background */
-            DisplayCharacterLayer(DDevice, CharaLayer);
-            
-            DrawPictures(DDevice);
-
-            Dialogue(DiagContext);              /* Dialog */
-            if (ButtonActivated){                        /* Check if the buttons are actually on screen to save ressources */
-                DisplayBackground(DDevice, ButtonLayer); /* Animate the button layer */
-                DrawButtons(BContext);                   /* Draw the actual buttons (Maybe merge ?) */
-            }
-            DrawUI(DDevice, IDevice);                    /* Draw teh user interface */
-            if (CourtRecordActivated){
-                DrawCourtRecord(DDevice, Context->MainFont);               /* Draw the court Record */
-            }
-            SDL_RenderPresent(DDevice->Renderer);       /* Update the main window */
+            SDL_RenderPresent(DDevice->Renderer);           /* Update the main window */
         #endif
     }
 

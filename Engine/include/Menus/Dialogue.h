@@ -12,7 +12,7 @@
         Uint32 LastLetter;
 
         /* Dialog Box */
-        Surface* DialogBox;
+        SDL_Texture* DialogBox;
         SDL_Rect DialogBoxBounds;   /* Region where the dialog box should be drawn */
         SDL_Rect TextBounds;        /* Region where the text should be drawn */
         SDL_Rect NameBounds;        /* Region where the name should be drawn */
@@ -21,8 +21,8 @@
         BitmapFont* MainFont;
         BitmapFont* NameFont;
         SDL_Rect DstLetter;
-        Surface* textLayer;
-        Surface* nameLayer;
+        SDL_Texture* textLayer;
+        SDL_Texture* nameLayer;
 
         char letterLag;
         Mix_Chunk* Letter;
