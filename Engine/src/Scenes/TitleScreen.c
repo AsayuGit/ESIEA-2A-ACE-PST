@@ -12,7 +12,7 @@ int Scene_TitleScreen(DisplayDevice* DDevice, InputDevice* IDevice, BitmapFont* 
 
     Mix_Chunk* ToMenu;
 
-    SContext = InitScene(DDevice, S_TitleScreen);
+    SContext = InitScene(DDevice, "Assets/Anim/TitleScreen.xml");
     BContext = InitButtons(DDevice, SContext, Font, 148, NULL);
 
     AddButton(BContext, "New Game");
@@ -98,6 +98,8 @@ int Scene_TitleScreen(DisplayDevice* DDevice, InputDevice* IDevice, BitmapFont* 
     }
 
 Exit:
+    if (SContext)
+        FreeScene(SContext);
 
     return ReturnValue;
 }

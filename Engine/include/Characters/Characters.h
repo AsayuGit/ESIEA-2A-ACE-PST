@@ -11,7 +11,7 @@
 
     /* Character Layer Management */
     void InitCharacterLayer(CharacterLayer** CharaLayer, SceneContext* SContext);
-    void AddCharacterToLayer(CharacterLayer* CharaLayer, Characters* Character, SceneContext* SContext, int TileID, char Flip, DisplayDevice* DDevice, Vector2i BackgroundBounds);
+    void AddCharacterToLayer(CharacterLayer* CharaLayer, Characters* Character, SceneContext* SContext, int TileID, char Flip, DisplayDevice* DDevice);
     void DeleteCharacterFromLayer(CharacterLayer* CharaLayer, Characters* Character);
     void DisplayCharacterLayer(DisplayDevice* DDevice, CharacterLayer* CharaLayer);
 

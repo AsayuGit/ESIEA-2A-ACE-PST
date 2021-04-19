@@ -154,3 +154,8 @@ Mix_Chunk* LoadSoundEffect(char FilePath[]){
         fprintf(stderr, "Can't load sound effect %s\n", Mix_GetError());
     return LoadingSoundEffect;
 }
+
+xmlDoc* loadXml(char* filePath){
+    xmlKeepBlanksDefault(0); /* Ignore white space */
+    return xmlReadFile(filePath, NULL, 0); /* Load File into memory */
+}

@@ -50,7 +50,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
         return -1;
     }
     DiagContext = InitDialog(DDevice, Context->MainFont, Context->NameFont);
-    SContext = InitScene(DDevice, S_Courtroom);
+    SContext = InitScene(DDevice, "Assets/Anim/Courtroom.xml");
 
     EventSelect = MainEvents;
     IDevice->EventEnabled = true;
@@ -61,7 +61,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
     ButtonsRect.h = DDevice->ScreenResolution.y - (DiagContext->TextBounds.h + DiagContext->NameBounds.h);
 
     /* Button Init */
-    ButtonLayer = InitScene(DDevice, S_Empty);
+    ButtonLayer = InitScene(DDevice, "Assets/Anim/ButtonHorizontal.xml");
     BContext = InitButtons(DDevice, ButtonLayer, Context->ButtonFont, 224, &ButtonsRect);
     MoveButtonsToCoordinates(BContext, DDevice->ScreenResolution.x, 0);
     ButtonActivated = 0;
@@ -86,21 +86,21 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
 
     CharaLayer = NULL;
     InitCharacterLayer(&CharaLayer, SContext);
-    AddCharacterToLayer(CharaLayer, &CHAR_PhoenixWright, SContext, 0, 0, DDevice, SContext->SurfaceBounds);
-    AddCharacterToLayer(CharaLayer, &CHAR_Desk, SContext, 0, 0, DDevice, SContext->SurfaceBounds);
+    AddCharacterToLayer(CharaLayer, &CHAR_PhoenixWright, SContext, 0, 0, DDevice);
+    AddCharacterToLayer(CharaLayer, &CHAR_Desk, SContext, 0, 0, DDevice);
 
-    AddCharacterToLayer(CharaLayer, &CHAR_MiaFey, SContext, 5, 0, DDevice, SContext->SurfaceBounds);
+    AddCharacterToLayer(CharaLayer, &CHAR_MiaFey, SContext, 5, 0, DDevice);
 
-    AddCharacterToLayer(CharaLayer, &CHAR_WinstonPayne, SContext, 1, 0, DDevice, SContext->SurfaceBounds);
-    AddCharacterToLayer(CharaLayer, &CHAR_Desk, SContext, 1, 1, DDevice, SContext->SurfaceBounds);
+    AddCharacterToLayer(CharaLayer, &CHAR_WinstonPayne, SContext, 1, 0, DDevice);
+    AddCharacterToLayer(CharaLayer, &CHAR_Desk, SContext, 1, 1, DDevice);
 
-    AddCharacterToLayer(CharaLayer, &CHAR_Judge, SContext, 4, 0, DDevice, SContext->SurfaceBounds);
+    AddCharacterToLayer(CharaLayer, &CHAR_Judge, SContext, 4, 0, DDevice);
 
-    AddCharacterToLayer(CharaLayer, &CHAR_FrankShawit, SContext, 2, 0, DDevice, SContext->SurfaceBounds);
-    AddCharacterToLayer(CharaLayer, &CHAR_DefendantDesk, SContext, 2, 0, DDevice, SContext->SurfaceBounds);
+    AddCharacterToLayer(CharaLayer, &CHAR_FrankShawit, SContext, 2, 0, DDevice);
+    AddCharacterToLayer(CharaLayer, &CHAR_DefendantDesk, SContext, 2, 0, DDevice);
 
     /* Scene setup */
-    sceneFile = loadScene(DialogPath);
+    sceneFile = loadXml(DialogPath);
     scenePointer = xmlDocGetRootElement(sceneFile)->children;
     parseScene(&scenePointer, IDevice, DiagContext, SContext, BContext, CharacterIndex, NbOfCharacters, &IdleAnimation, &ReturnToDefault, &CurrentCharacter, &ButtonActivated, ButtonJumpLabels);
     /*CourtroomScenarioA(SContext, ButtonLayer, DiagContext, BContext, &Plot, &CurrentCharacter, &IdleAnimation, &ReturnToDefault, &BGAnimComplete, &ButtonActivated, &ButtonInput); */
@@ -227,16 +227,16 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
 
 Exit:
     /* Cleaning memory */
-/*
-    #ifdef _SDL
-    SDL_FreeSurface(Courtroom);
-    #else
-    SDL_DestroyTexture(Courtroom);
-    #endif
-*/
+
     /*free(DiagContext); */
     if (sceneFile)
-        xmlFreeDoc(sceneFile); /* Free memory */
+        xmlFreeDoc(sceneFile);
+
+    if (SContext)
+        FreeScene(SContext);
+
+    if (ButtonLayer)
+        FreeScene(ButtonLayer);
 
     return 0;
 }

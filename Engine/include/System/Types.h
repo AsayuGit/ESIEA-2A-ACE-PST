@@ -1,7 +1,13 @@
-#ifndef _TYPES
-#define _TYPES
+#ifndef _TYPES_H
+#define _TYPES_H
 
     #include <stdbool.h>
+
+    #ifdef _SDL
+        #include <SDL/SDL.h>
+    #else
+        #include <SDL2/SDL.h>
+    #endif
 
     /* Uniformity between SDL1.2 and SDL2 */
     #ifdef _SDL
@@ -63,5 +69,9 @@
         SDL_Texture* FontSurface;
         SDL_Rect Rects[95]; /* Array containing one rect per printable ascii character */
     } BitmapFont;
+
+    SDL_Rect InitRect(int x, int y, int w, int h);
+    Vector2d InitVector2d(double x, double y);
+    Vector2i InitVector2i(int x, int y);
 
 #endif

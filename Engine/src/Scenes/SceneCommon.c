@@ -3,227 +3,107 @@
 #include "CourtRecord.h"
 #include "UI.h"
 #include "pictures.h"
-
-/* FIXME: We probably need to move the constants someplace else */
-
-/* First background animation (90° turn) */
-Vector2d CourtAnim1States[3] = {
-    {0.0, 1.6},
-    {4.0, 4.0},
-    {0.0, 1.6}
-};
-
-int CourtAnim1Runtime[3] = {
-    64,
-    320,
-    64
-};
-
-Vector2d CourtAnim1Range[3] = {
-    {0.0, 10.0},
-    {0.0, 10.56},
-    {0.0, 10.0}
-};
-
-char CourtAnim1Effects[3] = {
-    0, 
-    0,
-    0
-};
-
-/* Second background animation (180° turn) */
-Vector2d CourtAnim2States[4] = {
-    {0.0, 1.6},
-    {4.0, 4.0},
-    {4.0, 4.0},
-    {0.0, 1.6}
-};
-
-int CourtAnim2Runtime[4] = {
-    64,
-    320,
-    320,
-    64
-};
-
-Vector2d CourtAnim2Range[4] = {
-    {0.0, 10.0},
-    {0.0, 10.72}, /* To tweak */
-    {10.72, 0.0},
-    {10.0, 0.0}
-};
-
-char CourtAnim2Effects[4] = {
-    0,
-    0,
-    0,
-    0
-};
-
-/* Third background animation (Reverse 180° turn) */
-Vector2d CourtAnim3States[4] = {
-    {0.0, -1.6},
-    {-4.0, -4.0},
-    {-4.0, -4.0},
-    {0.0, -1.6}
-};
-
-int CourtAnim3Runtime[4] = {
-    64,
-    320,
-    320,
-    64
-};
-
-Vector2d CourtAnim3Range[4] = {
-    {0.0, 10.0},
-    {0.0, 10.74}, /* To tweak */
-    {10.74, 0.0},
-    {10.0, 0.0}
-};
-
-char CourtAnim3Effects[4] = {
-    0,
-    0,
-    0,
-    0
-};
-
-BGAnimation CourtAnim[3] = {
-    {
-        3,                  /* NbOfAnimStates */
-        CourtAnim1States,
-        CourtAnim1Runtime,
-        CourtAnim1Range, /* X max form 0 to +infinity */
-        CourtAnim1Effects,
-        {0, 0, 648, 0}
-    },
-    {
-        4,
-        CourtAnim2States,
-        CourtAnim2Runtime,
-        CourtAnim2Range,
-        CourtAnim2Effects,
-        {0, 0, 1040, 0}
-    },
-    {
-        4,
-        CourtAnim3States,
-        CourtAnim3Runtime,
-        CourtAnim3Range,
-        CourtAnim3Effects,
-        {1040, 0, 0, 0}
-    }
-};
-
-/* Title Screen */
-Vector2d TitleScreen1States[1] = {
-    {0.0, 25.6}
-};
-
-int TitleScreen1Runtime[1] = {
-    500
-};
-
-Vector2d TitleScreen1Range[1] = {
-    {0.0, 10.0}
-};
-
-char TitleScreen1Effects[1] = {
-    0
-};
-
-Vector2d TitleScreen2States[1] = {
-    {0.0, -25.6}
-};
-
-int TitleScreen2Runtime[1] = {
-    500
-};
-
-Vector2d TitleScreen2Range[1] = {
-    {0.0, 10.0}
-};
-
-char TitleScreen2Effects[1] = {
-    0
-};
-
-
-BGAnimation TitleScreenAnim[2] = {
-    {
-        1,                  /* NbOfAnimStates */
-        TitleScreen1States,
-        TitleScreen1Runtime,
-        TitleScreen1Range, /* X max form 0 to +infinity */
-        TitleScreen1Effects,
-        {0, 0, 256, 0}
-    },
-    {
-        1,                  /* NbOfAnimStates */
-        TitleScreen2States,
-        TitleScreen2Runtime,
-        TitleScreen2Range, /* X max form 0 to +infinity */
-        TitleScreen2Effects,
-        {256, 0, 0, 0}
-    }
-};
-
-Vector2i CourtScenes[6] = {
-    {0, 0},     /* Defence Side     (0) */
-    {1040, 0},  /* Prosecution side (1) */
-    {520, 0},   /* Defendant        (2) */
-    {0, 192},   /* Court View       (3) */
-    {256, 192}, /* Judge Side       (4) */
-    {512, 192}  /* Assistant Side   (5) */
-};
-
-Vector2i EmptyScenes[1] = {
-    {0, 0}
-};
-
-Background Scenes[BackgroundsCount] = {
-    {/* S_Empty */
-        NULL,
-        TitleScreenAnim,
-        1,
-        EmptyScenes
-    },
-    {/* S_Courtroom */
-        ROOT""TEXTURES"Places"SL"Courtroom"TEX_EXT,
-        CourtAnim,
-        6,
-        CourtScenes
-    },
-    {/* S_TitleScreen */
-        ROOT""TEXTURES"Menus"SL"TitleScreen"TEX_EXT,
-        TitleScreenAnim,
-        1,
-        EmptyScenes
-    }
-};
+#include "Load.h"
 
 /* Idée : Remplacer BackgroundID avec un "Background*" de cette façon les scènes gêrent elles meme leurs bg */
-/* Bonne idée mais on va refaire le système de loading des bg de tout façon 17/04 */
-SceneContext* InitScene(DisplayDevice* DDevice, int BackgroundID){
+
+BGAnimation* ParseBGAnimation(xmlNode* property){
+    BGAnimation* LoadingAnimation;
+    xmlNode *array, *entry;
+    unsigned int ArrayID, EntryID;
+
+    LoadingAnimation = (BGAnimation*)malloc(xmlChildElementCount(property)*sizeof(BGAnimation));
+    array = property->children;
+
+    ArrayID = 0;
+    while (array){
+        if (strcmp((char*)array->name, "anim") == 0) {
+            LoadingAnimation[ArrayID].NbOfAnimStates = xmlChildElementCount(array);
+            LoadingAnimation[ArrayID].AnimRegion = InitRect(atoi((char*)xmlGetProp(array, (xmlChar*)"X")), atoi((char*)xmlGetProp(array, (xmlChar*)"Y")), atoi((char*)xmlGetProp(array, (xmlChar*)"W")), atoi((char*)xmlGetProp(array, (xmlChar*)"H")));
+            
+            LoadingAnimation[ArrayID].AnimStates = (Vector2d*)malloc(sizeof(Vector2d)*LoadingAnimation[ArrayID].NbOfAnimStates);
+            LoadingAnimation[ArrayID].AnimRange = (Vector2d*)malloc(sizeof(Vector2d)*LoadingAnimation[ArrayID].NbOfAnimStates);
+            LoadingAnimation[ArrayID].AnimRuntime = (int*)malloc(sizeof(int)*LoadingAnimation[ArrayID].NbOfAnimStates);
+            entry = array->children;
+            
+            EntryID = 0;
+            while (entry){
+                if (strcmp((char*)entry->name, "entry") == 0){
+                    LoadingAnimation[ArrayID].AnimStates[EntryID] = InitVector2d(atof((char*)xmlGetProp(entry, (xmlChar*)"stateA")), atof((char*)xmlGetProp(entry, (xmlChar*)"stateB")));
+                    LoadingAnimation[ArrayID].AnimRange[EntryID] = InitVector2d(atof((char*)xmlGetProp(entry, (xmlChar*)"rangeA")), atof((char*)xmlGetProp(entry, (xmlChar*)"rangeB")));
+                    LoadingAnimation[ArrayID].AnimRuntime[EntryID] = atoi((char*)xmlGetProp(entry, (xmlChar*)"runtime"));
+                    EntryID++;
+                }
+                entry = entry->next;
+            }
+            
+            ArrayID++;
+        }
+        array = array->next;
+    }
+
+    return LoadingAnimation;
+}
+
+Vector2i* ParseScenesCoordinates(xmlNode* property){
+    Vector2i* LoadingScenesCoordinates;
+    xmlNode* entry;
+    unsigned int EntryID;
+
+    LoadingScenesCoordinates = (Vector2i*)malloc(xmlChildElementCount(property)*sizeof(Vector2i));
+    entry = property->children;
+
+    EntryID = 0;
+    while (entry){
+        if (strcmp((char*)entry->name, "scene") == 0){
+            LoadingScenesCoordinates[EntryID] = InitVector2i(atoi((char*)xmlGetProp(entry, (xmlChar*)"X")), atoi((char*)xmlGetProp(entry, (xmlChar*)"Y")));
+            EntryID++;
+        }
+        entry = entry->next;
+    }
+
+    return LoadingScenesCoordinates;
+}
+
+SceneContext* InitScene(DisplayDevice* DDevice, char* ScenePath){
+    /* Declaration */
     SceneContext* LoadingContext;
-    LoadingContext = (SceneContext*)malloc(sizeof(SceneContext));
-    LoadingContext->PlayingAnimation = -1;
-    LoadingContext->TileID = LoadingContext->SrcRect.x = LoadingContext->SrcRect.y = LoadingContext->ObjectLayerOffset = LoadingContext->Flipped = 0;
-    LoadingContext->Surface = LoadSurface((char*)Scenes[BackgroundID].SurfacePath, DDevice, 0x0, SURFACE_OPAQUE);
-    #ifdef _SDL
-        if (LoadingContext->Surface) {
-            LoadingContext->SurfaceBounds.x = LoadingContext->Surface->w;
-            LoadingContext->SurfaceBounds.y = LoadingContext->Surface->h;
-        }       
-    #else
-        SDL_QueryTexture(LoadingContext->Surface, NULL, NULL, &LoadingContext->SurfaceBounds.x, &LoadingContext->SurfaceBounds.y);
-    #endif
+    xmlDoc* SceneFile;
+    xmlNode *background, *property;
+    char* SurfacePath, *Buffer;
+
+    /* Init */
+    LoadingContext = (SceneContext*)calloc(1, sizeof(SceneContext));
+
+    /* Logic */
+    if (ScenePath){
+        SceneFile = loadXml(ScenePath); /* Load the xml file in memory */
+        background = xmlDocGetRootElement(SceneFile); /* root node */
+
+        if ((SurfacePath = (char*)xmlGetProp(background, (xmlChar*)"texture"))){
+            if ((Buffer = (char*)xmlGetProp(background, (xmlChar*)"colorKey"))){
+                LoadingContext->Surface = LoadSurface(SurfacePath, DDevice, (Uint32)atoi(Buffer), SURFACE_KEYED);
+            } else {
+                LoadingContext->Surface = LoadSurface(SurfacePath, DDevice, 0x0, SURFACE_OPAQUE);
+            }
+        }
+
+        /* Parsing */
+        property = background->children;
+        while (property){
+            if (strcmp((char*)property->name, "animArray") == 0){
+                LoadingContext->Animation = ParseBGAnimation(property);
+            } else if (strcmp((char*)property->name, "sceneArray") == 0){
+                LoadingContext->ScenesCoordinates = ParseScenesCoordinates(property);
+            }
+            property = property->next;
+        }
+    }
+
     LoadingContext->SrcRect.w = DDevice->ScreenResolution.x;
     LoadingContext->SrcRect.h = DDevice->ScreenResolution.y;
-    LoadingContext->Animation = Scenes[BackgroundID].Animation;
-    LoadingContext->nbOfScenes = Scenes[BackgroundID].nbOfScenes;
-    LoadingContext->ScenesCoordinates = Scenes[BackgroundID].ScenesCoordinates;
+    LoadingContext->PlayingAnimation = -1;
+
     return LoadingContext;
 }
 
@@ -311,6 +191,8 @@ void DisplayBackground(DisplayDevice* DDevice, SceneContext* Context){ /* Displa
         AnimDstRect.h = DDevice->ScreenResolution.y;
 
         /* Effects */
+        /* Not used for now :3 */
+        /*
         switch (Context->Animation[Context->PlayingAnimation].AnimEffects[Context->CurrentState]){
             case 0:
                 Context->Flipped = 0;
@@ -321,6 +203,9 @@ void DisplayBackground(DisplayDevice* DDevice, SceneContext* Context){ /* Displa
                 Context->SrcRect = AnimSrcRect;
                 break;
         }
+        */
+
+        Context->SrcRect = AnimSrcRect; /* Used to sync up to other layers */
 
         #ifdef _SDL
             SDL_BlitSurface(Context->Surface, &AnimSrcRect, DDevice->Screen, &AnimDstRect); 
@@ -351,11 +236,6 @@ void DisplayBackground(DisplayDevice* DDevice, SceneContext* Context){ /* Displa
             SDL_RenderCopyEx(DDevice->Renderer, Context->Surface, &Context->SrcRect, NULL, 0, 0, Context->Flipped);
         #endif
     }
-}
-
-xmlDoc* loadScene(char* filePath){ /* To move to load.c (maybe) */
-    xmlKeepBlanksDefault(0); /* Ignore white space */
-    return xmlReadFile(filePath, NULL, 0); /* Load File into memory */
 }
 
 xmlNode* searchSceneNode(xmlNode** entry, char* label){
@@ -392,6 +272,7 @@ void parseScene(xmlNode** entry, InputDevice* IDevice, DialogueContext* DiagCont
     int ItemBuffer;
     /* Music */
     int TrackID;
+
     /* Logic */
     next = ((*entry)->next) ? (*entry)->next : (*entry);
     property = (*entry)->children;
@@ -471,4 +352,26 @@ void parseScene(xmlNode** entry, InputDevice* IDevice, DialogueContext* DiagCont
         property = property->next;
     }
     (*entry) = next;
+}
+
+void FreeBGAnimation(BGAnimation* AnimationToFree){
+    if (AnimationToFree->AnimStates)
+        free(AnimationToFree->AnimStates);
+    
+    if (AnimationToFree->AnimRuntime)
+        free(AnimationToFree->AnimRuntime);
+
+    if (AnimationToFree->AnimRange)
+        free(AnimationToFree->AnimRange);
+}
+
+void FreeScene(SceneContext* SceneToFree){
+    if (SceneToFree->Surface)
+        SDL_DestroyTexture(SceneToFree->Surface);
+
+    if (SceneToFree->Animation)
+        FreeBGAnimation(SceneToFree->Animation);
+
+    free(SceneToFree->ScenesCoordinates);
+    free(SceneToFree);
 }

@@ -2,6 +2,7 @@
 #define _LOAD
 
     #include "include.h"
+    #include <libxml2/libxml/parser.h>
 
     enum {
         SURFACE_OPAQUE = 0,
@@ -18,5 +19,7 @@
 
     Mix_Music* LoadMusic(char FilePath[]);
     Mix_Chunk* LoadSoundEffect(char FilePath[]);
+
+    xmlDoc* loadXml(char* filePath);
 
 #endif
