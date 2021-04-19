@@ -1,5 +1,5 @@
-#ifndef _DIALOGUE
-#define _DIALOGUE
+#ifndef _DIALOGUE_H
+#define _DIALOGUE_H
 
     #include "include.h"
 

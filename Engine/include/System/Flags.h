@@ -1,4 +1,4 @@
-#ifndef _FLAGS
-#define _FLAGS
+#ifndef _FLAGS_H
+#define _FLAGS_H
 
 #endif

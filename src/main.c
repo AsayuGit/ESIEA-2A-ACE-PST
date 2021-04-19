@@ -14,6 +14,16 @@ int main(int argc, char* argv[]){
     Uint32 FontColorKey = 0xff00ff;
     CourtroomContext* CourtContext;
 
+    Characters* CharactersIndex[CharactersCount] = {
+        &CHAR_PhoenixWright,
+        &CHAR_MiaFey,
+        &CHAR_MilesEdgeworth,
+        &CHAR_Judge,
+        &CHAR_WinstonPayne,
+        &CHAR_Desk,
+        &CHAR_FrankShawit
+    };
+
     CourtContext = (CourtroomContext*)malloc(sizeof(CourtroomContext));
 
     InitSDL();
@@ -30,23 +40,13 @@ int main(int argc, char* argv[]){
     CourtContext->NameFont = NameFont;
     CourtContext->ButtonFont = MainMenuFont;
 
-    Characters* CharactersIndex[CharactersCount] = {
-        &CHAR_PhoenixWright,
-        &CHAR_MiaFey,
-        &CHAR_MilesEdgeworth,
-        &CHAR_Judge,
-        &CHAR_WinstonPayne,
-        &CHAR_Desk,
-        &CHAR_FrankShawit
-    };
-
     /* First we start the title screen */
     if (Scene_TitleScreen(DDevice, IDevice, MainMenuFont) == 0){
         /* We start the courtroom Scene */
         if (argc > 1){
-            Scene_Courtroom(DDevice, IDevice, CourtContext, CharactersIndex, CharactersCount, argv[1]);
+            Scene_Courtroom(DDevice, IDevice, CourtContext, CharactersIndex, argv[1]);
         } else {
-            Scene_Courtroom(DDevice, IDevice, CourtContext, CharactersIndex, CharactersCount, "Assets/Dialogue/court.xml");
+            Scene_Courtroom(DDevice, IDevice, CourtContext, CharactersIndex, "Assets/Dialogue/court.xml");
         }
     }
     

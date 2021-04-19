@@ -1,5 +1,5 @@
-#ifndef _CHARACTERSSTRUCTURES
-#define _CHARACTERSSTRUCTURES
+#ifndef _CHARACTERSSTRUCTURES_H
+#define _CHARACTERSSTRUCTURES_H
 
     #include "include.h"
 

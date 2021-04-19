@@ -1,5 +1,5 @@
-#ifndef _GRAPHICS
-#define _GRAPHICS
+#ifndef _GRAPHICS_H
+#define _GRAPHICS_H
 
     #include "include.h"
 

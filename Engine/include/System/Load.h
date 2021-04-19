@@ -1,5 +1,5 @@
-#ifndef _LOAD
-#define _LOAD
+#ifndef _LOAD_H
+#define _LOAD_H
 
     #include "include.h"
     #include <libxml2/libxml/parser.h>

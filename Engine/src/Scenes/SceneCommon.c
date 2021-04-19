@@ -2,7 +2,6 @@
 #include "Characters.h"
 #include "CourtRecord.h"
 #include "UI.h"
-#include "pictures.h"
 #include "Load.h"
 
 /* Idée : Remplacer BackgroundID avec un "Background*" de cette façon les scènes gêrent elles meme leurs bg */
@@ -65,15 +64,15 @@ Vector2i* ParseScenesCoordinates(xmlNode* property){
     return LoadingScenesCoordinates;
 }
 
-SceneContext* InitScene(DisplayDevice* DDevice, char* ScenePath){
+BackgroundContext* InitBackground(DisplayDevice* DDevice, char* ScenePath){
     /* Declaration */
-    SceneContext* LoadingContext;
+    BackgroundContext* LoadingContext;
     xmlDoc* SceneFile;
     xmlNode *background, *property;
     char* SurfacePath, *Buffer;
 
     /* Init */
-    LoadingContext = (SceneContext*)calloc(1, sizeof(SceneContext));
+    LoadingContext = (BackgroundContext*)calloc(1, sizeof(BackgroundContext));
 
     /* Logic */
     if (ScenePath){
@@ -103,35 +102,33 @@ SceneContext* InitScene(DisplayDevice* DDevice, char* ScenePath){
     LoadingContext->SrcRect.w = DDevice->ScreenResolution.x;
     LoadingContext->SrcRect.h = DDevice->ScreenResolution.y;
     LoadingContext->PlayingAnimation = -1;
+    LoadingContext->Shown = true;
 
     return LoadingContext;
 }
 
-void MoveTile(SceneContext* Context, int TileID, char Effect){ /* Change the background tile */
+void MoveBackground(BackgroundContext* Context, int TileID, char Effect){ /* Change the background tile */
+    if (TileID >= 0){
+        Context->Shown = true;
+        Context->SrcRect.x = Context->ScenesCoordinates[TileID].x;
+        Context->SrcRect.y = Context->ScenesCoordinates[TileID].y;
+        Context->ObjectLayerOffset = 0;
 
-    /*    
-    Vector2i Coordinates;
-
-    Coordinates = RectTileToCorrdinate(Context->SrcRect, Context->SurfaceBounds, TileX, TileY);
-    Context->SrcRect.y = Coordinates.y;
-    Context->SrcRect.x = Coordinates.x;*/
-
-    Context->SrcRect.x = Context->ScenesCoordinates[TileID].x;
-    Context->SrcRect.y = Context->ScenesCoordinates[TileID].y;
-    Context->ObjectLayerOffset = 0;
-
-    /* Effects */
-    switch (Effect){
-        case 0:
-            Context->Flipped = 0;
-            break;
-        case 1:
-            Context->Flipped = 1;
-            break;
+        /* Effects */
+        switch (Effect){
+            case 0:
+                Context->Flipped = 0;
+                break;
+            case 1:
+                Context->Flipped = 1;
+                break;
+        }
+    } else {
+        Context->Shown = false;
     }
 }
 
-void BackgroundPlayAnimation(SceneContext* Context, int AnimationID, bool* AnimState){ /* Start the background animation */
+void BackgroundPlayAnimation(BackgroundContext* Context, int AnimationID, bool* AnimState){ /* Start the background animation */
     Context->PlayingAnimation = AnimationID;
     Context->StartFrame = Context->CurrentState = Context->AnimOffset = 0;
     Context->ObjectLayerOffset = 0;
@@ -139,7 +136,7 @@ void BackgroundPlayAnimation(SceneContext* Context, int AnimationID, bool* AnimS
     Context->AnimState = AnimState;
 }
 
-void DisplayBackground(DisplayDevice* DDevice, SceneContext* Context){ /* Display the background on screen */
+void DisplayBackground(DisplayDevice* DDevice, BackgroundContext* Context){ /* Display the background on screen */
     SDL_Rect AnimSrcRect, AnimDstRect;
     Uint32 TimeProgress;
     double Progress;
@@ -147,6 +144,10 @@ void DisplayBackground(DisplayDevice* DDevice, SceneContext* Context){ /* Displa
     double MaxProgress;
     int MaxOffset;
     int NewOffset;
+
+    /* Only process the following if the background is actually shown*/
+    if (!Context->Shown)
+        return;
 
     if ((Context->PlayingAnimation >= 0) && (Context->CurrentState < Context->Animation[Context->PlayingAnimation].NbOfAnimStates)){ /* Background slide animation */
         
@@ -238,10 +239,10 @@ void DisplayBackground(DisplayDevice* DDevice, SceneContext* Context){ /* Displa
     }
 }
 
-xmlNode* searchSceneNode(xmlNode** entry, char* label){
+xmlNode* searchSceneNode(xmlNode* entry, char* label){
     xmlNode* root;
     char* checkLabel;
-    root = (*entry)->parent->children;
+    root = entry->parent->children;
     while (root){
         checkLabel = (char*)xmlGetProp(root, (xmlChar*)"label");
         if (checkLabel){
@@ -254,7 +255,34 @@ xmlNode* searchSceneNode(xmlNode** entry, char* label){
     return NULL;
 }
 
-void parseScene(xmlNode** entry, InputDevice* IDevice, DialogueContext* DiagContext, SceneContext* SContext, ButtonsContext* BContext, Characters** CharactersIndex, int NbOfCharacters, int* IdleAnimation, int* ReturnToDefault, int* CurrentCharacter, char* ButtonActivated, char** ButtonJumpLabels){
+SceneContext* InitScene(DisplayDevice* DDevice, InputDevice* IDevice, DialogueContext* DiagContext, ButtonsContext* BContext, Characters** CharactersIndex, CourtroomContext* CContext, char* ScenePath){
+    /* Declaration */
+    SceneContext* LoadingScene;
+    xmlNode* rootNode;
+
+    /* Init */
+    LoadingScene = (SceneContext*)malloc(sizeof(SceneContext));
+    LoadingScene->sceneFile = loadXml(ScenePath);
+    rootNode = xmlDocGetRootElement(LoadingScene->sceneFile);
+    LoadingScene->BGContext = InitBackground(DDevice, (char*)xmlGetProp(rootNode, (xmlChar*)"background"));
+    LoadingScene->ScenePics = InitBackground(DDevice, (char*)xmlGetProp(rootNode, (xmlChar*)"scenePics"));
+    LoadingScene->ScenePics->Shown = false;
+
+    LoadingScene->IDevice = IDevice;
+    LoadingScene->DiagContext = DiagContext;
+    LoadingScene->BContext = BContext;
+    LoadingScene->CharactersIndex = CharactersIndex;
+    LoadingScene->CContext = CContext;
+    LoadingScene->entry = rootNode->children;
+
+    return LoadingScene;
+}
+
+void FreeScene(SceneContext* SceneContext){
+
+}
+
+void parseScene(SceneContext* SContext){
     /* Declaration */
     xmlNode *searchNode, *property, *element, *next;
     /* diag */
@@ -274,8 +302,8 @@ void parseScene(xmlNode** entry, InputDevice* IDevice, DialogueContext* DiagCont
     int TrackID;
 
     /* Logic */
-    next = ((*entry)->next) ? (*entry)->next : (*entry);
-    property = (*entry)->children;
+    next = (SContext->entry->next) ? SContext->entry->next : SContext->entry;
+    property = SContext->entry->children;
     while (property){
         if (strcmp((char*)property->name, "diag") == 0){
             element = property->children;
@@ -288,8 +316,8 @@ void parseScene(xmlNode** entry, InputDevice* IDevice, DialogueContext* DiagCont
                 }
                 element = element->next;
             }
-            lineSize = SetDialogueText(DiagContext, CharactersIndex[CurrentCharacterID]->DisplayName, DialogueText, 1);
-            *CurrentCharacter = CurrentCharacterID;
+            lineSize = SetDialogueText(SContext->DiagContext, SContext->CharactersIndex[CurrentCharacterID]->DisplayName, DialogueText, 1);
+            SContext->CContext->CurrentCharacter = CurrentCharacterID;
         } else if (strcmp((char*)property->name, "anim") == 0) {
             element = property->children;
             while (element){
@@ -298,35 +326,35 @@ void parseScene(xmlNode** entry, InputDevice* IDevice, DialogueContext* DiagCont
                 } else if (strcmp((char*)element->name, "animation") == 0) {
                     animationID = atoi((char*)xmlNodeGetContent(element));
                 } else if (strcmp((char*)element->name, "idleAnim") == 0) {
-                    (*IdleAnimation) = atoi((char*)xmlNodeGetContent(element)); /* Need to be setup */
-                    (*ReturnToDefault) = lineSize;
+                    SContext->CContext->IdleAnimation = atoi((char*)xmlNodeGetContent(element)); /* Need to be setup */
+                    SContext->CContext->ReturnToDefault = lineSize;
                 }
                 element = element->next;
             }
-            CharacterPlayAnimation(CharactersIndex[animTarget], animationID);
+            CharacterPlayAnimation(SContext->CharactersIndex[animTarget], animationID);
         } else if (strcmp((char*)property->name, "buttons") == 0) {
-            ClearButtons(BContext);
+            ClearButtons(SContext->BContext);
             buttonJumpIndex = 0;
             element = property->children;
             while (element){
                 if (strcmp((char*)element->name, "option") == 0) {
-                    AddButton(BContext, (char*)xmlNodeGetContent(element));
-                    ButtonJumpLabels[buttonJumpIndex] = (char*)xmlGetProp(element, (xmlChar*)"jump");
+                    AddButton(SContext->BContext, (char*)xmlNodeGetContent(element));
+                    SContext->CContext->ButtonJumpLabels[buttonJumpIndex] = (char*)xmlGetProp(element, (xmlChar*)"jump");
                     buttonJumpIndex++;
                 }
                 element = element->next;
             }
-            IDevice->EventEnabled = false;
-            (*ButtonActivated) = 1;
+            SContext->IDevice->EventEnabled = false;
+            SContext->CContext->ButtonActivated = 1;
         } else if (strcmp((char*)property->name, "setBackground") == 0) {
-            MoveTile(SContext, atoi((char*)xmlNodeGetContent(property)), 0);
+            MoveBackground(SContext->BGContext, atoi((char*)xmlNodeGetContent(property)), 0);
         } else if (strcmp((char*)property->name, "backgroundAnim") == 0) {
-            BackgroundPlayAnimation(SContext, atoi((char*)xmlNodeGetContent(property)), &IDevice->EventEnabled);
+            BackgroundPlayAnimation(SContext->BGContext, atoi((char*)xmlNodeGetContent(property)), &SContext->IDevice->EventEnabled);
         } else if (strcmp((char*)property->name, "setPicture") == 0) {
-            SetPicture(atoi((char*)xmlNodeGetContent(property)));
+            MoveBackground(SContext->ScenePics, atoi((char*)xmlNodeGetContent(property)), 0);
         } else if (strcmp((char*)property->name, "jump") == 0) {
             jumpLabel = (char*)xmlNodeGetContent(property);
-            searchNode = searchSceneNode(entry, jumpLabel);
+            searchNode = searchSceneNode(SContext->entry, jumpLabel);
             if (searchNode)
                 next = searchNode;
         } else if (strcmp((char*)property->name, "giveItem") == 0){
@@ -347,11 +375,10 @@ void parseScene(xmlNode** entry, InputDevice* IDevice, DialogueContext* DiagCont
             }
         } else if (strcmp((char*)property->name, "setUI") == 0){
             setUI((unsigned int)atoi((char*)xmlGetProp(property, (xmlChar*)"type")), atoi((char*)xmlNodeGetContent(property)));
-
         }
         property = property->next;
     }
-    (*entry) = next;
+    SContext->entry = next;
 }
 
 void FreeBGAnimation(BGAnimation* AnimationToFree){
@@ -365,7 +392,7 @@ void FreeBGAnimation(BGAnimation* AnimationToFree){
         free(AnimationToFree->AnimRange);
 }
 
-void FreeScene(SceneContext* SceneToFree){
+void FreeBackground(BackgroundContext* SceneToFree){
     if (SceneToFree->Surface)
         SDL_DestroyTexture(SceneToFree->Surface);
 

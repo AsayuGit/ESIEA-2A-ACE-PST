@@ -1,5 +1,5 @@
-#ifndef _CHARACTERS
-#define _CHARACTERS
+#ifndef _CHARACTERS_H
+#define _CHARACTERS_H
 
     #include "include.h"
     #include "CharactersStructures.h"
@@ -10,8 +10,8 @@
     /* char* GetCharacterName(Characters* Character);  */
 
     /* Character Layer Management */
-    void InitCharacterLayer(CharacterLayer** CharaLayer, SceneContext* SContext);
-    void AddCharacterToLayer(CharacterLayer* CharaLayer, Characters* Character, SceneContext* SContext, int TileID, char Flip, DisplayDevice* DDevice);
+    void InitCharacterLayer(CharacterLayer** CharaLayer, BackgroundContext* SContext);
+    void AddCharacterToLayer(CharacterLayer* CharaLayer, Characters* Character, BackgroundContext* SContext, int TileID, char Flip, DisplayDevice* DDevice);
     void DeleteCharacterFromLayer(CharacterLayer* CharaLayer, Characters* Character);
     void DisplayCharacterLayer(DisplayDevice* DDevice, CharacterLayer* CharaLayer);
 

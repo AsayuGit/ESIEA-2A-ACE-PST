@@ -1,7 +1,11 @@
-#ifndef _SCENECOMMONSTRUCTS
-#define _SCENECOMMONSTRUCTS
+#ifndef _SCENECOMMONSTRUCTS_H
+#define _SCENECOMMONSTRUCTS_H
 
     #include "include.h"
+    #include "Dialogue.h"
+    #include "CharactersStructures.h"
+    #include "ButtonsStructs.h"
+    #include "Courtroom.h"
 
     typedef struct{
         int NbOfAnimStates;
@@ -31,6 +35,33 @@
         bool* AnimState;
         char Flipped;
         int ObjectLayerOffset;
+        
+        bool Shown;
+    } BackgroundContext;
+
+    typedef struct {
+        /* System Devices */
+        InputDevice* IDevice;           /* Ref */
+
+        /* Loaded Scene */
+        xmlDoc* sceneFile;
+        xmlNode* entry;
+        
+        /* Dialogue */
+        DialogueContext* DiagContext;   /* Ref */
+        
+        /* Buttons */
+        ButtonsContext* BContext;       /* Ref */
+
+        /* Backgrounds */
+        BackgroundContext* BGContext;
+        BackgroundContext* ScenePics;
+        
+        /* Characters */
+        Characters** CharactersIndex;   /* Ref */
+
+        /* Coms with Courtroom.c */
+        CourtroomContext* CContext;     /* Ref */
     } SceneContext;
 
 #endif

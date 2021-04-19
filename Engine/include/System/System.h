@@ -1,5 +1,5 @@
-#ifndef _SYSTEM
-#define _SYSTEM
+#ifndef _SYSTEM_H
+#define _SYSTEM_H
 
     #include "include.h"
 

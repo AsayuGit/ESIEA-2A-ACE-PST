@@ -1,5 +1,5 @@
-#ifndef _KEYMAP
-#define _KEYMAP
+#ifndef _KEYMAP_H
+#define _KEYMAP_H
 
     #ifdef _SDL
         /* Actions */

@@ -10,7 +10,7 @@ void CharacterPlayAnimation(Characters* Character, int AnimationID){
     Character->CurrentFrame = 0;
 }
 
-void InitCharacterLayer(CharacterLayer** CharaLayer, SceneContext* SContext){
+void InitCharacterLayer(CharacterLayer** CharaLayer, BackgroundContext* SContext){
     if ((*CharaLayer) == NULL){
         (*CharaLayer) = (CharacterLayer*)malloc(sizeof(CharacterLayer));
         (*CharaLayer)->CharaList = NULL;
@@ -20,7 +20,7 @@ void InitCharacterLayer(CharacterLayer** CharaLayer, SceneContext* SContext){
     }
 }
 
-void AddCharacterToLayer(CharacterLayer* CharaLayer, Characters* Character, SceneContext* SContext, int TileID, char Flip, DisplayDevice* DDevice){  /* Add a new character to a CharacterLayer */
+void AddCharacterToLayer(CharacterLayer* CharaLayer, Characters* Character, BackgroundContext* SContext, int TileID, char Flip, DisplayDevice* DDevice){  /* Add a new character to a CharacterLayer */
     CharacterList** CharaList;
 
     if (!CharaLayer)
