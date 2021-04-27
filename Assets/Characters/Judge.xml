@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<character texture="./Assets/Textures/Characters/Judge.bmp" colorKey="0xb5a5d5">
+    <name>Judge</name>
+    <animArray>
+        <anim nbOfFrames="5" framerate="500"> <!-- Idle-->
+            <src X="8" Y="11" W="118" H="96"/>
+            <dst X="69" Y="35" W="118" H="96"/>
+        </anim>
+        <anim nbOfFrames="4" framerate="125"> <!-- Talk-->
+            <src X="131" Y="136" W="118" H="96"/>
+            <dst X="69" Y="35" W="118" H="96"/>
+        </anim>
+        <anim nbOfFrames="5" framerate="500"> <!-- Serious Idle-->
+            <src X="12" Y="706" W="118" H="96"/>
+            <dst X="69" Y="36" W="118" H="96"/>
+        </anim>
+        <anim nbOfFrames="4" framerate="125"> <!-- Serious Talk-->
+            <src X="134" Y="834" W="118" H="96"/>
+            <dst X="69" Y="36" W="118" H="96"/>
+        </anim>
+        <anim nbOfFrames="5" framerate="250"> <!-- Shocked Idle-->
+            <src X="10" Y="477" W="118" H="96"/>
+            <dst X="69" Y="36" W="118" H="96"/>
+        </anim>
+        <anim nbOfFrames="4" framerate="125"> <!-- Shocked Talk-->
+            <src X="134" Y="600" W="118" H="96"/>
+            <dst X="69" Y="36" W="118" H="96"/>
+        </anim>
+    </animArray>
+</character>

@@ -55,7 +55,10 @@ dkms.conf
 .vscode/
 
 # Assets
-Assets/
+Assets/Dialogue/
+Assets/Fonts/
+Assets/Sound/
+Assets/Textures/
 
 # Executable
 ACE

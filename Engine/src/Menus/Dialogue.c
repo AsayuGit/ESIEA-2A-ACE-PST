@@ -1,4 +1,5 @@
 #include "Dialogue.h"
+#include "math.h"
 
 void ClearDialogueText(DialogueContext* Context){
     #ifdef _SDL
@@ -120,9 +121,13 @@ DialogueContext* InitDialog(DisplayDevice* DDevice, BitmapFont* MainFont, Bitmap
 /* Fonction non bloquante gérant les dialogues */
 void Dialogue(DialogueContext* Context){
     SDL_Rect InLayerTextBounds;
+    SDL_Rect ArrowSrcRect = {256, 0, 9, 9};
+    SDL_Rect ArrowDstRect = {0, 172, 9, 9};
 
     InLayerTextBounds = Context->TextBounds;
     InLayerTextBounds.x = InLayerTextBounds.y = 0;
+
+    ArrowDstRect.x = 240 + sin((double)SDL_GetTicks() / 50) * 2;
 
     /* DialogBox Rendering */
     #ifdef _SDL
@@ -132,27 +137,34 @@ void Dialogue(DialogueContext* Context){
     #endif
 
     /* Write text */
-    if ((Context->Text[Context->progress] != '\0') && (SDL_GetTicks() >= Context->LastLetter + Context->TextSpeed)){
-        SetRenderTarget(Context->DDevice, Context->textLayer);
-        if (!Context->letterLag){
-            Mix_PlayChannel(-1, Context->Letter, 0);
-            Context->letterLag = 1;
-        }else{
-            Context->letterLag--;
-        }
+    if (Context->Text[Context->progress] != '\0') {
+        if (SDL_GetTicks() >= Context->LastLetter + Context->TextSpeed){
+            SetRenderTarget(Context->DDevice, Context->textLayer);
+            if (!Context->letterLag){
+                Mix_PlayChannel(-1, Context->Letter, 0);
+                Context->letterLag = 1;
+            }else{
+                Context->letterLag--;
+            }
 
-        /* Print the next letter */
-        if ((Context->DstLetter.x + Context->MainFont->Rects[MAX(Context->Text[Context->progress] - 32, 0)].w < InLayerTextBounds.x + InLayerTextBounds.w) && (Context->Text[Context->progress] != '\n')){
-            Context->DstLetter.x += gputc(Context->DDevice, Context->MainFont, Context->Text[Context->progress], Context->DstLetter.x, Context->DstLetter.y) + 2;
-        } else {
-            Context->DstLetter.x = InLayerTextBounds.x;
-            Context->DstLetter.y += Context->MainFont->Rects[0].h;
+            /* Print the next letter */
+            if ((Context->DstLetter.x + Context->MainFont->Rects[MAX(Context->Text[Context->progress] - 32, 0)].w < InLayerTextBounds.x + InLayerTextBounds.w) && (Context->Text[Context->progress] != '\n')){
+                Context->DstLetter.x += gputc(Context->DDevice, Context->MainFont, Context->Text[Context->progress], Context->DstLetter.x, Context->DstLetter.y) + 2;
+            } else {
+                Context->DstLetter.x = InLayerTextBounds.x;
+                Context->DstLetter.y += Context->MainFont->Rects[0].h;
+            }
+            
+            Context->progress++;
+            Context->LastLetter = SDL_GetTicks();
+            SetRenderTarget(Context->DDevice, NULL);
         }
-        
-        
-        Context->progress++;
-        Context->LastLetter = SDL_GetTicks();
-        SetRenderTarget(Context->DDevice, NULL);
+    } else {
+        #ifdef _SDL
+            SDL_BlitSurface(Context->DialogBox, &ArrowSrcRect, Context->DDevice->Screen, &ArrowDstRect);
+        #else
+            SDL_RenderCopy(Context->DDevice->Renderer, Context->DialogBox, &ArrowSrcRect, &ArrowDstRect);
+        #endif
     }
 
     #ifdef _SDL

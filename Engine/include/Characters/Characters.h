@@ -5,7 +5,7 @@
     #include "CharactersStructures.h"
     #include "SceneCommon.h"
 
-    void InitCharacter(DisplayDevice* DisplayDevice, Characters* Character);
+    Characters* InitCharacter(DisplayDevice* DDevice, char* CharacterPath);
     void CharacterPlayAnimation(Characters* Character, int AnimationID);
     /* char* GetCharacterName(Characters* Character);  */
 

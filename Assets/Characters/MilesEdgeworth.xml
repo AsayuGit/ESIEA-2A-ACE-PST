@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<character texture="./Assets/Textures/Characters/Miles_Edgeworth.bmp" colorKey="0xb5a5d5">
+    <name>Edgeworth</name>
+    <animArray>
+        <anim nbOfFrames="4" framerate="125"> <!-- Idle-->
+            <src X="37" Y="35" W="104" H="143"/>
+            <dst X="136" Y="16" W="104" H="143"/>
+        </anim>
+        <anim nbOfFrames="4" framerate="125"> <!-- Talk-->
+            <src X="493" Y="35" W="104" H="143"/>
+            <dst X="136" Y="16" W="104" H="143"/>
+        </anim>
+    </animArray>
+</character>

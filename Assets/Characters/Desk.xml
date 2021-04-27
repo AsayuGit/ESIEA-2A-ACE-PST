@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<character texture="./Assets/Textures/Places/CourtroomDesk.bmp" colorKey="0xff00ff">
+    <animArray>
+        <anim nbOfFrames="1" framerate="0"> <!-- Idle-->
+            <src X="0" Y="0" W="256" H="44"/>
+            <dst X="0" Y="148" W="256" H="44"/>
+        </anim>
+    </animArray>
+</character>

@@ -5,10 +5,11 @@
 #include "CourtRecord.h"
 #include "UI.h"
 
-#include "CHAR_Index.h"
+/* FIXME: Temporary */
+Characters* CharactersIndex[CharactersCount];
 
 /* FIXME: We need to sort out the final form of this prototype */
-int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomContext* Context, Characters** CharacterIndex, char* DialogPath){
+int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomContext* Context, char* DialogPath){
 
     /* Declaration */
     char EventSelect;
@@ -64,32 +65,32 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
     InitUI(DDevice, ItemBank);
     CourtRecordActivated = false;
 
-    InitCharacter(DDevice, &CHAR_PhoenixWright); /* Initialise the character in memory */
-    InitCharacter(DDevice, &CHAR_MiaFey);
-    InitCharacter(DDevice, &CHAR_WinstonPayne);
-    InitCharacter(DDevice, &CHAR_Judge);
-    InitCharacter(DDevice, &CHAR_FrankShawit);
-
-    InitCharacter(DDevice, &CHAR_Desk);
-    InitCharacter(DDevice, &CHAR_DefendantDesk);
+    CharactersIndex[0] = InitCharacter(DDevice, "Assets/Characters/PhoenixWright.xml"); /* Initialise the character in memory */
+    CharactersIndex[1] = InitCharacter(DDevice, "Assets/Characters/MiaFey.xml");
+    CharactersIndex[2] = NULL; /* Edgeworth */
+    CharactersIndex[3] = InitCharacter(DDevice, "Assets/Characters/Judge.xml");
+    CharactersIndex[4] = InitCharacter(DDevice, "Assets/Characters/WinstonPayne.xml");
+    CharactersIndex[5] = InitCharacter(DDevice, "Assets/Characters/Desk.xml");
+    CharactersIndex[6] = InitCharacter(DDevice, "Assets/Characters/FrankShawit.xml");
+    CharactersIndex[7] = InitCharacter(DDevice, "Assets/Characters/DefendantDesk.xml");
 
     /* InitScene */
-    SContext = InitScene(DDevice, IDevice, DiagContext, BContext, CharacterIndex, Context, DialogPath);
+    SContext = InitScene(DDevice, IDevice, DiagContext, BContext, CharactersIndex, Context, DialogPath);
 
     CharaLayer = NULL;
     InitCharacterLayer(&CharaLayer, SContext->BGContext);
-    AddCharacterToLayer(CharaLayer, &CHAR_PhoenixWright, SContext->BGContext, 0, 0, DDevice);
-    AddCharacterToLayer(CharaLayer, &CHAR_Desk, SContext->BGContext, 0, 0, DDevice);
+    AddCharacterToLayer(CharaLayer, CharactersIndex[0], SContext->BGContext, 0, 0, DDevice);
+    AddCharacterToLayer(CharaLayer, CharactersIndex[5], SContext->BGContext, 0, 0, DDevice);
 
-    AddCharacterToLayer(CharaLayer, &CHAR_MiaFey, SContext->BGContext, 5, 0, DDevice);
+    AddCharacterToLayer(CharaLayer, CharactersIndex[1], SContext->BGContext, 5, 0, DDevice);
 
-    AddCharacterToLayer(CharaLayer, &CHAR_WinstonPayne, SContext->BGContext, 1, 0, DDevice);
-    AddCharacterToLayer(CharaLayer, &CHAR_Desk, SContext->BGContext, 1, 1, DDevice);
+    AddCharacterToLayer(CharaLayer, CharactersIndex[4], SContext->BGContext, 1, 0, DDevice);
+    AddCharacterToLayer(CharaLayer, CharactersIndex[5], SContext->BGContext, 1, 1, DDevice);
 
-    AddCharacterToLayer(CharaLayer, &CHAR_Judge, SContext->BGContext, 4, 0, DDevice);
+    AddCharacterToLayer(CharaLayer, CharactersIndex[3], SContext->BGContext, 4, 0, DDevice);
 
-    AddCharacterToLayer(CharaLayer, &CHAR_FrankShawit, SContext->BGContext, 2, 0, DDevice);
-    AddCharacterToLayer(CharaLayer, &CHAR_DefendantDesk, SContext->BGContext, 2, 0, DDevice);
+    AddCharacterToLayer(CharaLayer, CharactersIndex[6], SContext->BGContext, 2, 0, DDevice);
+    AddCharacterToLayer(CharaLayer, CharactersIndex[7], SContext->BGContext, 2, 0, DDevice);
     
     /* Main Loop */
     parseScene(SContext);
@@ -115,7 +116,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                         switch (IDevice->event.PADKEY)
                         {
                         case PAD_SELECT:
-                            CharacterPlayAnimation(CharacterIndex[Context->CurrentCharacter], Context->IdleAnimation); /* Mouaif */
+                            CharacterPlayAnimation(CharactersIndex[Context->CurrentCharacter], Context->IdleAnimation); /* Mouaif */
                             parseScene(SContext);
                             break;
                         case PAD_COURTRECORD:
@@ -141,7 +142,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                             EventSelect = MainEvents;
                             SContext->entry = searchSceneNode(SContext->entry, Context->ButtonJumpLabels[ButtonInput]);
                             MoveBackground(ButtonLayer, 0, 0);
-                            CharacterPlayAnimation(CharacterIndex[Context->CurrentCharacter], Context->IdleAnimation); /* Mouaif */
+                            CharacterPlayAnimation(CharactersIndex[Context->CurrentCharacter], Context->IdleAnimation); /* Mouaif */
                             parseScene(SContext);
                             break;
                         case PAD_COURTRECORD:
@@ -182,9 +183,9 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
             }
         }
 
-        /* Logic */
+        /* Logic */ /* FIXME: There may be a way to optimize this further */ 
         if ((DiagContext->progress >= Context->ReturnToDefault) && (Context->ReturnToDefault != -1)){
-            CharacterPlayAnimation(CharacterIndex[Context->CurrentCharacter], Context->IdleAnimation);
+            CharacterPlayAnimation(CharactersIndex[Context->CurrentCharacter], Context->IdleAnimation);
             Context->ReturnToDefault = -1;
             if (Context->ButtonActivated){ /* We do that here because we want to wait for the dialogue to end before showing the buttons */
                 BackgroundPlayAnimation(ButtonLayer, 0, &IDevice->EventEnabled);

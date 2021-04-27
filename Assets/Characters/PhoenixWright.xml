@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<character texture="./Assets/Textures/Characters/Phoenix_Wright.bmp" colorKey="0xb5a5d5">
+    <name>Phoenix</name>
+    <animArray>
+        <anim nbOfFrames="4" framerate="500"> <!-- Idle-->
+            <src X="14" Y="24" W="125" H="142"/>
+            <dst X="0" Y="18" W="125" H="142"/>
+        </anim>
+        <anim nbOfFrames="4" framerate="125"> <!-- Talk-->
+            <src X="600" Y="24" W="125" H="142"/>
+            <dst X="0" Y="18" W="125" H="142"/>
+        </anim>
+        <anim nbOfFrames="4" framerate="125"> <!-- Glup-->
+            <src X="14" Y="185" W="107" H="136"/>
+            <dst X="12" Y="24" W="107" H="136"/>
+        </anim>
+        <anim nbOfFrames="4" framerate="125"> <!-- Thinking Talk-->
+            <src X="15" Y="536" W="132" H="142"/>
+            <dst X="0" Y="18" W="132" H="142"/>
+        </anim>
+        <anim nbOfFrames="10" framerate="500"> <!-- Thinling Idle-->
+            <src X="12" Y="366" W="132" H="142"/>
+            <dst X="0" Y="18" W="132" H="142"/>
+        </anim>
+    </animArray>
+</character>

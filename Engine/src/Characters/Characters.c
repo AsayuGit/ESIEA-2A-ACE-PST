@@ -1,8 +1,93 @@
 #include "Characters.h"
-#include "CHAR_Index.h"
 
-void InitCharacter(DisplayDevice* DDevice, Characters* Character){
-    Character->Surface = LoadSurface(Character->SurfacePath, DDevice, Character->ColorKey, SURFACE_KEYED);
+Animation* ParseCHAnimation(xmlNode* property){
+    Animation* LoadingAnimation;
+    xmlNode *array, *entry;
+    unsigned int ArrayID;
+
+    LoadingAnimation = (Animation*)malloc(xmlChildElementCount(property)*sizeof(Animation));
+    array = property->children;
+
+    ArrayID = 0;
+    while (array){
+        if (strcmp((char*)array->name, "anim") == 0) {
+
+            LoadingAnimation[ArrayID].NbOfFrames = atoi((char*)xmlGetProp(array, (xmlChar*)"nbOfFrames"));
+            LoadingAnimation[ArrayID].Framerate = atoi((char*)xmlGetProp(array, (xmlChar*)"framerate"));
+
+            entry = array->children;
+            while (entry){
+                if (strcmp((char*)entry->name, "src") == 0){
+                    LoadingAnimation[ArrayID].SrcRect = InitRect(
+                        atoi((char*)xmlGetProp(entry, (xmlChar*)"X")),
+                        atoi((char*)xmlGetProp(entry, (xmlChar*)"Y")),
+                        atoi((char*)xmlGetProp(entry, (xmlChar*)"W")),
+                        atoi((char*)xmlGetProp(entry, (xmlChar*)"H"))
+                    );
+                    /*printf("Src %d %d %d %d\n", LoadingAnimation->SrcRect.x, LoadingAnimation->SrcRect.y, LoadingAnimation->SrcRect.w, LoadingAnimation->SrcRect.h);*/
+                } else if (strcmp((char*)entry->name, "dst") == 0){
+                    LoadingAnimation[ArrayID].DstRect = InitRect(
+                        atoi((char*)xmlGetProp(entry, (xmlChar*)"X")),
+                        atoi((char*)xmlGetProp(entry, (xmlChar*)"Y")),
+                        atoi((char*)xmlGetProp(entry, (xmlChar*)"W")),
+                        atoi((char*)xmlGetProp(entry, (xmlChar*)"H"))
+                    );
+                    /*printf("Dst %d %d %d %d\n", LoadingAnimation->DstRect.x, LoadingAnimation->DstRect.y, LoadingAnimation->DstRect.w, LoadingAnimation->DstRect.h);*/
+                }
+                entry = entry->next;
+            }
+            ArrayID++;
+        }
+        array = array->next;
+    }
+
+    return LoadingAnimation;
+}
+
+Characters* InitCharacter(DisplayDevice* DDevice, char* CharacterPath){
+    /* Declaration */
+    Characters* LoadingCharacter;
+    xmlDoc* CharacterFile;
+    xmlNode *character, *property;
+    Uint32 ColorKey;
+    char* SurfacePath, *Buffer;
+
+    /* Init */
+    LoadingCharacter = (Characters*)calloc(1, sizeof(Characters));
+
+    if (CharacterPath){
+        CharacterFile = loadXml(CharacterPath); /* Load the xml file in memory */
+        character = xmlDocGetRootElement(CharacterFile); /* root node */
+
+        /* Logic */
+        if ((SurfacePath = (char*)xmlGetProp(character, (xmlChar*)"texture"))){
+            if ((Buffer = (char*)xmlGetProp(character, (xmlChar*)"colorKey"))){
+                sscanf(Buffer, "%x", &ColorKey);
+                LoadingCharacter->Surface = LoadSurface(SurfacePath, DDevice, ColorKey, SURFACE_KEYED);
+            } else {
+                LoadingCharacter->Surface = LoadSurface(SurfacePath, DDevice, 0x0, SURFACE_OPAQUE);
+            }
+        }
+
+        /* Parsing */
+        property = character->children;
+        while (property){
+            if (strcmp((char*)property->name, "name") == 0){
+                astrcpy(&LoadingCharacter->DisplayName ,(char*)xmlNodeGetContent(property));
+            } else if (strcmp((char*)property->name, "animArray") == 0){
+                LoadingCharacter->Anim = ParseCHAnimation(property);
+            }
+            property = property->next;
+        }
+
+        if (!LoadingCharacter->DisplayName){
+            LoadingCharacter->DisplayName = "Default";
+        }
+    }
+
+    xmlFreeDoc(CharacterFile);
+
+    return LoadingCharacter;
 }
 
 void CharacterPlayAnimation(Characters* Character, int AnimationID){
@@ -85,7 +170,6 @@ void DisplayCharacter(DisplayDevice* DDevice, Characters* Character, SDL_Rect Vi
 
     /* On affiche la frame d'animation a l'écran */
     #ifdef _SDL
-        /*SDL_BlitSurface(Character->Surface, &SpriteWindow, DDevice->Screen, &SpriteLayer);*/
         FlipBlitSurface(Character->Surface, &SpriteWindow, DDevice->Screen, &SpriteLayer, Flip); /* Curent Character on screen */
     #else
         SDL_RenderCopyEx(DDevice->Renderer, Character->Surface, &SpriteWindow, &SpriteLayer, 0, 0, Flip);

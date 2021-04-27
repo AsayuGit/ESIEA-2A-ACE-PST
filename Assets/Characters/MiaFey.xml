@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<character texture="./Assets/Textures/Characters/Mia_Fey.bmp" colorKey="0xb5a5d5">
+    <name>Mia</name>
+    <animArray>
+        <anim nbOfFrames="4" framerate="500"> <!-- Idle-->
+            <src X="54" Y="1045" W="73" H="169"/>
+            <dst X="87" Y="23" W="73" H="169"/>
+        </anim>
+        <anim nbOfFrames="4" framerate="125"> <!-- Talk-->
+            <src X="411" Y="1045" W="73" H="169"/>
+            <dst X="87" Y="23" W="73" H="169"/>
+        </anim>
+        <anim nbOfFrames="4" framerate="500"> <!-- Disbelief Idle-->
+            <src X="56" Y="828" W="92" H="166"/>
+            <dst X="76" Y="26" W="92" H="166"/>
+        </anim>
+        <anim nbOfFrames="4" framerate="125"> <!-- Disbelief Talk-->
+            <src X="514" Y="827" W="92" H="166"/>
+            <dst X="76" Y="26" W="92" H="166"/>
+        </anim>
+        <anim nbOfFrames="4" framerate="500"> <!-- Sad Idle-->
+            <src X="53" Y="1465" W="73" H="169"/>
+            <dst X="83" Y="23" W="73" H="169"/>
+        </anim>
+        <anim nbOfFrames="4" framerate="125"> <!-- Sad Talk-->
+            <src X="450" Y="1465" W="73" H="169"/>
+            <dst X="83" Y="23" W="73" H="169"/>
+        </anim>
+        <anim nbOfFrames="4" framerate="500"> <!-- Shocked Idle-->
+            <src X="61" Y="1257" W="73" H="170"/>
+            <dst X="81" Y="22" W="73" H="170"/>
+        </anim>
+        <anim nbOfFrames="3" framerate="125"> <!-- Shocked Talk-->
+            <src X="419" Y="1257" W="73" H="170"/>
+            <dst X="81" Y="22" W="73" H="170"/>
+        </anim>
+    </animArray>
+</character>

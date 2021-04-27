@@ -44,7 +44,6 @@
         InputDevice* IDevice;           /* Ref */
 
         /* Loaded Scene */
-        xmlDoc* sceneFile;
         xmlNode* entry;
         
         /* Dialogue */

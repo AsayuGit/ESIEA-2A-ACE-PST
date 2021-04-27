@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<character texture="./Assets/Textures/Characters/Frank_Shawit.bmp" colorKey="0xb5a5d5">
+    <name>Shawit</name>
+    <animArray>
+        <anim nbOfFrames="4" framerate="500"> <!-- Idle-->
+            <src X="0" Y="0" W="95" H="148"/>
+            <dst X="79" Y="28" W="95" H="148"/>
+        </anim>
+        <anim nbOfFrames="4" framerate="125"> <!-- Talk-->
+            <src X="391" Y="0" W="94" H="148"/>
+            <dst X="80" Y="28" W="94" H="148"/>
+        </anim>
+    </animArray>
+</character>

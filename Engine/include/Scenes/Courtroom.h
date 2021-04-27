@@ -17,6 +17,6 @@
         char* ButtonJumpLabels[4];
     } CourtroomContext;
 
-    int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomContext* Context, Characters** CharacterIndex, char* DialogPath);
+    int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomContext* Context, char* DialogPath);
 
 #endif

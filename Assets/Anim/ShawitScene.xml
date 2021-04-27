@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<background texture="./Assets/Textures/Scenes/Scene1.bmp">
+    <sceneArray>
+        <scene X="0" Y="0"/>
+        <scene X="256" Y="0"/>
+        <scene X="512" Y="0"/>
+    </sceneArray>
+</background>

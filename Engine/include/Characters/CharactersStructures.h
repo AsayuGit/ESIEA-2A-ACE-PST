@@ -11,32 +11,34 @@
         Winston_Payne,
         Court_Desk,
         FrankShawit,
+        Defendant_Desk,
         CharactersCount
     } Cid;
 
     typedef struct{
-        const SDL_Rect SrcRect; /* Character source rect */
-        SDL_Rect DstRect; /* Character destination */
-        int NbOfFrames;   /* Number of frames in an animation */
-        int Framerate;  /* Number of milliseconds between two frames */
+        SDL_Rect SrcRect; /* Character source rect */
+        SDL_Rect DstRect;       /* Character destination */
+        int NbOfFrames;         /* Number of frames in an animation */
+        int Framerate;          /* Number of milliseconds between two frames */
     } Animation;
 
     typedef struct{
-        char* DisplayName;
+        char* DisplayName;      /* Character Name */
+        
         /* Character Texture properties */
-        SDL_Texture* Surface; /* Character Surface */
-        char *SurfacePath;/* Character Surface path */
-        Uint32 ColorKey;  /* Character color key */
+        SDL_Texture* Surface;   /* Character Surface */
 
         /* Background Interaction properties */
         int* BackgroundOffset;
 
         /* Character Animation properties */
-        Uint32 LastFrame; /* Time at the last frame display */
-        int CurrentFrame; /* Frame currently being displayed */
-        int PlayingAnimation; /* The Animation currently playing */
-        Animation* Anim; /* Contains all the differents animations for a character */
-    } Characters; /* Sprite ? */
+        Uint32 LastFrame;       /* Time at the last frame display */
+        int CurrentFrame;       /* Frame currently being displayed */
+        int PlayingAnimation;   /* The Animation currently playing */
+        
+        /* Character Animation */
+        Animation* Anim;        /* Contains all the differents animations for a character */
+    } Characters; /* Sprite ? */ /* mmmm */
 
     typedef struct CharacterList_s{
         Characters* Character;

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<character texture="./Assets/Textures/Characters/Winston_Payne.bmp" colorKey="0xb5a5d5">
+    <name>Payne</name>
+    <animArray>
+        <anim nbOfFrames="1" framerate="0"> <!-- Idle-->
+            <src X="17" Y="26" W="85" H="134"/>
+            <dst X="158" Y="26" W="85" H="134"/>
+        </anim>
+        <anim nbOfFrames="4" framerate="125"> <!-- Talk-->
+            <src X="111" Y="26" W="85" H="134"/>
+            <dst X="158" Y="26" W="85" H="134"/>
+        </anim>
+    </animArray>
+</character>

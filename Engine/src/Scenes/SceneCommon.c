@@ -18,7 +18,12 @@ BGAnimation* ParseBGAnimation(xmlNode* property){
     while (array){
         if (strcmp((char*)array->name, "anim") == 0) {
             LoadingAnimation[ArrayID].NbOfAnimStates = xmlChildElementCount(array);
-            LoadingAnimation[ArrayID].AnimRegion = InitRect(atoi((char*)xmlGetProp(array, (xmlChar*)"X")), atoi((char*)xmlGetProp(array, (xmlChar*)"Y")), atoi((char*)xmlGetProp(array, (xmlChar*)"W")), atoi((char*)xmlGetProp(array, (xmlChar*)"H")));
+            LoadingAnimation[ArrayID].AnimRegion = InitRect(
+                atoi((char*)xmlGetProp(array, (xmlChar*)"X")),
+                atoi((char*)xmlGetProp(array, (xmlChar*)"Y")),
+                atoi((char*)xmlGetProp(array, (xmlChar*)"W")), 
+                atoi((char*)xmlGetProp(array, (xmlChar*)"H"))
+            );
             
             LoadingAnimation[ArrayID].AnimStates = (Vector2d*)malloc(sizeof(Vector2d)*LoadingAnimation[ArrayID].NbOfAnimStates);
             LoadingAnimation[ArrayID].AnimRange = (Vector2d*)malloc(sizeof(Vector2d)*LoadingAnimation[ArrayID].NbOfAnimStates);
@@ -70,18 +75,20 @@ BackgroundContext* InitBackground(DisplayDevice* DDevice, char* ScenePath){
     xmlDoc* SceneFile;
     xmlNode *background, *property;
     char* SurfacePath, *Buffer;
+    Uint32 ColorKey;
 
     /* Init */
     LoadingContext = (BackgroundContext*)calloc(1, sizeof(BackgroundContext));
 
     /* Logic */
     if (ScenePath){
-        SceneFile = loadXml(ScenePath); /* Load the xml file in memory */
-        background = xmlDocGetRootElement(SceneFile); /* root node */
+        SceneFile = loadXml(ScenePath);                 /* Load the xml file in memory */
+        background = xmlDocGetRootElement(SceneFile);   /* root node */
 
         if ((SurfacePath = (char*)xmlGetProp(background, (xmlChar*)"texture"))){
             if ((Buffer = (char*)xmlGetProp(background, (xmlChar*)"colorKey"))){
-                LoadingContext->Surface = LoadSurface(SurfacePath, DDevice, (Uint32)atoi(Buffer), SURFACE_KEYED);
+                sscanf(Buffer, "%x", &ColorKey);
+                LoadingContext->Surface = LoadSurface(SurfacePath, DDevice, ColorKey, SURFACE_KEYED);
             } else {
                 LoadingContext->Surface = LoadSurface(SurfacePath, DDevice, 0x0, SURFACE_OPAQUE);
             }
@@ -103,6 +110,8 @@ BackgroundContext* InitBackground(DisplayDevice* DDevice, char* ScenePath){
     LoadingContext->SrcRect.h = DDevice->ScreenResolution.y;
     LoadingContext->PlayingAnimation = -1;
     LoadingContext->Shown = true;
+
+    xmlFreeDoc(SceneFile);
 
     return LoadingContext;
 }
@@ -257,13 +266,14 @@ xmlNode* searchSceneNode(xmlNode* entry, char* label){
 
 SceneContext* InitScene(DisplayDevice* DDevice, InputDevice* IDevice, DialogueContext* DiagContext, ButtonsContext* BContext, Characters** CharactersIndex, CourtroomContext* CContext, char* ScenePath){
     /* Declaration */
+    xmlDoc* sceneFile;
     SceneContext* LoadingScene;
     xmlNode* rootNode;
 
     /* Init */
     LoadingScene = (SceneContext*)malloc(sizeof(SceneContext));
-    LoadingScene->sceneFile = loadXml(ScenePath);
-    rootNode = xmlDocGetRootElement(LoadingScene->sceneFile);
+    sceneFile = loadXml(ScenePath);
+    rootNode = xmlDocGetRootElement(sceneFile);
     LoadingScene->BGContext = InitBackground(DDevice, (char*)xmlGetProp(rootNode, (xmlChar*)"background"));
     LoadingScene->ScenePics = InitBackground(DDevice, (char*)xmlGetProp(rootNode, (xmlChar*)"scenePics"));
     LoadingScene->ScenePics->Shown = false;
@@ -394,7 +404,11 @@ void FreeBGAnimation(BGAnimation* AnimationToFree){
 
 void FreeBackground(BackgroundContext* SceneToFree){
     if (SceneToFree->Surface)
+    #ifdef _SDL
+        free(SceneToFree->Surface);
+    #else 
         SDL_DestroyTexture(SceneToFree->Surface);
+    #endif
 
     if (SceneToFree->Animation)
         FreeBGAnimation(SceneToFree->Animation);

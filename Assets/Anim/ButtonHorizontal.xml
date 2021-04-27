@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<background>
+    <animArray>
+        <anim X="0" Y="0" W="256" H="0"> <!-- Slide Left-->
+            <entry stateA="0.0" stateB="25.6" rangeA="0.0" rangeB="10.0" runtime="500"/>
+        </anim>
+        <anim X="256" Y="0" W="0" H="0"> <!-- Slite Right-->
+            <entry stateA="0.0" stateB="-25.6" rangeA="0.0" rangeB="10.0" runtime="500"/>
+        </anim>
+    </animArray>
+    <sceneArray>
+        <scene X="0" Y="0"/>
+    </sceneArray>
+</background>

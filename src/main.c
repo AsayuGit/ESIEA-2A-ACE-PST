@@ -1,6 +1,5 @@
 #include "include.h"
 #include "Scenes.h"
-#include "CHAR_Index.h"
 
 int main(int argc, char* argv[]){
 
@@ -13,16 +12,6 @@ int main(int argc, char* argv[]){
     BitmapFont* MainMenuFont;
     Uint32 FontColorKey = 0xff00ff;
     CourtroomContext* CourtContext;
-
-    Characters* CharactersIndex[CharactersCount] = {
-        &CHAR_PhoenixWright,
-        &CHAR_MiaFey,
-        &CHAR_MilesEdgeworth,
-        &CHAR_Judge,
-        &CHAR_WinstonPayne,
-        &CHAR_Desk,
-        &CHAR_FrankShawit
-    };
 
     CourtContext = (CourtroomContext*)malloc(sizeof(CourtroomContext));
 
@@ -44,9 +33,9 @@ int main(int argc, char* argv[]){
     if (Scene_TitleScreen(DDevice, IDevice, MainMenuFont) == 0){
         /* We start the courtroom Scene */
         if (argc > 1){
-            Scene_Courtroom(DDevice, IDevice, CourtContext, CharactersIndex, argv[1]);
+            Scene_Courtroom(DDevice, IDevice, CourtContext, argv[1]);
         } else {
-            Scene_Courtroom(DDevice, IDevice, CourtContext, CharactersIndex, "Assets/Dialogue/court.xml");
+            Scene_Courtroom(DDevice, IDevice, CourtContext, "Assets/Dialogue/court.xml");
         }
     }
     

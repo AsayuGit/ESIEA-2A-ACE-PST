@@ -8,4 +8,5 @@
     Vector2i gstrlen(BitmapFont* Font, char* text, int intCharSpce);
     int      map(int SrcA, int SrcB, int DstA, int DstB, int Value);
     double   dmap(double DstA, double DstB, double SrcA, double SrcB, double Value);
+    char*    astrcpy(char** dst, char* src);
 #endif
