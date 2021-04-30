@@ -14,7 +14,7 @@ void ClearDialogueText(DialogueContext* Context){
     #endif
 }
 
-int SetDialogueText(DialogueContext* Context, char* Name, char* Text, char SndEffType){
+size_t SetDialogueText(DialogueContext* Context, char* Name, char* Text, char SndEffType){
     SDL_Rect NameDest;
 
     Context->Text = Text;

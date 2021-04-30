@@ -117,8 +117,18 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                         {
                         case PAD_SELECT:
                             CharacterPlayAnimation(CharactersIndex[Context->CurrentCharacter], Context->IdleAnimation); /* Mouaif */
+                            SceneForward(SContext);
                             parseScene(SContext);
                             break;
+
+                        case PAD_BACK:
+                            /* FIXME: We need a nice way to toogle dialogue's booth way mode */
+                            CharacterPlayAnimation(CharactersIndex[Context->CurrentCharacter], Context->IdleAnimation); /* Mouaif */
+                            SceneBackward(SContext);
+                            parseScene(SContext);
+                        
+                            break;
+
                         case PAD_COURTRECORD:
                             CourtRecordActivated = true;
                             EventSelect = CourtRecordEvents;

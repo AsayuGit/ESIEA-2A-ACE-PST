@@ -18,9 +18,10 @@ char* EffectPath[NumberOfEffectTracks] = {
     ROOT""EFFECTS"TestimonySwoosh"MUS_EXT
 };
 
-Mix_Music* LoadedTrack;
+static Mix_Music* LoadedTrack;
+static unsigned int PlayingTrack;
 
-void InitJukebox(){
+void InitJukebox(void){
     LoadedTrack = NULL;
 }
 
@@ -31,4 +32,14 @@ void PlayTrackID(MusicPlaylistID TrackID){
     }
     LoadedTrack = LoadMusic(MusicPath[TrackID]);
     Mix_PlayMusic(LoadedTrack, -1);
+    PlayingTrack = TrackID;
+}
+
+unsigned int GetTrackID(void){
+    return PlayingTrack;
+}
+
+void StopTrack(void){
+    PlayingTrack = -1;
+    Mix_HaltMusic();
 }

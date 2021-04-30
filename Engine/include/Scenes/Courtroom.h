@@ -9,10 +9,10 @@
         BitmapFont* NameFont;
         BitmapFont* ButtonFont;
 
-        int IdleAnimation;
-        int ReturnToDefault;
-        int CurrentCharacter;
         char ButtonActivated;
+        int IdleAnimation;
+        int CurrentCharacter;
+        size_t ReturnToDefault;
 
         char* ButtonJumpLabels[4];
     } CourtroomContext;

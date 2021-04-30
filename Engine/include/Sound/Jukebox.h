@@ -25,7 +25,9 @@
 
     extern char* EffectPath[NumberOfEffectTracks];
 
-    void InitJukebox();
+    void InitJukebox(void);
     void PlayTrackID(MusicPlaylistID TrackID);
+    unsigned int GetTrackID(void);
+    void StopTrack(void);
 
 #endif

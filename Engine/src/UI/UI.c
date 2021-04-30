@@ -4,24 +4,28 @@ static void (*currentUI)(DisplayDevice*, InputDevice*);
 
 static Items* UIItemBank;
 static unsigned int StoredItemID;
-static SDL_Rect ItemPos;
+static SDL_Rect ItemPos = {13, 13, 70, 70};
 
 /* Surface and rects */
 static SDL_Texture* UISurface;
-static SDL_Rect UITestimonyRect;
+static SDL_Rect UITestimonyRect = {0, 0, 64, 32};
 static unsigned int UILastBlink;
 static bool UIBlink;
 static unsigned int UIBlinkDelay;
 
-static SDL_Texture* UIWitnessTestimony;
-static SDL_Rect UIWTASrcRect;
-static SDL_Rect UIWTBSrcRect;
-static SDL_Rect UIWTADstRect;
-static SDL_Rect UIWTBDstRect;
+static SDL_Rect UI_ASrcRect[2] = {{0, 33, 192, 39}, {0, 117, 192, 39}};
+static SDL_Rect UI_BSrcRect[2] = {{0, 73, 192, 44}, {0, 157, 192, 44}};
+
+static SDL_Rect UI_ADstRect;
+static SDL_Rect UI_BDstRect;
+
 static unsigned int UIAnimStart;
 static unsigned int UIAnimEnd;
 static unsigned char UIWTState;
 static unsigned char UIWTAnimFrame;
+
+static unsigned int logoID;
+static unsigned int Lives = 5;
 
 /* Sound Effets */
 static Mix_Chunk* Swoosh;
@@ -64,22 +68,40 @@ void UI_Testimony(DisplayDevice* DDevice, InputDevice* IDevice){
     }
 }
 
-void UI_TestimonyIntro(DisplayDevice* DDevice, InputDevice* IDevice){ /* Timings to tune */
+void UI_Lives(DisplayDevice* DDevice, InputDevice* IDevice){
+    SDL_Rect SrcLives = {0, 197, 10, 16};
+    SDL_Rect DstLives = {245, 16, 10, 16};
+    unsigned int i;
+
+    for (i = 0; i < Lives; i++){
+        #ifdef _SDL
+            SDL_BlitSurface(UISurface, &SrcLives, DDevice->Renderer, &DstLives);
+        #else
+            SDL_RenderCopy(DDevice->Renderer, UISurface, &SrcLives, &DstLives);
+        #endif
+        DstLives.x -= 6 + SrcLives.w;
+    }
+}
+
+void UI_TeCeIntro(DisplayDevice* DDevice, InputDevice* IDevice){ /* Timings to tune */
     int Slide;
     
     Slide = (int)dmap(0.0, 224.0, (double)UIAnimStart, (double)UIAnimEnd, (double)SDL_GetTicks());
 
     switch (UIWTState){
     case 0: /* Setup */
+        UI_ADstRect.x = -192;
+        UI_ADstRect.y = 34;
+        UI_BDstRect.x = 256;
+        UI_BDstRect.y = 74;
         UIAnimStart = SDL_GetTicks();
         UIAnimEnd = UIAnimStart + UI_SLIDE;
-        UIWTState = 0;
         IDevice->EventEnabled = false;
         UIWTState++;
         break;
     case 1: /* Slide On Screen */
-        UIWTADstRect.x = -192 + Slide;
-        UIWTBDstRect.x = 256 - Slide;
+        UI_ADstRect.x = -192 + Slide;
+        UI_BDstRect.x = 256 - Slide;
         if (Slide == 224){
             UIAnimStart = SDL_GetTicks();
             UIAnimEnd = UIAnimStart + UI_SLIDE;
@@ -93,8 +115,8 @@ void UI_TestimonyIntro(DisplayDevice* DDevice, InputDevice* IDevice){ /* Timings
             SwooshPlaying = true;
         }
         UIWTAnimFrame = 0;
-        UIWTASrcRect.x = 0;
-        UIWTBSrcRect.x = 0;
+        UI_ASrcRect[logoID].x = 0;
+        UI_BSrcRect[logoID].x = 0;
         UIAnimEnd = SDL_GetTicks() + UI_WT_ANIM_FRAMERATE;
         UIWTState++;
         break;
@@ -103,8 +125,8 @@ void UI_TestimonyIntro(DisplayDevice* DDevice, InputDevice* IDevice){ /* Timings
             UIWTAnimFrame++;
             UIAnimEnd = SDL_GetTicks() + UI_WT_ANIM_FRAMERATE;
             if (UIWTAnimFrame != UI_WT_NBOFFRAMES){
-                UIWTASrcRect.x += UIWTASrcRect.w;
-                UIWTBSrcRect.x += UIWTBSrcRect.w;
+                UI_ASrcRect[logoID].x += UI_ASrcRect[logoID].w;
+                UI_BSrcRect[logoID].x += UI_BSrcRect[logoID].w;
             } else {
                 UIWTState++;
             }
@@ -122,26 +144,32 @@ void UI_TestimonyIntro(DisplayDevice* DDevice, InputDevice* IDevice){ /* Timings
         }
         break;
     case 6: /* Slide out */
-        UIWTADstRect.x = 32 + Slide;
-        UIWTBDstRect.x = 32 - Slide;
+        if (logoID){
+            UI_ADstRect.y = 34 - Slide;
+            UI_BDstRect.y = 74 + Slide;
+        } else {
+            UI_ADstRect.x = 32 + Slide;
+            UI_BDstRect.x = 32 - Slide;
+        }
         if (Slide == 224){
             UIWTState++;
         }
         break;
     case 7:
         IDevice->EventEnabled = true;
-        currentUI = &UI_Testimony;
+        currentUI = (logoID) ? &UI_Lives : &UI_Testimony;
+        UIWTState = 0;
         break;
     default:
         break;
     }
 
     #ifdef _SDL
-        SDL_BlitSurface(UIWitnessTestimony, &UIWTASrcRect, DDevice->Renderer, &UIWTADstRect);
-        SDL_BlitSurface(UIWitnessTestimony, &UIWTBSrcRect, DDevice->Renderer, &UIWTBDstRect);
+        SDL_BlitSurface(UISurface, &UIWTASrcRect[logoID], DDevice->Renderer, &UI_ADstRect);
+        SDL_BlitSurface(UISurface, &UIWTBSrcRect[logoID], DDevice->Renderer, &UI_BDstRect);
     #else
-        SDL_RenderCopy(DDevice->Renderer, UIWitnessTestimony, &UIWTASrcRect, &UIWTADstRect);
-        SDL_RenderCopy(DDevice->Renderer, UIWitnessTestimony, &UIWTBSrcRect, &UIWTBDstRect);
+        SDL_RenderCopy(DDevice->Renderer, UISurface, &UI_ASrcRect[logoID], &UI_ADstRect);
+        SDL_RenderCopy(DDevice->Renderer, UISurface, &UI_BSrcRect[logoID], &UI_BDstRect);
     #endif
 }
 
@@ -151,36 +179,14 @@ void InitUI(DisplayDevice* DDevice, Items* UIItemBankPointer){
     currentUI = NULL;
     StoredItemID = 0;
 
-    ItemPos.x = 13;
-    ItemPos.y = 13;
-    ItemPos.w = 70;
-    ItemPos.h = 70;
-
     UISurface = LoadSurface(ROOT""TEXTURES"UI"SL"UI.bmp", DDevice, 0xff00ff, SURFACE_KEYED);
-    UITestimonyRect.x = 0;
-    UITestimonyRect.y = 0;
-    UITestimonyRect.w = 64;
-    UITestimonyRect.h = 32;
     /* FIXME : We should really check for the validity of UISurface */
 
-    UIWitnessTestimony = LoadSurface(ROOT""TEXTURES"UI"SL"WitnessTestimony.bmp", DDevice, 0xff00ff, SURFACE_KEYED);
-    
-    UIWTASrcRect.x = 768;
-    UIWTASrcRect.y = 0;
-    UIWTASrcRect.w = 192;
-    UIWTASrcRect.h = 39;
-    
-    UIWTBSrcRect.x = 768;
-    UIWTBSrcRect.y = 40;
-    UIWTBSrcRect.w = 192;
-    UIWTBSrcRect.h = 44;
+    UI_ADstRect.w = UI_ASrcRect[logoID].w;
+    UI_ADstRect.h = UI_ASrcRect[logoID].h;
 
-    UIWTADstRect.w = UIWTASrcRect.w;
-    UIWTADstRect.h = UIWTASrcRect.h;
-    UIWTBDstRect.w = UIWTBSrcRect.w;
-    UIWTBDstRect.h = UIWTBSrcRect.h;
-    UIWTADstRect.y = 34;
-    UIWTBDstRect.y = 74;
+    UI_BDstRect.w = UI_BSrcRect[logoID].w;
+    UI_BDstRect.h = UI_BSrcRect[logoID].h;
 
     /* Sound Effects */
     Swoosh = LoadSoundEffect(EffectPath[CHK_TestimonySwoosh]);
@@ -194,7 +200,12 @@ void setUI(unsigned int UIType, unsigned int argument){
             currentUI = NULL;
             break;
         case TESTIMONY_ICON:
-            currentUI = &UI_TestimonyIntro;
+            currentUI = &UI_TeCeIntro;
+            logoID = 0;
+            break;
+        case CROSS_EXAMINATION:
+            currentUI = &UI_TeCeIntro;
+            logoID = 1;
             break;
         case SHOW_ITEM_TO_COURT:
             currentUI = &UI_ShowToCourt;

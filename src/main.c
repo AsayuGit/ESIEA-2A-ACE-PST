@@ -13,7 +13,7 @@ int main(int argc, char* argv[]){
     Uint32 FontColorKey = 0xff00ff;
     CourtroomContext* CourtContext;
 
-    CourtContext = (CourtroomContext*)malloc(sizeof(CourtroomContext));
+    CourtContext = (CourtroomContext*)calloc(1, sizeof(CourtroomContext));
 
     InitSDL();
     DDevice = CreateDisplayDevice(256, 192, "Mia's Legacy");

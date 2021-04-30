@@ -45,6 +45,7 @@
 
         /* Loaded Scene */
         xmlNode* entry;
+        bool Jump;
         
         /* Dialogue */
         DialogueContext* DiagContext;   /* Ref */

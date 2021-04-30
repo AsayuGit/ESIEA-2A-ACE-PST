@@ -284,6 +284,7 @@ SceneContext* InitScene(DisplayDevice* DDevice, InputDevice* IDevice, DialogueCo
     LoadingScene->CharactersIndex = CharactersIndex;
     LoadingScene->CContext = CContext;
     LoadingScene->entry = rootNode->children;
+    LoadingScene->Jump = false;
 
     return LoadingScene;
 }
@@ -292,103 +293,144 @@ void FreeScene(SceneContext* SceneContext){
 
 }
 
-void parseScene(SceneContext* SContext){
-    /* Declaration */
-    xmlNode *searchNode, *property, *element, *next;
-    /* diag */
+size_t parseDiag(SceneContext* SContext, xmlNode* element){
     int CurrentCharacterID; /* Hold the name of the character who is talking during the dialog */
     char* DialogueText; /* Hold the text of the dialogue itself */
-    int lineSize; /* Hold the size of the dialog who is about to be played */
-    /* anim */
+
+    while (element){
+        if (strcmp((char*)element->name, "char") == 0) {
+            CurrentCharacterID = atoi((char*)xmlNodeGetContent(element));
+        } else if (strcmp((char*)element->name, "line") == 0) {
+            /*ReturnToDefault = SetDialogueText(DiagContext, (*CurrentCharacter)->DisplayName, "The court is now in session for\nthe trial of Mr. Larry Butz.", 1); */
+            DialogueText = (char*)xmlNodeGetContent(element);
+        }
+        element = element->next;
+    }
+    SContext->CContext->CurrentCharacter = CurrentCharacterID;
+
+    return SetDialogueText(SContext->DiagContext, SContext->CharactersIndex[CurrentCharacterID]->DisplayName, DialogueText, 1);
+}
+
+void parseAnim(SceneContext* SContext, xmlNode* element){
     int animTarget;
     int animationID;
-    /* jump */
-    char* jumpLabel;
-    /* Buttons */
-    int buttonJumpIndex;
-    /* Item */
-    int ItemBuffer;
-    /* Music */
-    int TrackID;
 
-    /* Logic */
-    next = (SContext->entry->next) ? SContext->entry->next : SContext->entry;
-    property = SContext->entry->children;
-    while (property){
-        if (strcmp((char*)property->name, "diag") == 0){
-            element = property->children;
-            while (element){
-                if (strcmp((char*)element->name, "char") == 0) {
-                    CurrentCharacterID = atoi((char*)xmlNodeGetContent(element));
-                } else if (strcmp((char*)element->name, "line") == 0) {
-                    /*ReturnToDefault = SetDialogueText(DiagContext, (*CurrentCharacter)->DisplayName, "The court is now in session for\nthe trial of Mr. Larry Butz.", 1); */
-                    DialogueText = (char*)xmlNodeGetContent(element);
-                }
-                element = element->next;
+    while (element){
+        if (strcmp((char*)element->name, "animTarget") == 0) {
+            animTarget = atoi((char*)xmlNodeGetContent(element));
+        } else if (strcmp((char*)element->name, "animation") == 0) {
+            animationID = atoi((char*)xmlNodeGetContent(element));
+        } else if (strcmp((char*)element->name, "idleAnim") == 0) {
+            SContext->CContext->IdleAnimation = atoi((char*)xmlNodeGetContent(element)); /* Need to be setup */
+        }
+        element = element->next;
+    }
+    CharacterPlayAnimation(SContext->CharactersIndex[animTarget], animationID);
+}
+
+void parseButtons(SceneContext* SContext, xmlNode* element){
+    int buttonJumpIndex;
+
+    ClearButtons(SContext->BContext);
+    buttonJumpIndex = 0;
+    while (element){
+        if (strcmp((char*)element->name, "option") == 0) {
+            AddButton(SContext->BContext, (char*)xmlNodeGetContent(element));
+            SContext->CContext->ButtonJumpLabels[buttonJumpIndex] = (char*)xmlGetProp(element, (xmlChar*)"jump");
+            buttonJumpIndex++;
+        }
+        element = element->next;
+    }
+    SContext->IDevice->EventEnabled = false;
+    SContext->CContext->ButtonActivated = 1;
+}
+
+void parseFlags(SceneContext* SContext, xmlNode* element){
+    char* CharBuffer;
+    int IntBuffer;
+    xmlNode *searchNode;
+
+    while (element){
+        if (strcmp((char*)element->name, "setBG") == 0) {
+            MoveBackground(SContext->BGContext, atoi((char*)xmlGetProp(element, (xmlChar*)"value")), 0);
+        } else if (strcmp((char*)element->name, "setBGAnim") == 0) {
+            BackgroundPlayAnimation(SContext->BGContext, atoi((char*)xmlNodeGetContent(element)), &SContext->IDevice->EventEnabled);
+        } else if (strcmp((char*)element->name, "setPic") == 0) {
+            MoveBackground(SContext->ScenePics, atoi((char*)xmlNodeGetContent(element)), 0);
+        } else if (strcmp((char*)element->name, "setBGM") == 0){
+            IntBuffer = atoi((char*)xmlGetProp(element, (xmlChar*)"value"));
+            if (IntBuffer >= 0){
+                if (IntBuffer != GetTrackID())
+                    PlayTrackID(IntBuffer);
+            } else {
+                StopTrack();
             }
-            lineSize = SetDialogueText(SContext->DiagContext, SContext->CharactersIndex[CurrentCharacterID]->DisplayName, DialogueText, 1);
-            SContext->CContext->CurrentCharacter = CurrentCharacterID;
-        } else if (strcmp((char*)property->name, "anim") == 0) {
-            element = property->children;
-            while (element){
-                if (strcmp((char*)element->name, "animTarget") == 0) {
-                    animTarget = atoi((char*)xmlNodeGetContent(element));
-                } else if (strcmp((char*)element->name, "animation") == 0) {
-                    animationID = atoi((char*)xmlNodeGetContent(element));
-                } else if (strcmp((char*)element->name, "idleAnim") == 0) {
-                    SContext->CContext->IdleAnimation = atoi((char*)xmlNodeGetContent(element)); /* Need to be setup */
-                    SContext->CContext->ReturnToDefault = lineSize;
-                }
-                element = element->next;
+        } else if (strcmp((char*)element->name, "setUI") == 0){
+            CharBuffer = (char*)xmlGetProp(element, (xmlChar*)"param");
+            setUI((unsigned int)atoi((char*)xmlGetProp(element, (xmlChar*)"value")), (CharBuffer) ? atoi(CharBuffer) : 0);
+        } else if (strcmp((char*)element->name, "setCE") == 0){
+            printf("FIXME: Cross Examination\n");
+
+
+        } else if (strcmp((char*)element->name, "jump") == 0) {
+            CharBuffer = (char*)xmlNodeGetContent(element);
+            searchNode = searchSceneNode(SContext->entry, CharBuffer);
+            if (searchNode){
+                SContext->entry = searchNode;
+                SContext->Jump = true;
             }
-            CharacterPlayAnimation(SContext->CharactersIndex[animTarget], animationID);
-        } else if (strcmp((char*)property->name, "buttons") == 0) {
-            ClearButtons(SContext->BContext);
-            buttonJumpIndex = 0;
-            element = property->children;
-            while (element){
-                if (strcmp((char*)element->name, "option") == 0) {
-                    AddButton(SContext->BContext, (char*)xmlNodeGetContent(element));
-                    SContext->CContext->ButtonJumpLabels[buttonJumpIndex] = (char*)xmlGetProp(element, (xmlChar*)"jump");
-                    buttonJumpIndex++;
-                }
-                element = element->next;
-            }
-            SContext->IDevice->EventEnabled = false;
-            SContext->CContext->ButtonActivated = 1;
-        } else if (strcmp((char*)property->name, "setBackground") == 0) {
-            MoveBackground(SContext->BGContext, atoi((char*)xmlNodeGetContent(property)), 0);
-        } else if (strcmp((char*)property->name, "backgroundAnim") == 0) {
-            BackgroundPlayAnimation(SContext->BGContext, atoi((char*)xmlNodeGetContent(property)), &SContext->IDevice->EventEnabled);
-        } else if (strcmp((char*)property->name, "setPicture") == 0) {
-            MoveBackground(SContext->ScenePics, atoi((char*)xmlNodeGetContent(property)), 0);
-        } else if (strcmp((char*)property->name, "jump") == 0) {
-            jumpLabel = (char*)xmlNodeGetContent(property);
-            searchNode = searchSceneNode(SContext->entry, jumpLabel);
-            if (searchNode)
-                next = searchNode;
-        } else if (strcmp((char*)property->name, "giveItem") == 0){
-            AddItemToCourtRecord(atoi((char*)xmlNodeGetContent(property)));
-        } else if (strcmp((char*)property->name, "removeItem") == 0){
-            ItemBuffer = atoi((char*)xmlNodeGetContent(property));
-            if (ItemBuffer > -1){
-                RemoveItemFromCourtRecord(ItemBuffer);
+        } else if (strcmp((char*)element->name, "giveItem") == 0){
+            AddItemToCourtRecord(atoi((char*)xmlNodeGetContent(element)));
+        } else if (strcmp((char*)element->name, "removeItem") == 0){
+            IntBuffer = atoi((char*)xmlNodeGetContent(element));
+            if (IntBuffer > -1){
+                RemoveItemFromCourtRecord(IntBuffer);
             } else {
                 EmptyCourtRecord();
             }
-        } else if (strcmp((char*)property->name, "playBGM") == 0){
-            TrackID = atoi((char*)xmlNodeGetContent(property));
-            if (TrackID >= 0){
-                PlayTrackID(TrackID);
-            } else {
-                Mix_HaltMusic();
-            }
-        } else if (strcmp((char*)property->name, "setUI") == 0){
-            setUI((unsigned int)atoi((char*)xmlGetProp(property, (xmlChar*)"type")), atoi((char*)xmlNodeGetContent(property)));
+        }
+        element = element->next;
+    }
+}
+
+void parseScene(SceneContext* SContext){
+    /* Declaration */
+    xmlNode *property;
+    /* diag */
+    size_t lineSize = 0; /* Hold the size of the dialog who is about to be played */
+
+    /* Logic */
+    property = SContext->entry->children;
+    while (property){
+        if (strcmp((char*)property->name, "diag") == 0){
+            lineSize = parseDiag(SContext, property->children);
+        } else if (strcmp((char*)property->name, "anim") == 0) {
+            parseAnim(SContext, property->children);
+        } else if (strcmp((char*)property->name, "buttons") == 0) {
+            parseButtons(SContext, property->children);
+        } else if (strcmp((char*)property->name, "flags") == 0) {
+            parseFlags(SContext, property->children);
         }
         property = property->next;
     }
-    SContext->entry = next;
+
+    /* Post parsing */
+    if (lineSize)   /* We don't want to modify Return to default unless a new dialogue is set */
+        SContext->CContext->ReturnToDefault = lineSize;
+}
+
+void SceneForward(SceneContext* SContext){
+    if (SContext->Jump) {
+        SContext->Jump = false;
+    } else if (SContext->entry->next){
+        SContext->entry = SContext->entry->next;
+    }
+}
+
+
+void SceneBackward(SceneContext* SContext){
+    if (SContext->entry->prev)
+        SContext->entry = SContext->entry->prev;
 }
 
 void FreeBGAnimation(BGAnimation* AnimationToFree){

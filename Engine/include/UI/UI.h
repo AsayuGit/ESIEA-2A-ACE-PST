@@ -7,6 +7,7 @@
     enum {
         UI_EMPTY,
         TESTIMONY_ICON,
+        CROSS_EXAMINATION,
         SHOW_ITEM_TO_COURT
     };
 
