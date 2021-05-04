@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <background texture="./Assets/Textures/Places/Courtroom.bmp"> <!--  colorKey="0xff00ff"-->
     <animArray>
-        <anim X="0" Y="0" W="648" H="0"> <!-- 90° turn-->
+        <anim X="0" Y="0" W="520" H="0"> <!-- 90° turn-->
             <entry stateA="0.0" stateB="1.6" rangeA="0.0" rangeB="10.0" runtime="64"/>
             <entry stateA="4.0" stateB="4.0" rangeA="0.0" rangeB="10.56" runtime="320"/>
             <entry stateA="0.0" stateB="1.6" rangeA="0.0" rangeB="10.0" runtime="64"/>
+        </anim>
+        <anim X="520" Y="0" W="0" H="0"> <!-- Reverse 90° turn-->
+            <entry stateA="0.0" stateB="-1.6" rangeA="0.0" rangeB="10.0" runtime="64"/>
+            <entry stateA="-4.0" stateB="-4.0" rangeA="0.0" rangeB="10.56" runtime="320"/>
+            <entry stateA="0.0" stateB="-1.6" rangeA="0.0" rangeB="10.0" runtime="64"/>
         </anim>
         <anim X="0" Y="0" W="1040" H="0"> <!-- 180° turn-->
             <entry stateA="0.0" stateB="1.6" rangeA="0.0" rangeB="10.0" runtime="64"/>

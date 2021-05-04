@@ -284,6 +284,7 @@ SceneContext* InitScene(DisplayDevice* DDevice, InputDevice* IDevice, DialogueCo
     LoadingScene->CharactersIndex = CharactersIndex;
     LoadingScene->CContext = CContext;
     LoadingScene->entry = rootNode->children;
+    LoadingScene->press = NULL;
     LoadingScene->Jump = false;
 
     return LoadingScene;
@@ -350,11 +351,12 @@ void parseFlags(SceneContext* SContext, xmlNode* element){
     int IntBuffer;
     xmlNode *searchNode;
 
+    SContext->press = NULL;
     while (element){
         if (strcmp((char*)element->name, "setBG") == 0) {
             MoveBackground(SContext->BGContext, atoi((char*)xmlGetProp(element, (xmlChar*)"value")), 0);
         } else if (strcmp((char*)element->name, "setBGAnim") == 0) {
-            BackgroundPlayAnimation(SContext->BGContext, atoi((char*)xmlNodeGetContent(element)), &SContext->IDevice->EventEnabled);
+            BackgroundPlayAnimation(SContext->BGContext, atoi((char*)xmlGetProp(element, (xmlChar*)"value")), &SContext->IDevice->EventEnabled);
         } else if (strcmp((char*)element->name, "setPic") == 0) {
             MoveBackground(SContext->ScenePics, atoi((char*)xmlNodeGetContent(element)), 0);
         } else if (strcmp((char*)element->name, "setBGM") == 0){
@@ -368,10 +370,8 @@ void parseFlags(SceneContext* SContext, xmlNode* element){
         } else if (strcmp((char*)element->name, "setUI") == 0){
             CharBuffer = (char*)xmlGetProp(element, (xmlChar*)"param");
             setUI((unsigned int)atoi((char*)xmlGetProp(element, (xmlChar*)"value")), (CharBuffer) ? atoi(CharBuffer) : 0);
-        } else if (strcmp((char*)element->name, "setCE") == 0){
-            printf("FIXME: Cross Examination\n");
-
-
+        } else if (strcmp((char*)element->name, "setREW") == 0){
+            SContext->CContext->diagRewind = (bool)atoi((char*)xmlGetProp(element, (xmlChar*)"value"));
         } else if (strcmp((char*)element->name, "jump") == 0) {
             CharBuffer = (char*)xmlNodeGetContent(element);
             searchNode = searchSceneNode(SContext->entry, CharBuffer);
@@ -379,6 +379,11 @@ void parseFlags(SceneContext* SContext, xmlNode* element){
                 SContext->entry = searchNode;
                 SContext->Jump = true;
             }
+        } else if (strcmp((char*)element->name, "press") == 0) {
+            CharBuffer = (char*)xmlNodeGetContent(element);
+            searchNode = searchSceneNode(SContext->entry, CharBuffer);
+            if (searchNode)
+                SContext->press = searchNode;
         } else if (strcmp((char*)element->name, "giveItem") == 0){
             AddItemToCourtRecord(atoi((char*)xmlNodeGetContent(element)));
         } else if (strcmp((char*)element->name, "removeItem") == 0){

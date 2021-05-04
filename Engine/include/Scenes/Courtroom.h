@@ -14,6 +14,8 @@
         int CurrentCharacter;
         size_t ReturnToDefault;
 
+        bool diagRewind;
+
         char* ButtonJumpLabels[4];
     } CourtroomContext;
 

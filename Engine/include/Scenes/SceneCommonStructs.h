@@ -45,6 +45,7 @@
 
         /* Loaded Scene */
         xmlNode* entry;
+        xmlNode* press;
         bool Jump;
         
         /* Dialogue */

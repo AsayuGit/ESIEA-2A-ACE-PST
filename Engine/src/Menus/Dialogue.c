@@ -163,7 +163,7 @@ void Dialogue(DialogueContext* Context){
         #ifdef _SDL
             SDL_BlitSurface(Context->DialogBox, &ArrowSrcRect, Context->DDevice->Screen, &ArrowDstRect);
         #else
-            SDL_RenderCopy(Context->DDevice->Renderer, Context->DialogBox, &ArrowSrcRect, &ArrowDstRect);
+            SDL_RenderCopy(Context->DDevice->Renderer, Context->DialogBox, &ArrowSrcRect, &ArrowDstRect); /* Right Arrow */
         #endif
     }
 

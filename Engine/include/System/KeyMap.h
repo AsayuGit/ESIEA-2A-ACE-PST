@@ -6,6 +6,7 @@
         #define PAD_SELECT SDLK_SPACE
         #define PAD_BACK SDLK_LCTRL
         #define PAD_COURTRECORD SDLK_e
+        #define PAD_PRESS SDLK_q
 
         /* Directions */
         #define PAD_UP SDLK_UP
@@ -18,6 +19,7 @@
         #define PAD_SELECT SDL_SCANCODE_SPACE
         #define PAD_BACK SDL_SCANCODE_LCTRL
         #define PAD_COURTRECORD SDL_SCANCODE_E
+        #define PAD_PRESS SDL_SCANCODE_Q
 
         /* Directions */
         #define PAD_UP SDL_SCANCODE_UP

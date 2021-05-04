@@ -123,15 +123,25 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
 
                         case PAD_BACK:
                             /* FIXME: We need a nice way to toogle dialogue's booth way mode */
-                            CharacterPlayAnimation(CharactersIndex[Context->CurrentCharacter], Context->IdleAnimation); /* Mouaif */
-                            SceneBackward(SContext);
-                            parseScene(SContext);
+                            if (Context->diagRewind){
+                                CharacterPlayAnimation(CharactersIndex[Context->CurrentCharacter], Context->IdleAnimation); /* Mouaif */
+                                SceneBackward(SContext);
+                                parseScene(SContext);
+                            }
                         
                             break;
 
                         case PAD_COURTRECORD:
                             CourtRecordActivated = true;
                             EventSelect = CourtRecordEvents;
+                            break;
+
+                        case PAD_PRESS:
+                            if (SContext->press){
+                                SContext->entry = SContext->press;
+                                Context->diagRewind = false;
+                                parseScene(SContext);
+                            }
                             break;
                         default:
                             break;
