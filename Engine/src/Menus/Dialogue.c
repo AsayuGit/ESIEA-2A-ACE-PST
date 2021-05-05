@@ -119,15 +119,16 @@ DialogueContext* InitDialog(DisplayDevice* DDevice, BitmapFont* MainFont, Bitmap
 }
 
 /* Fonction non bloquante gérant les dialogues */
-void Dialogue(DialogueContext* Context){
+void Dialogue(DialogueContext* Context, bool bothWay){
     SDL_Rect InLayerTextBounds;
-    SDL_Rect ArrowSrcRect = {256, 0, 9, 9};
+    SDL_Rect ArrowSrcRect[2] = {{256, 0, 9, 9}, {256, 9, 9, 9}};
     SDL_Rect ArrowDstRect = {0, 172, 9, 9};
+    double Wobble;
 
     InLayerTextBounds = Context->TextBounds;
     InLayerTextBounds.x = InLayerTextBounds.y = 0;
 
-    ArrowDstRect.x = 240 + sin((double)SDL_GetTicks() / 50) * 2;
+    Wobble = sin((double)SDL_GetTicks() / 50.0f) * 2.0f;
 
     /* DialogBox Rendering */
     #ifdef _SDL
@@ -160,10 +161,20 @@ void Dialogue(DialogueContext* Context){
             SetRenderTarget(Context->DDevice, NULL);
         }
     } else {
+        if (bothWay){
+            ArrowDstRect.x = 7 - Wobble;
+            #ifdef _SDL
+                SDL_BlitSurface(Context->DialogBox, &ArrowSrcRect[1], Context->DDevice->Screen, &ArrowDstRect);
+            #else
+                SDL_RenderCopy(Context->DDevice->Renderer, Context->DialogBox, &ArrowSrcRect[1], &ArrowDstRect); /* Right Arrow */
+            #endif
+        }
+        
+        ArrowDstRect.x = 240 + Wobble;
         #ifdef _SDL
-            SDL_BlitSurface(Context->DialogBox, &ArrowSrcRect, Context->DDevice->Screen, &ArrowDstRect);
+            SDL_BlitSurface(Context->DialogBox, &ArrowSrcRect[0], Context->DDevice->Screen, &ArrowDstRect);
         #else
-            SDL_RenderCopy(Context->DDevice->Renderer, Context->DialogBox, &ArrowSrcRect, &ArrowDstRect); /* Right Arrow */
+            SDL_RenderCopy(Context->DDevice->Renderer, Context->DialogBox, &ArrowSrcRect[0], &ArrowDstRect); /* Right Arrow */
         #endif
     }
 

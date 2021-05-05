@@ -3,19 +3,17 @@
 static void (*currentUI)(DisplayDevice*, InputDevice*);
 
 static Items* UIItemBank;
+static SceneContext* SContextPtr;
 static unsigned int StoredItemID;
-static SDL_Rect ItemPos = {13, 13, 70, 70};
 
 /* Surface and rects */
 static SDL_Texture* UISurface;
-static SDL_Rect UITestimonyRect = {0, 0, 64, 32};
 static unsigned int UILastBlink;
 static bool UIBlink;
 static unsigned int UIBlinkDelay;
 
 static SDL_Rect UI_ASrcRect[2] = {{0, 33, 192, 39}, {0, 117, 192, 39}};
 static SDL_Rect UI_BSrcRect[2] = {{0, 73, 192, 44}, {0, 157, 192, 44}};
-
 static SDL_Rect UI_ADstRect;
 static SDL_Rect UI_BDstRect;
 
@@ -29,7 +27,8 @@ static unsigned int Lives = 5;
 
 /* Sound Effets */
 static Mix_Chunk* Swoosh;
-static bool SwooshPlaying;
+static Mix_Chunk* HoldIT;
+static bool EffectPlaying;
 
 /* Blink delay in miliseconds */
 #define UI_BLINK_HIDDEN_DELAY 333
@@ -42,6 +41,8 @@ static bool SwooshPlaying;
 #define UI_WT_PAUSE 1000
 
 void UI_ShowToCourt(DisplayDevice* DDevice, InputDevice* IDevice){
+    SDL_Rect ItemPos = {13, 13, 70, 70};
+
     #ifdef _SDL
         SDL_BlitSurface(UIItemBank->ItemSpritesheet, &(UIItemBank->ItemSrcRectArray[StoredItemID]), DDevice->Renderer, &(ItemPos));
     #else
@@ -50,6 +51,8 @@ void UI_ShowToCourt(DisplayDevice* DDevice, InputDevice* IDevice){
 }
 
 void UI_Testimony(DisplayDevice* DDevice, InputDevice* IDevice){
+    SDL_Rect UITestimonyRect = {0, 0, 64, 32};
+
     if (UIBlink){
 
         #ifdef _SDL
@@ -98,21 +101,20 @@ void UI_TeCeIntro(DisplayDevice* DDevice, InputDevice* IDevice){ /* Timings to t
         UIAnimEnd = UIAnimStart + UI_SLIDE;
         IDevice->EventEnabled = false;
         UIWTState++;
-        break;
     case 1: /* Slide On Screen */
         UI_ADstRect.x = -192 + Slide;
         UI_BDstRect.x = 256 - Slide;
         if (Slide == 224){
             UIAnimStart = SDL_GetTicks();
             UIAnimEnd = UIAnimStart + UI_SLIDE;
-            SwooshPlaying = false;
+            EffectPlaying = false;
             UIWTState++;
         }
         break;
     case 2: /* Flash screen */ /* TODO */
-        if (!SwooshPlaying){
+        if (!EffectPlaying){
             Mix_PlayChannel(-1, Swoosh, 0);
-            SwooshPlaying = true;
+            EffectPlaying = true;
         }
         UIWTAnimFrame = 0;
         UI_ASrcRect[logoID].x = 0;
@@ -173,9 +175,56 @@ void UI_TeCeIntro(DisplayDevice* DDevice, InputDevice* IDevice){ /* Timings to t
     #endif
 }
 
+void UI_HoldIt(DisplayDevice* DDevice, InputDevice* IDevice){
+    SDL_Rect UI_HoldItSrcRect = {0, 214, 254, 189};
+    SDL_Rect UI_HoldItDstRect = {1, 2, 254, 189};
+
+    switch (UIWTState){
+    case 0: /* Setup */
+        UIAnimStart = SDL_GetTicks();
+        UIAnimEnd = UIAnimStart + 600;
+        EffectPlaying = false;
+        IDevice->EventEnabled = false;
+        SContextPtr->DiagShown = false;
+        UIWTState++;
+    case 1: /* Shake & sound*/
+        UI_HoldItDstRect.x += (int)(sin((SDL_GetTicks()/3)*6.0f)*5.0f);
+        UI_HoldItDstRect.y += (int)(sin((SDL_GetTicks()/3)*6.5f)*5.0f);
+        if (!EffectPlaying){
+            Mix_PlayChannel(-1, HoldIT, 0);
+            EffectPlaying = true;
+        }
+        if (SDL_GetTicks() > UIAnimEnd){
+            UIAnimStart = SDL_GetTicks();
+            UIAnimEnd = UIAnimStart + 200;
+            UIWTState++;
+        }
+        break;
+    case 2:
+        if (SDL_GetTicks() > UIAnimEnd){
+            parseScene(SContextPtr);
+            currentUI = NULL;
+            IDevice->EventEnabled = true;
+            SContextPtr->DiagShown = true;
+            UIWTState = 0;
+        }
+        break;
+
+    default:
+        break;
+    }
+
+    #ifdef _SDL
+        SDL_BlitSurface(UISurface, &UI_HoldItSrcRect, DDevice->Renderer, &UI_HoldItDstRect);
+    #else
+        SDL_RenderCopy(DDevice->Renderer, UISurface, &UI_HoldItSrcRect, &UI_HoldItDstRect);
+    #endif
+}
+
 /* Init the notification handler */
-void InitUI(DisplayDevice* DDevice, Items* UIItemBankPointer){
+void InitUI(DisplayDevice* DDevice, Items* UIItemBankPointer, SceneContext* SContext){
     UIItemBank = UIItemBankPointer;
+    SContextPtr = SContext;
     currentUI = NULL;
     StoredItemID = 0;
 
@@ -190,7 +239,8 @@ void InitUI(DisplayDevice* DDevice, Items* UIItemBankPointer){
 
     /* Sound Effects */
     Swoosh = LoadSoundEffect(EffectPath[CHK_TestimonySwoosh]);
-    /* Mix_VolumeChunk(Swoosh, 64);*/
+    HoldIT = LoadSoundEffect(EffectPath[CHK_HoldIt]);
+    /*Mix_VolumeChunk(HoldIT, 32);*/
 }
 
 /* Add a ui element */
@@ -210,6 +260,9 @@ void setUI(unsigned int UIType, unsigned int argument){
         case SHOW_ITEM_TO_COURT:
             currentUI = &UI_ShowToCourt;
             StoredItemID = argument;
+            break;
+        case HOLD_IT:
+            currentUI = &UI_HoldIt;
             break;
         default:
             break;

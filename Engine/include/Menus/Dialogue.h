@@ -36,6 +36,6 @@
     void ClearDialogueText(DialogueContext* Context);
     size_t SetDialogueText(DialogueContext* Context, char* Name, char* Text, char SndEffType);
     DialogueContext* InitDialog(DisplayDevice* DDevice, BitmapFont* MainFont, BitmapFont* NameFont);
-    void Dialogue(DialogueContext* Context);
+    void Dialogue(DialogueContext* Context, bool bothWay);
 
 #endif

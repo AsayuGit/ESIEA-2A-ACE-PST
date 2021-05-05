@@ -20,6 +20,7 @@
         CHK_NextLine,
         CHK_LineComplete,
         CHK_TestimonySwoosh,
+        CHK_HoldIt,
         NumberOfEffectTracks
     } EffectsPlaylistID;
 

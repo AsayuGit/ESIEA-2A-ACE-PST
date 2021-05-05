@@ -15,7 +15,8 @@ char* EffectPath[NumberOfEffectTracks] = {
     ROOT""EFFECTS"HPLetter"MUS_EXT,
     ROOT""EFFECTS"NextLine"MUS_EXT,
     ROOT""EFFECTS"LineComplete"MUS_EXT,
-    ROOT""EFFECTS"TestimonySwoosh"MUS_EXT
+    ROOT""EFFECTS"TestimonySwoosh"MUS_EXT,
+    ROOT""EFFECTS"HoldIt"MUS_EXT
 };
 
 static Mix_Music* LoadedTrack;

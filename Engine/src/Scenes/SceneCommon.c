@@ -286,6 +286,7 @@ SceneContext* InitScene(DisplayDevice* DDevice, InputDevice* IDevice, DialogueCo
     LoadingScene->entry = rootNode->children;
     LoadingScene->press = NULL;
     LoadingScene->Jump = false;
+    LoadingScene->DiagShown = true;
 
     return LoadingScene;
 }
@@ -372,6 +373,8 @@ void parseFlags(SceneContext* SContext, xmlNode* element){
             setUI((unsigned int)atoi((char*)xmlGetProp(element, (xmlChar*)"value")), (CharBuffer) ? atoi(CharBuffer) : 0);
         } else if (strcmp((char*)element->name, "setREW") == 0){
             SContext->CContext->diagRewind = (bool)atoi((char*)xmlGetProp(element, (xmlChar*)"value"));
+        } else if (strcmp((char*)element->name, "setDIAG") == 0){
+            SContext->DiagShown = (bool)atoi((char*)xmlGetProp(element, (xmlChar*)"value"));
         } else if (strcmp((char*)element->name, "jump") == 0) {
             CharBuffer = (char*)xmlNodeGetContent(element);
             searchNode = searchSceneNode(SContext->entry, CharBuffer);

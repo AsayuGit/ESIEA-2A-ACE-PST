@@ -35,7 +35,7 @@ int main(int argc, char* argv[]){
         if (argc > 1){
             Scene_Courtroom(DDevice, IDevice, CourtContext, argv[1]);
         } else {
-            Scene_Courtroom(DDevice, IDevice, CourtContext, "Assets/Dialogue/court.xml");
+            Scene_Courtroom(DDevice, IDevice, CourtContext, "Assets/Dialogue/cross.xml");
         }
     }
     

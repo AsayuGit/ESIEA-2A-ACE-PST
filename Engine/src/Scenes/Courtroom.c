@@ -61,8 +61,6 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
     ItemBank = LoadItemsFromFile(DDevice, ROOT""TEXTURES"Evidences"SL"Evidences.xml");
     /* CourtRecord Init */
     InitCourtRecord(DDevice, ItemBank);
-    /* Init the notification handler */
-    InitUI(DDevice, ItemBank);
     CourtRecordActivated = false;
 
     CharactersIndex[0] = InitCharacter(DDevice, "Assets/Characters/PhoenixWright.xml"); /* Initialise the character in memory */
@@ -76,6 +74,9 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
 
     /* InitScene */
     SContext = InitScene(DDevice, IDevice, DiagContext, BContext, CharactersIndex, Context, DialogPath);
+
+    /* Init the notification handler */
+    InitUI(DDevice, ItemBank, SContext);
 
     CharaLayer = NULL;
     InitCharacterLayer(&CharaLayer, SContext->BGContext);
@@ -140,7 +141,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                             if (SContext->press){
                                 SContext->entry = SContext->press;
                                 Context->diagRewind = false;
-                                parseScene(SContext);
+                                setUI(4, 0);
                             }
                             break;
                         default:
@@ -217,7 +218,8 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
         DisplayBackground(DDevice, SContext->BGContext);    /* Background */
         DisplayCharacterLayer(DDevice, CharaLayer);         /* Character Layer */
         DisplayBackground(DDevice, SContext->ScenePics);    /* Exposition Pictures */
-        Dialogue(DiagContext);                              /* Dialog */
+        if (SContext->DiagShown)
+            Dialogue(DiagContext, Context->diagRewind);     /* Dialog */
         if (Context->ButtonActivated){                      /* Check if the buttons are actually on screen to save ressources */
             DisplayBackground(DDevice, ButtonLayer);        /* Animate the button layer */
             DrawButtons(BContext);                          /* Draw the actual buttons (Maybe merge ?) */

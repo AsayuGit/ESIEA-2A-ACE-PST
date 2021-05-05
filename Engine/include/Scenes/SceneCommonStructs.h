@@ -47,6 +47,7 @@
         xmlNode* entry;
         xmlNode* press;
         bool Jump;
+        bool DiagShown;
         
         /* Dialogue */
         DialogueContext* DiagContext;   /* Ref */
