@@ -13,13 +13,13 @@ static bool UIBlink;
 static unsigned int UIBlinkDelay;
 
 static SDL_Rect UI_ASrcRect[2] = {{0, 33, 192, 39}, {0, 117, 192, 39}};
-static SDL_Rect UI_BSrcRect[2] = {{0, 73, 192, 44}, {0, 157, 192, 44}};
+static SDL_Rect UI_BSrcRect[2] = {{0, 73, 192, 39}, {0, 157, 192, 39}};
 static SDL_Rect UI_ADstRect;
 static SDL_Rect UI_BDstRect;
 
 static unsigned int UIAnimStart;
 static unsigned int UIAnimEnd;
-static unsigned char UIWTState;
+static unsigned char UIWTState = 0;
 static unsigned char UIWTAnimFrame;
 
 static unsigned int logoID;
@@ -27,7 +27,7 @@ static unsigned int Lives = 5;
 
 /* Sound Effets */
 static Mix_Chunk* Swoosh;
-static Mix_Chunk* HoldIT;
+static Mix_Chunk* Mix_Excla[3];
 static bool EffectPlaying;
 
 /* Blink delay in miliseconds */
@@ -100,6 +100,7 @@ void UI_TeCeIntro(DisplayDevice* DDevice, InputDevice* IDevice){ /* Timings to t
         UIAnimStart = SDL_GetTicks();
         UIAnimEnd = UIAnimStart + UI_SLIDE;
         IDevice->EventEnabled = false;
+        Slide = 0;
         UIWTState++;
     case 1: /* Slide On Screen */
         UI_ADstRect.x = -192 + Slide;
@@ -175,9 +176,9 @@ void UI_TeCeIntro(DisplayDevice* DDevice, InputDevice* IDevice){ /* Timings to t
     #endif
 }
 
-void UI_HoldIt(DisplayDevice* DDevice, InputDevice* IDevice){
-    SDL_Rect UI_HoldItSrcRect = {0, 214, 254, 189};
-    SDL_Rect UI_HoldItDstRect = {1, 2, 254, 189};
+void UI_Exclamation(DisplayDevice* DDevice, InputDevice* IDevice){
+    SDL_Rect UI_ExclaSrcRect[3] = {{0, 212, 254, 191}, {254, 212, 254, 191}, {510, 212, 254, 191}};
+    SDL_Rect UI_ExclaDstRect = {1, 0, 254, 191};
 
     switch (UIWTState){
     case 0: /* Setup */
@@ -188,10 +189,10 @@ void UI_HoldIt(DisplayDevice* DDevice, InputDevice* IDevice){
         SContextPtr->DiagShown = false;
         UIWTState++;
     case 1: /* Shake & sound*/
-        UI_HoldItDstRect.x += (int)(sin((SDL_GetTicks()/3)*6.0f)*5.0f);
-        UI_HoldItDstRect.y += (int)(sin((SDL_GetTicks()/3)*6.5f)*5.0f);
+        UI_ExclaDstRect.x += (int)(sin((SDL_GetTicks()/3)*6.0f)*5.0f);
+        UI_ExclaDstRect.y += (int)(sin((SDL_GetTicks()/3)*6.5f)*5.0f);
         if (!EffectPlaying){
-            Mix_PlayChannel(-1, HoldIT, 0);
+            Mix_PlayChannel(-1, Mix_Excla[logoID], 0);
             EffectPlaying = true;
         }
         if (SDL_GetTicks() > UIAnimEnd){
@@ -215,9 +216,9 @@ void UI_HoldIt(DisplayDevice* DDevice, InputDevice* IDevice){
     }
 
     #ifdef _SDL
-        SDL_BlitSurface(UISurface, &UI_HoldItSrcRect, DDevice->Renderer, &UI_HoldItDstRect);
+        SDL_BlitSurface(UISurface, &UI_ExclaSrcRect[LogoID], DDevice->Renderer, &UI_ExclaDstRect);
     #else
-        SDL_RenderCopy(DDevice->Renderer, UISurface, &UI_HoldItSrcRect, &UI_HoldItDstRect);
+        SDL_RenderCopy(DDevice->Renderer, UISurface, &UI_ExclaSrcRect[logoID], &UI_ExclaDstRect);
     #endif
 }
 
@@ -239,7 +240,9 @@ void InitUI(DisplayDevice* DDevice, Items* UIItemBankPointer, SceneContext* SCon
 
     /* Sound Effects */
     Swoosh = LoadSoundEffect(EffectPath[CHK_TestimonySwoosh]);
-    HoldIT = LoadSoundEffect(EffectPath[CHK_HoldIt]);
+    Mix_Excla[0] = LoadSoundEffect(EffectPath[CHK_HoldIt]);
+    Mix_Excla[1] = LoadSoundEffect(EffectPath[CHK_Objection]);
+    Mix_Excla[2] = LoadSoundEffect(EffectPath[CHK_TakeThat]);
     /*Mix_VolumeChunk(HoldIT, 32);*/
 }
 
@@ -262,7 +265,16 @@ void setUI(unsigned int UIType, unsigned int argument){
             StoredItemID = argument;
             break;
         case HOLD_IT:
-            currentUI = &UI_HoldIt;
+            currentUI = &UI_Exclamation;
+            logoID = 0;
+            break;
+        case OBJECTION:
+            currentUI = &UI_Exclamation;
+            logoID = 1;
+            break;
+        case TAKE_THAT:
+            currentUI = &UI_Exclamation;
+            logoID = 2;
             break;
         default:
             break;

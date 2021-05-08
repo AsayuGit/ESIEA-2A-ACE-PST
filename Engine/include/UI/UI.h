@@ -10,7 +10,9 @@
         TESTIMONY_ICON,
         CROSS_EXAMINATION,
         SHOW_ITEM_TO_COURT,
-        HOLD_IT
+        HOLD_IT,
+        OBJECTION,
+        TAKE_THAT
     };
 
     void InitUI(DisplayDevice* DDevice, Items* UIItemBankPointer, SceneContext* SContext);

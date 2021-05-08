@@ -1,6 +1,8 @@
 #include "Dialogue.h"
 #include "math.h"
 
+#define LETTER_VOLUME 20
+
 void ClearDialogueText(DialogueContext* Context){
     #ifdef _SDL
         SDL_FillRect(Context->textLayer, NULL, 0x000000);
@@ -104,7 +106,7 @@ DialogueContext* InitDialog(DisplayDevice* DDevice, BitmapFont* MainFont, Bitmap
     DiagContext->Letter = LoadSoundEffect(EffectPath[CHK_Letter]);
     DiagContext->NextLine = LoadSoundEffect(EffectPath[CHK_NextLine]);
     DiagContext->LineComplete = LoadSoundEffect(EffectPath[CHK_LineComplete]);
-    Mix_VolumeChunk(DiagContext->Letter, 32);
+    Mix_VolumeChunk(DiagContext->Letter, LETTER_VOLUME);
     Mix_VolumeChunk(DiagContext->NextLine, 32);
     Mix_VolumeChunk(DiagContext->LineComplete, 32);
 

@@ -324,7 +324,7 @@ void UpdateItemDetails(int ItemID){
     sprintf(ItemDetails, "Type:%s\n%s", ItemTypes[ItemBank->TypeArray[ItemID]], ItemBank->OrignArray[ItemID]);
 }
 
-void HandleCourtRecordEvents(SDL_Event* event){
+void HandleCourtRecordEvents(SDL_Event* event, SceneContext* SContext){
     int SlotSearch;
 
     switch (MenuSelect)
@@ -396,6 +396,21 @@ void HandleCourtRecordEvents(SDL_Event* event){
             case PAD_BACK:
                 MenuSelect = MainCRMenu;
                 Mix_PlayChannel(-1, MoveCursor, 0);
+                break;
+            case PAD_PRESS:
+                if (SContext->presentDefault){
+                    setUI(OBJECTION, 0);
+                    SContext->CContext->ShowCourtRecord = false;
+                    SContext->CContext->EventSelect = 0;
+                    SContext->CContext->diagRewind = false;
+                    if (SContext->presentItem == SelectedItem){
+                        if (SContext->presentMatch)
+                            SContext->entry = SContext->presentMatch;
+                    } else {
+                        if (SContext->presentDefault)
+                            SContext->entry = SContext->presentDefault;
+                    }
+                }
                 break;
             default:
                 break;

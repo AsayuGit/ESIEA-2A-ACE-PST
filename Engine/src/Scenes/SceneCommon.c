@@ -252,6 +252,8 @@ xmlNode* searchNodeLabel(xmlNode* entry, char* label){
     xmlNode* root;
     char* checkLabel;
     root = entry->parent->children;
+    if (!label)
+        return NULL;
     while (root){
         checkLabel = (char*)xmlGetProp(root, (xmlChar*)"label");
         if (checkLabel){
@@ -316,6 +318,9 @@ SceneContext* InitScene(DisplayDevice* DDevice, InputDevice* IDevice, DialogueCo
     LoadingScene->CContext = CContext;
     LoadingScene->press = NULL;
     LoadingScene->Jump = false;
+    LoadingScene->presentItem = -1;
+    LoadingScene->presentMatch = NULL;
+    LoadingScene->presentDefault = NULL;
     LoadingScene->DiagShown = true;
 
     LoadingScene->CharactersIndex = NULL;
@@ -409,6 +414,9 @@ void parseFlags(SceneContext* SContext, xmlNode* element){
     xmlNode *searchNode;
 
     SContext->press = NULL;
+    SContext->presentItem = -1;
+    SContext->presentDefault = NULL;
+    SContext->presentMatch = NULL;
     while (element){
         if (strcmp((char*)element->name, "setBG") == 0) {
             MoveBackground(SContext->BGContext, atoi((char*)xmlGetProp(element, (xmlChar*)"value")), 0);
@@ -443,6 +451,17 @@ void parseFlags(SceneContext* SContext, xmlNode* element){
             searchNode = searchNodeLabel(SContext->entry, CharBuffer);
             if (searchNode)
                 SContext->press = searchNode;
+        } else if (strcmp((char*)element->name, "present") == 0) {
+            CharBuffer = (char*)xmlGetProp(element, (xmlChar*)"item");
+            if (CharBuffer){
+                SContext->presentItem = atoi(CharBuffer);
+            }
+            searchNode = searchNodeLabel(SContext->entry, (char*)xmlGetProp(element, (xmlChar*)"match"));
+            if (searchNode)
+                SContext->presentMatch = searchNode;
+            searchNode = searchNodeLabel(SContext->entry, (char*)xmlGetProp(element, (xmlChar*)"default"));
+            if (searchNode)
+                SContext->presentDefault = searchNode;
         } else if (strcmp((char*)element->name, "giveItem") == 0){
             AddItemToCourtRecord(atoi((char*)xmlNodeGetContent(element)));
         } else if (strcmp((char*)element->name, "removeItem") == 0){
