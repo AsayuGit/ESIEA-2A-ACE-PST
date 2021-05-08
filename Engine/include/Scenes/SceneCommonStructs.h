@@ -60,7 +60,8 @@
         BackgroundContext* ScenePics;
         
         /* Characters */
-        Characters** CharactersIndex;   /* Ref */
+        Characters** CharactersIndex;
+        CharacterLayer* CharaLayer;
 
         /* Coms with Courtroom.c */
         CourtroomContext* CContext;     /* Ref */

@@ -1,12 +1,12 @@
 #include "Characters.h"
 
-Animation* ParseCHAnimation(xmlNode* property){
+Animation* ParseCHAnimation(xmlNode* array){
     Animation* LoadingAnimation;
-    xmlNode *array, *entry;
+    xmlNode *entry;
     unsigned int ArrayID;
 
-    LoadingAnimation = (Animation*)malloc(xmlChildElementCount(property)*sizeof(Animation));
-    array = property->children;
+    LoadingAnimation = (Animation*)malloc(xmlChildElementCount(array)*sizeof(Animation));
+    array = array->children;
 
     ArrayID = 0;
     while (array){
@@ -105,7 +105,7 @@ void InitCharacterLayer(CharacterLayer** CharaLayer, BackgroundContext* SContext
     }
 }
 
-void AddCharacterToLayer(CharacterLayer* CharaLayer, Characters* Character, BackgroundContext* SContext, int TileID, char Flip, DisplayDevice* DDevice){  /* Add a new character to a CharacterLayer */
+void AddCharacterToLayer(CharacterLayer* CharaLayer, Characters* Character, BackgroundContext* BGContext, int TileID, bool Flip, DisplayDevice* DDevice){  /* Add a new character to a CharacterLayer */
     CharacterList** CharaList;
 
     if (!CharaLayer)
@@ -117,8 +117,8 @@ void AddCharacterToLayer(CharacterLayer* CharaLayer, Characters* Character, Back
     (*CharaList) = (CharacterList*)malloc(sizeof(CharacterList));
     (*CharaList)->Character = Character;
 
-    (*CharaList)->Coordinates.x = SContext->ScenesCoordinates[TileID].x;
-    (*CharaList)->Coordinates.y = SContext->ScenesCoordinates[TileID].y;
+    (*CharaList)->Coordinates.x = BGContext->ScenesCoordinates[TileID].x;
+    (*CharaList)->Coordinates.y = BGContext->ScenesCoordinates[TileID].y;
     (*CharaList)->Flip = Flip;
     (*CharaList)->NextCharacter = NULL;
 }

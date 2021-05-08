@@ -5,9 +5,6 @@
 #include "CourtRecord.h"
 #include "UI.h"
 
-/* FIXME: Temporary */
-Characters* CharactersIndex[CharactersCount];
-
 /* FIXME: We need to sort out the final form of this prototype */
 int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomContext* Context, char* DialogPath){
 
@@ -21,7 +18,6 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
     };
 
     DialogueContext* DiagContext;
-    CharacterLayer* CharaLayer;
 
     /* Button related variables */
     BackgroundContext* ButtonLayer;
@@ -63,35 +59,11 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
     InitCourtRecord(DDevice, ItemBank);
     CourtRecordActivated = false;
 
-    CharactersIndex[0] = InitCharacter(DDevice, "Assets/Characters/PhoenixWright.xml"); /* Initialise the character in memory */
-    CharactersIndex[1] = InitCharacter(DDevice, "Assets/Characters/MiaFey.xml");
-    CharactersIndex[2] = NULL; /* Edgeworth */
-    CharactersIndex[3] = InitCharacter(DDevice, "Assets/Characters/Judge.xml");
-    CharactersIndex[4] = InitCharacter(DDevice, "Assets/Characters/WinstonPayne.xml");
-    CharactersIndex[5] = InitCharacter(DDevice, "Assets/Characters/Desk.xml");
-    CharactersIndex[6] = InitCharacter(DDevice, "Assets/Characters/FrankShawit.xml");
-    CharactersIndex[7] = InitCharacter(DDevice, "Assets/Characters/DefendantDesk.xml");
-
     /* InitScene */
-    SContext = InitScene(DDevice, IDevice, DiagContext, BContext, CharactersIndex, Context, DialogPath);
+    SContext = InitScene(DDevice, IDevice, DiagContext, BContext, Context, DialogPath);
 
     /* Init the notification handler */
     InitUI(DDevice, ItemBank, SContext);
-
-    CharaLayer = NULL;
-    InitCharacterLayer(&CharaLayer, SContext->BGContext);
-    AddCharacterToLayer(CharaLayer, CharactersIndex[0], SContext->BGContext, 0, 0, DDevice);
-    AddCharacterToLayer(CharaLayer, CharactersIndex[5], SContext->BGContext, 0, 0, DDevice);
-
-    AddCharacterToLayer(CharaLayer, CharactersIndex[1], SContext->BGContext, 5, 0, DDevice);
-
-    AddCharacterToLayer(CharaLayer, CharactersIndex[4], SContext->BGContext, 1, 0, DDevice);
-    AddCharacterToLayer(CharaLayer, CharactersIndex[5], SContext->BGContext, 1, 1, DDevice);
-
-    AddCharacterToLayer(CharaLayer, CharactersIndex[3], SContext->BGContext, 4, 0, DDevice);
-
-    AddCharacterToLayer(CharaLayer, CharactersIndex[6], SContext->BGContext, 2, 0, DDevice);
-    AddCharacterToLayer(CharaLayer, CharactersIndex[7], SContext->BGContext, 2, 0, DDevice);
     
     /* Main Loop */
     parseScene(SContext);
@@ -117,7 +89,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                         switch (IDevice->event.PADKEY)
                         {
                         case PAD_SELECT:
-                            CharacterPlayAnimation(CharactersIndex[Context->CurrentCharacter], Context->IdleAnimation); /* Mouaif */
+                            CharacterPlayAnimation(SContext->CharactersIndex[Context->CurrentCharacter], Context->IdleAnimation); /* Mouaif */
                             SceneForward(SContext);
                             parseScene(SContext);
                             break;
@@ -125,7 +97,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                         case PAD_BACK:
                             /* FIXME: We need a nice way to toogle dialogue's booth way mode */
                             if (Context->diagRewind){
-                                CharacterPlayAnimation(CharactersIndex[Context->CurrentCharacter], Context->IdleAnimation); /* Mouaif */
+                                CharacterPlayAnimation(SContext->CharactersIndex[Context->CurrentCharacter], Context->IdleAnimation); /* Mouaif */
                                 SceneBackward(SContext);
                                 parseScene(SContext);
                             }
@@ -161,9 +133,9 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                             ButtonInput = GetClkdButtonID(BContext); /* Get the id of the currently selected button */
                             Context->ButtonActivated = 0;
                             EventSelect = MainEvents;
-                            SContext->entry = searchSceneNode(SContext->entry, Context->ButtonJumpLabels[ButtonInput]);
+                            SContext->entry = searchNodeLabel(SContext->entry, Context->ButtonJumpLabels[ButtonInput]);
                             MoveBackground(ButtonLayer, 0, 0);
-                            CharacterPlayAnimation(CharactersIndex[Context->CurrentCharacter], Context->IdleAnimation); /* Mouaif */
+                            CharacterPlayAnimation(SContext->CharactersIndex[Context->CurrentCharacter], Context->IdleAnimation); /* Mouaif */
                             parseScene(SContext);
                             break;
                         case PAD_COURTRECORD:
@@ -206,7 +178,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
 
         /* Logic */ /* FIXME: There may be a way to optimize this further */ 
         if ((DiagContext->progress >= Context->ReturnToDefault) && (Context->ReturnToDefault != -1)){
-            CharacterPlayAnimation(CharactersIndex[Context->CurrentCharacter], Context->IdleAnimation);
+            CharacterPlayAnimation(SContext->CharactersIndex[Context->CurrentCharacter], Context->IdleAnimation);
             Context->ReturnToDefault = -1;
             if (Context->ButtonActivated){ /* We do that here because we want to wait for the dialogue to end before showing the buttons */
                 BackgroundPlayAnimation(ButtonLayer, 0, &IDevice->EventEnabled);
@@ -216,7 +188,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
 
         /* Rendering (Back to front) */
         DisplayBackground(DDevice, SContext->BGContext);    /* Background */
-        DisplayCharacterLayer(DDevice, CharaLayer);         /* Character Layer */
+        DisplayCharacterLayer(DDevice, SContext->CharaLayer);         /* Character Layer */
         DisplayBackground(DDevice, SContext->ScenePics);    /* Exposition Pictures */
         if (SContext->DiagShown)
             Dialogue(DiagContext, Context->diagRewind);     /* Dialog */

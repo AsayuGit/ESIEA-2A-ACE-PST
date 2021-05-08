@@ -248,7 +248,7 @@ void DisplayBackground(DisplayDevice* DDevice, BackgroundContext* Context){ /* D
     }
 }
 
-xmlNode* searchSceneNode(xmlNode* entry, char* label){
+xmlNode* searchNodeLabel(xmlNode* entry, char* label){
     xmlNode* root;
     char* checkLabel;
     root = entry->parent->children;
@@ -264,11 +264,43 @@ xmlNode* searchSceneNode(xmlNode* entry, char* label){
     return NULL;
 }
 
-SceneContext* InitScene(DisplayDevice* DDevice, InputDevice* IDevice, DialogueContext* DiagContext, ButtonsContext* BContext, Characters** CharactersIndex, CourtroomContext* CContext, char* ScenePath){
+xmlNode* searchNode(xmlNode* entry, char* name){
+    if (entry->parent)
+        entry = entry->parent->children;
+    while (entry){
+        if (strcmp((char*)entry->name, name) == 0){
+            return entry;
+        }
+        entry = entry->next;
+    }
+    return NULL;
+}
+
+Characters** initCharArray(DisplayDevice* DDevice, xmlNode* array){
+    Characters** CharactersIndex;
+    unsigned int ArrayID;
+
+    CharactersIndex = (Characters**)malloc(xmlChildElementCount(array)*sizeof(Characters*));
+    array = array->children;
+    
+    ArrayID = 0;
+    while (array){
+        if (strcmp((char*)array->name, "init") == 0) {
+            CharactersIndex[ArrayID] = InitCharacter(DDevice, (char*)xmlGetProp(array, (xmlChar*)"path"));
+            ArrayID++;
+        }
+        array = array->next;
+    }
+
+    return CharactersIndex;
+}
+
+SceneContext* InitScene(DisplayDevice* DDevice, InputDevice* IDevice, DialogueContext* DiagContext, ButtonsContext* BContext, CourtroomContext* CContext, char* ScenePath){
     /* Declaration */
     xmlDoc* sceneFile;
     SceneContext* LoadingScene;
-    xmlNode* rootNode;
+    xmlNode* rootNode, *element;
+    char* Buffer;
 
     /* Init */
     LoadingScene = (SceneContext*)malloc(sizeof(SceneContext));
@@ -281,12 +313,36 @@ SceneContext* InitScene(DisplayDevice* DDevice, InputDevice* IDevice, DialogueCo
     LoadingScene->IDevice = IDevice;
     LoadingScene->DiagContext = DiagContext;
     LoadingScene->BContext = BContext;
-    LoadingScene->CharactersIndex = CharactersIndex;
     LoadingScene->CContext = CContext;
-    LoadingScene->entry = rootNode->children;
     LoadingScene->press = NULL;
     LoadingScene->Jump = false;
     LoadingScene->DiagShown = true;
+
+    LoadingScene->CharactersIndex = NULL;
+    LoadingScene->CharaLayer = NULL;
+    InitCharacterLayer(&LoadingScene->CharaLayer, LoadingScene->BGContext);
+
+    element = searchNode(rootNode->children, "setup");
+    if (element) {
+        element = element->children;
+        while (element){
+            if (strcmp((char*)element->name, "initChar") == 0) {
+                LoadingScene->CharactersIndex = initCharArray(DDevice, element);
+            } else if (strcmp((char*)element->name, "addToLayer") == 0) {
+                Buffer = (char*)xmlGetProp(element, (xmlChar*)"flip");
+                AddCharacterToLayer(
+                    LoadingScene->CharaLayer,
+                    LoadingScene->CharactersIndex[(unsigned int)atoi((char*)xmlGetProp(element, (xmlChar*)"char"))],
+                    LoadingScene->BGContext,
+                    (int)atoi((char*)xmlGetProp(element, (xmlChar*)"dest")),
+                    (Buffer) ? (bool)atoi(Buffer) : 0,
+                    DDevice
+                );
+            }
+            element = element->next;
+        }
+    }
+    LoadingScene->entry = searchNode(rootNode->children, "entry");;
 
     return LoadingScene;
 }
@@ -377,14 +433,14 @@ void parseFlags(SceneContext* SContext, xmlNode* element){
             SContext->DiagShown = (bool)atoi((char*)xmlGetProp(element, (xmlChar*)"value"));
         } else if (strcmp((char*)element->name, "jump") == 0) {
             CharBuffer = (char*)xmlNodeGetContent(element);
-            searchNode = searchSceneNode(SContext->entry, CharBuffer);
+            searchNode = searchNodeLabel(SContext->entry, CharBuffer);
             if (searchNode){
                 SContext->entry = searchNode;
                 SContext->Jump = true;
             }
         } else if (strcmp((char*)element->name, "press") == 0) {
             CharBuffer = (char*)xmlNodeGetContent(element);
-            searchNode = searchSceneNode(SContext->entry, CharBuffer);
+            searchNode = searchNodeLabel(SContext->entry, CharBuffer);
             if (searchNode)
                 SContext->press = searchNode;
         } else if (strcmp((char*)element->name, "giveItem") == 0){

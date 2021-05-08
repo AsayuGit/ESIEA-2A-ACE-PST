@@ -16,10 +16,10 @@
     void DisplayBackground(DisplayDevice* DDevice, BackgroundContext* Context);
 
     /* Xml Funcitons */
-    xmlNode* searchSceneNode(xmlNode* entry, char* label);
+    xmlNode* searchNodeLabel(xmlNode* entry, char* label);
 
     /* Scenes Functions */
-    SceneContext* InitScene(DisplayDevice* DDevice, InputDevice* IDevice, DialogueContext* DiagContext, ButtonsContext* BContext, Characters** CharactersIndex, CourtroomContext* CContext, char* ScenePath);
+    SceneContext* InitScene(DisplayDevice* DDevice, InputDevice* IDevice, DialogueContext* DiagContext, ButtonsContext* BContext, CourtroomContext* CContext, char* ScenePath);
     void parseScene(SceneContext* SContext);
     void SceneForward(SceneContext* SContext);
     void SceneBackward(SceneContext* SContext);
