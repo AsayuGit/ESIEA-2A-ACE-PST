@@ -6,10 +6,12 @@
     #include "SceneCommon.h"
 
     enum {
-        UI_EMPTY,
+        UI_EMPTY = -1,
+        UI_LIVES,
         TESTIMONY_ICON,
         CROSS_EXAMINATION,
-        SHOW_ITEM_TO_COURT,
+        SHOW_ITEM_TO_COURTL,
+        SHOW_ITEM_TO_COURTR,
         HOLD_IT,
         OBJECTION,
         TAKE_THAT

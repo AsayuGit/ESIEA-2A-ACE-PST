@@ -399,14 +399,15 @@ void HandleCourtRecordEvents(SDL_Event* event, SceneContext* SContext){
                 break;
             case PAD_PRESS:
                 if (SContext->presentDefault){
-                    setUI(OBJECTION, 0);
                     SContext->CContext->ShowCourtRecord = false;
                     SContext->CContext->EventSelect = 0;
                     SContext->CContext->diagRewind = false;
                     if (SContext->presentItem == SelectedItem){
+                        setUI(OBJECTION, 0);
                         if (SContext->presentMatch)
                             SContext->entry = SContext->presentMatch;
                     } else {
+                        setUI(OBJECTION, 1);
                         if (SContext->presentDefault)
                             SContext->entry = SContext->presentDefault;
                     }

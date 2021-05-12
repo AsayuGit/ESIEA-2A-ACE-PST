@@ -348,6 +348,8 @@ SceneContext* InitScene(DisplayDevice* DDevice, InputDevice* IDevice, DialogueCo
         }
     }
     LoadingScene->entry = searchNode(rootNode->children, "entry");;
+    LoadingScene->returnTarget = LoadingScene->entry;
+    LoadingScene->next = LoadingScene->entry->next;
 
     return LoadingScene;
 }
@@ -462,6 +464,7 @@ void parseFlags(SceneContext* SContext, xmlNode* element){
             searchNode = searchNodeLabel(SContext->entry, (char*)xmlGetProp(element, (xmlChar*)"default"));
             if (searchNode)
                 SContext->presentDefault = searchNode;
+            SContext->returnTarget = SContext->entry;
         } else if (strcmp((char*)element->name, "giveItem") == 0){
             AddItemToCourtRecord(atoi((char*)xmlNodeGetContent(element)));
         } else if (strcmp((char*)element->name, "removeItem") == 0){
@@ -471,6 +474,8 @@ void parseFlags(SceneContext* SContext, xmlNode* element){
             } else {
                 EmptyCourtRecord();
             }
+        } else if (strcmp((char*)element->name, "return") == 0){
+            SContext->next = SContext->returnTarget;
         }
         element = element->next;
     }
@@ -483,6 +488,7 @@ void parseScene(SceneContext* SContext){
     size_t lineSize = 0; /* Hold the size of the dialog who is about to be played */
 
     /* Logic */
+    SContext->next = SContext->entry->next;
     property = SContext->entry->children;
     while (property){
         if (strcmp((char*)property->name, "diag") == 0){
@@ -506,7 +512,7 @@ void SceneForward(SceneContext* SContext){
     if (SContext->Jump) {
         SContext->Jump = false;
     } else if (SContext->entry->next){
-        SContext->entry = SContext->entry->next;
+        SContext->entry = SContext->next;
     }
 }
 

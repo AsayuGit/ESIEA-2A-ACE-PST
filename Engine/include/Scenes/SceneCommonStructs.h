@@ -45,9 +45,11 @@
 
         /* Loaded Scene */
         xmlNode* entry;
+        xmlNode* next;
         xmlNode* press;
         xmlNode* presentMatch;
         xmlNode* presentDefault;
+        xmlNode* returnTarget;
         int presentItem;
         bool Jump;
         bool DiagShown;

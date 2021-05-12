@@ -23,6 +23,11 @@
             <entry stateA="-4.0" stateB="-4.0" rangeA="10.72" rangeB="0.0" runtime="320"/>
             <entry stateA="0.0" stateB="-1.6" rangeA="10.0" rangeB="0.0" runtime="64"/>
         </anim>
+        <anim X="520" Y="0" W="1040" H="0"> <!-- 90° turn to prosecution -->
+            <entry stateA="0.0" stateB="1.6" rangeA="0.0" rangeB="10.0" runtime="64"/>
+            <entry stateA="4.0" stateB="4.0" rangeA="0.0" rangeB="10.56" runtime="320"/>
+            <entry stateA="0.0" stateB="1.6" rangeA="0.0" rangeB="10.0" runtime="64"/>
+        </anim>
     </animArray>
     <sceneArray>
         <scene X="0" Y="0"/>     <!-- Defence Side     -->

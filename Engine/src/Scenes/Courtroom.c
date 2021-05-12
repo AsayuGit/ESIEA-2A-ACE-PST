@@ -182,6 +182,9 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
             }
         }
 
+        /* Sound */
+        MusicDaemon();
+
         /* Rendering (Back to front) */
         DisplayBackground(DDevice, SContext->BGContext);    /* Background */
         DisplayCharacterLayer(DDevice, SContext->CharaLayer);         /* Character Layer */

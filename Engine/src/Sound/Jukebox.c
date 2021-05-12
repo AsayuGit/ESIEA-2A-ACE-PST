@@ -1,9 +1,10 @@
 #include "Jukebox.h"
 
-char* MusicPath[NumberOfMusicTracks] = {
-    ROOT""MUSIC"Courtroom"MUS_EXT,
-    ROOT""MUSIC"Moderato"MUS_EXT,
-    ROOT""MUSIC"Telling_the_Thuth"MUS_EXT,
+char* MusicPath[NumberOfMusicTracks][2] = {
+    {NULL, ROOT""MUSIC"Courtroom"MUS_EXT},
+    {NULL, ROOT""MUSIC"Moderato"MUS_EXT},
+    {NULL, ROOT""MUSIC"Telling_the_Thuth"MUS_EXT},
+    {ROOT""MUSIC"Objection!_INTRO"MUS_EXT, ROOT""MUSIC"Objection!_LOOP"MUS_EXT}
 };
 
 char* EffectPath[NumberOfEffectTracks] = {
@@ -21,21 +22,34 @@ char* EffectPath[NumberOfEffectTracks] = {
     ROOT""EFFECTS"TakeThat"MUS_EXT
 };
 
-static Mix_Music* LoadedTrack;
-static unsigned int PlayingTrack;
+static Mix_Music* Track_INTRO = NULL;
+static Mix_Music* Track_LOOP = NULL;
+static int PlayingTrack;
 
-void InitJukebox(void){
-    LoadedTrack = NULL;
-}
+/* MUSIC QUEUE SYSTEM */
 
 void PlayTrackID(MusicPlaylistID TrackID){
-    if (LoadedTrack){
-        Mix_HaltMusic();
-        Mix_FreeMusic(LoadedTrack);
+    if (Track_INTRO)
+        Mix_FreeMusic(Track_INTRO);
+    if (Track_LOOP)
+        Mix_FreeMusic(Track_LOOP);
+    if (MusicPath[TrackID][0])
+        Track_INTRO = LoadMusic(MusicPath[TrackID][0]);
+    if (MusicPath[TrackID][1]){
+        Track_LOOP = LoadMusic(MusicPath[TrackID][1]);
     }
-    LoadedTrack = LoadMusic(MusicPath[TrackID]);
-    Mix_PlayMusic(LoadedTrack, -1);
+
+    Mix_HaltMusic();
+    if (Track_INTRO)
+        Mix_PlayMusic(Track_INTRO, 1);
+    
     PlayingTrack = TrackID;
+}
+
+void MusicDaemon(void){
+    if ((PlayingTrack >= 0) && (!Mix_PlayingMusic())){
+        Mix_PlayMusic(Track_LOOP, -1);
+    }
 }
 
 unsigned int GetTrackID(void){

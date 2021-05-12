@@ -7,6 +7,7 @@
         TRK_Courtroom,
         TRK_Moderato,
         TRK_Telling_the_Truth,
+        TRK_Objection,
         NumberOfMusicTracks
     } MusicPlaylistID;
 
@@ -28,8 +29,8 @@
 
     extern char* EffectPath[NumberOfEffectTracks];
 
-    void InitJukebox(void);
     void PlayTrackID(MusicPlaylistID TrackID);
+    void MusicDaemon(void);
     unsigned int GetTrackID(void);
     void StopTrack(void);
 

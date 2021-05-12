@@ -41,12 +41,12 @@ static bool EffectPlaying;
 #define UI_WT_PAUSE 1000
 
 void UI_ShowToCourt(DisplayDevice* DDevice, InputDevice* IDevice){
-    SDL_Rect ItemPos = {13, 13, 70, 70};
+    SDL_Rect ItemPos[2] = {{13, 13, 70, 70}, {173, 13, 70, 70}};
 
     #ifdef _SDL
-        SDL_BlitSurface(UIItemBank->ItemSpritesheet, &(UIItemBank->ItemSrcRectArray[StoredItemID]), DDevice->Renderer, &(ItemPos));
+        SDL_BlitSurface(UIItemBank->ItemSpritesheet, &(UIItemBank->ItemSrcRectArray[StoredItemID]), DDevice->Renderer, &(ItemPos[logoID]));
     #else
-        SDL_RenderCopy(DDevice->Renderer, UIItemBank->ItemSpritesheet, &(UIItemBank->ItemSrcRectArray[StoredItemID]), &(ItemPos)); /* Draw the item */
+        SDL_RenderCopy(DDevice->Renderer, UIItemBank->ItemSpritesheet, &(UIItemBank->ItemSrcRectArray[StoredItemID]), &(ItemPos[logoID])); /* Draw the item */
     #endif
 }
 
@@ -208,6 +208,8 @@ void UI_Exclamation(DisplayDevice* DDevice, InputDevice* IDevice){
             IDevice->EventEnabled = true;
             SContextPtr->DiagShown = true;
             UIWTState = 0;
+            if (StoredItemID)
+                currentUI = &UI_Lives;
         }
         break;
 
@@ -249,8 +251,8 @@ void InitUI(DisplayDevice* DDevice, Items* UIItemBankPointer, SceneContext* SCon
 /* Add a ui element */
 void setUI(unsigned int UIType, unsigned int argument){
     switch (UIType){
-        case UI_EMPTY:
-            currentUI = NULL;
+        case UI_LIVES:
+            currentUI = &UI_Lives;
             break;
         case TESTIMONY_ICON:
             currentUI = &UI_TeCeIntro;
@@ -260,23 +262,33 @@ void setUI(unsigned int UIType, unsigned int argument){
             currentUI = &UI_TeCeIntro;
             logoID = 1;
             break;
-        case SHOW_ITEM_TO_COURT:
+        case SHOW_ITEM_TO_COURTL:
+            logoID = 0;
+            currentUI = &UI_ShowToCourt;
+            StoredItemID = argument;
+            break;
+        case SHOW_ITEM_TO_COURTR:
+            logoID = 1;
             currentUI = &UI_ShowToCourt;
             StoredItemID = argument;
             break;
         case HOLD_IT:
             currentUI = &UI_Exclamation;
+            StoredItemID = argument;
             logoID = 0;
             break;
         case OBJECTION:
             currentUI = &UI_Exclamation;
+            StoredItemID = argument;
             logoID = 1;
             break;
         case TAKE_THAT:
             currentUI = &UI_Exclamation;
+            StoredItemID = argument;
             logoID = 2;
             break;
         default:
+            currentUI = NULL;
             break;
     }
 }

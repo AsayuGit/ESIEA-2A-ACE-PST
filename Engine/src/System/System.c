@@ -60,7 +60,6 @@ SoundDevice* CreateSoundDevice(){
         fprintf(stderr, "Can't create sound device\n - %s\n", SDL_GetError());
         exit(EXIT_INIT);
     }
-    InitJukebox();
     return NULL;
 }
 
