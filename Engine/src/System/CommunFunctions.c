@@ -24,11 +24,11 @@ int gputc(DisplayDevice* DDevice, BitmapFont* Font, char c, unsigned int x, unsi
     DstLetter.w = Font->Rects[(int)c].w;
 
     /* Logic */
-    #ifdef _SDL
-        SDL_BlitSurface(Font->FontSurface, &Font->Rects[(int)c], DDevice->Renderer, &DstLetter);
-    #else
+    if (DDevice->OffScreenRender){
         SDL_RenderCopy(DDevice->Renderer, Font->FontSurface, &Font->Rects[(int)c], &DstLetter);
-    #endif
+    } else {
+        ScaledDraw(DDevice, Font->FontSurface, &Font->Rects[(int)c], &DstLetter);
+    }
 
 Exit:
     return DstLetter.w;
@@ -39,7 +39,7 @@ Vector2i gstrlen(BitmapFont* Font, char* text, int intCharSpce){
 }
 
 
-Vector2i gprintf(DisplayDevice* DDevice, BitmapFont* Font, char* text, int intCharSpce, SDL_Rect* Bounds){
+Vector2i gprintf(DisplayDevice* DDevice, BitmapFont* Font, char* text, int intCharSpce, const SDL_Rect* Bounds){
     /* Declaration */
     unsigned int CharID, sizeTmp, DimX;
     Vector2i CharCoords;

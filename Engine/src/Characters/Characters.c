@@ -117,8 +117,7 @@ void AddCharacterToLayer(CharacterLayer* CharaLayer, Characters* Character, Back
     (*CharaList) = (CharacterList*)malloc(sizeof(CharacterList));
     (*CharaList)->Character = Character;
 
-    (*CharaList)->Coordinates.x = BGContext->ScenesCoordinates[TileID].x;
-    (*CharaList)->Coordinates.y = BGContext->ScenesCoordinates[TileID].y;
+    (*CharaList)->Coordinates = BGContext->ScenesCoordinates[TileID];
     (*CharaList)->Flip = Flip;
     (*CharaList)->NextCharacter = NULL;
 }
@@ -159,24 +158,14 @@ void DisplayCharacter(DisplayDevice* DDevice, Characters* Character, SDL_Rect Vi
     }
     
     /* On déplace la fenêtre dans la spritesheet en fonction du numéro de la frame */
+    SpriteWindow = Character->Anim[Character->PlayingAnimation].SrcRect;
     SpriteWindow.x = Character->Anim[Character->PlayingAnimation].SrcRect.x + Character->CurrentFrame * Character->Anim[Character->PlayingAnimation].SrcRect.w;
-    SpriteWindow.y = Character->Anim[Character->PlayingAnimation].SrcRect.y;
-    SpriteWindow.w = Character->Anim[Character->PlayingAnimation].SrcRect.w;
-    SpriteWindow.h = Character->Anim[Character->PlayingAnimation].SrcRect.h;
 
     SpriteLayer = Character->Anim[Character->PlayingAnimation].DstRect;
-    SpriteLayer.x += DDevice->InternalResolution.x + Coordinates.x - Viewport.x;
-    SpriteLayer.y += DDevice->InternalResolution.y + Coordinates.y - Viewport.y;
+    SpriteLayer.x = Character->Anim[Character->PlayingAnimation].DstRect.x  + Coordinates.x - Viewport.x,
+    SpriteLayer.y = Character->Anim[Character->PlayingAnimation].DstRect.y + Coordinates.y - Viewport.y,
 
-    if (RectOnScreen(DDevice, &SpriteLayer)){
-        /* On affiche la frame d'animation a l'écran */
-        #ifdef _SDL
-            FlipBlitSurface(Character->Surface, &SpriteWindow, DDevice->Screen, &SpriteLayer, Flip); /* Curent Character on screen */
-        #else
-            SDL_RenderCopyEx(DDevice->Renderer, Character->Surface, &SpriteWindow, &SpriteLayer, 0, 0, Flip);
-        #endif
-    }
-    
+    ScaledDrawEx(DDevice, Character->Surface, &SpriteWindow, &SpriteLayer, Flip);
     
     if (SDL_GetTicks() > Character->LastFrame + Character->Anim[Character->PlayingAnimation].Framerate){
         Character->LastFrame = SDL_GetTicks();

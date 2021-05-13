@@ -50,7 +50,6 @@ size_t SetDialogueText(DialogueContext* Context, char* Name, char* Text, char Sn
 }
 
 DialogueContext* InitDialog(DisplayDevice* DDevice, BitmapFont* MainFont, BitmapFont* NameFont){
-    
     DialogueContext* DiagContext;
     const int NameMargin = 3;
     const int TextMargin = 10;
@@ -58,33 +57,34 @@ DialogueContext* InitDialog(DisplayDevice* DDevice, BitmapFont* MainFont, Bitmap
     DiagContext = (DialogueContext*)malloc(sizeof(DialogueContext));
     DiagContext->TextSpeed = 40;
     DiagContext->LastLetter = 0;
+    DiagContext->letterLag = 0;
 
     DiagContext->DialogBox = NULL;
     DiagContext->DialogBox = LoadSurface(ROOT""TEXTURES"Menus"SL"Dialog"TEX_EXT, DDevice, 0x0, SURFACE_ALPHA);
     if (DiagContext->DialogBox == NULL){
         fprintf(stderr, "Can't load texture %s\n", SDL_GetError());
     }
-    #ifdef _SDL
-        DiagContext->DialogBoxBounds.w = DiagContext->DialogBox->w;
-        DiagContext->DialogBoxBounds.h = DiagContext->DialogBox->h;
-    #else
-        SDL_QueryTexture(DiagContext->DialogBox, NULL, NULL, &(DiagContext->DialogBoxBounds.w), &(DiagContext->DialogBoxBounds.h));
-    #endif
+    
+    DiagContext->DialogBoxSrcBounds = InitRect(0, 0, 256, 76);
 
-    DiagContext->DialogBoxBounds.x = DDevice->InternalResolution.x;
-    DiagContext->DialogBoxBounds.y = DDevice->InternalResolution.y + (DDevice->InternalResolution.h - DiagContext->DialogBoxBounds.h);
+    DiagContext->DialogBoxBounds.w = DiagContext->DialogBoxSrcBounds.w;
+    DiagContext->DialogBoxBounds.h = DiagContext->DialogBoxSrcBounds.h;
+
+    DiagContext->DialogBoxBounds.x = 0;
+    DiagContext->DialogBoxBounds.y = BASE_RESOLUTION_Y - DiagContext->DialogBoxBounds.h;
 
     DiagContext->NameBounds.w = 42;
     DiagContext->NameBounds.h = 8;
-    DiagContext->NameBounds.x = DDevice->InternalResolution.x + NameMargin;
-    DiagContext->NameBounds.y = DiagContext->DialogBoxBounds.y + NameMargin + 1;
+    DiagContext->NameBounds.x = NameMargin;
+    DiagContext->NameBounds.y = DiagContext->DialogBoxBounds.y + ((NameMargin + 1));
 
     DiagContext->TextBounds = DiagContext->DialogBoxBounds;
     DiagContext->TextBounds.x += TextMargin;
-    DiagContext->TextBounds.y += DiagContext->NameBounds.h + NameMargin + TextMargin - 2;
+    DiagContext->TextBounds.y += DiagContext->NameBounds.h + (NameMargin + TextMargin - 2);
     DiagContext->TextBounds.w -= (TextMargin << 1); /* To inspect */
     DiagContext->TextBounds.h -= (DiagContext->NameBounds.h + (TextMargin << 1) + NameMargin + 1);
     
+    DiagContext->ArrowDstRect = InitRect(0, 172, 9, 9);
 
     DiagContext->textLayer = NULL;
     DiagContext->nameLayer = NULL;
@@ -102,14 +102,16 @@ DialogueContext* InitDialog(DisplayDevice* DDevice, BitmapFont* MainFont, Bitmap
         fprintf(stderr, "Can't load texture %s\n", SDL_GetError());
     }
 
-    DiagContext->letterLag = 0;
+    /* SFXs */
     DiagContext->Letter = LoadSoundEffect(EffectPath[CHK_Letter]);
     DiagContext->NextLine = LoadSoundEffect(EffectPath[CHK_NextLine]);
     DiagContext->LineComplete = LoadSoundEffect(EffectPath[CHK_LineComplete]);
+
     Mix_VolumeChunk(DiagContext->Letter, LETTER_VOLUME);
     Mix_VolumeChunk(DiagContext->NextLine, 32);
     Mix_VolumeChunk(DiagContext->LineComplete, 32);
 
+    /* Fonts */
     DiagContext->MainFont = MainFont;
     DiagContext->NameFont = NameFont;
     DiagContext->DDevice = DDevice;
@@ -122,24 +124,17 @@ DialogueContext* InitDialog(DisplayDevice* DDevice, BitmapFont* MainFont, Bitmap
 
 /* Fonction non bloquante gérant les dialogues */
 void Dialogue(DialogueContext* Context, bool bothWay){
+    const SDL_Rect ArrowSrcRect[2] = {{256, 0, 9, 9}, {256, 9, 9, 9}};
     SDL_Rect InLayerTextBounds;
-    SDL_Rect ArrowSrcRect[2] = {{256, 0, 9, 9}, {256, 9, 9, 9}};
-    SDL_Rect ArrowDstRect = {0, 172, 9, 9};
     double Wobble;
 
     InLayerTextBounds = Context->TextBounds;
     InLayerTextBounds.x = InLayerTextBounds.y = 0;
 
-    ArrowDstRect.y += Context->DDevice->InternalResolution.y;
-
     Wobble = sin((double)SDL_GetTicks() / 50.0f) * 2.0f;
 
     /* DialogBox Rendering */
-    #ifdef _SDL
-        SDL_BlitSurface(Context->DialogBox, NULL, Context->DDevice->Screen, &(Context->DialogBoxBounds));
-    #else
-        SDL_RenderCopy(Context->DDevice->Renderer, Context->DialogBox, NULL, &(Context->DialogBoxBounds));
-    #endif
+    ScaledDraw(Context->DDevice, Context->DialogBox, &(Context->DialogBoxSrcBounds), &(Context->DialogBoxBounds));
 
     /* Write text */
     if (Context->Text[Context->progress] != '\0') {
@@ -166,27 +161,14 @@ void Dialogue(DialogueContext* Context, bool bothWay){
         }
     } else {
         if (bothWay){
-            ArrowDstRect.x = Context->DDevice->InternalResolution.x + (7 - Wobble);
-            #ifdef _SDL
-                SDL_BlitSurface(Context->DialogBox, &ArrowSrcRect[1], Context->DDevice->Screen, &ArrowDstRect);
-            #else
-                SDL_RenderCopy(Context->DDevice->Renderer, Context->DialogBox, &ArrowSrcRect[1], &ArrowDstRect); /* Right Arrow */
-            #endif
+            Context->ArrowDstRect.x = 7 - Wobble;
+            ScaledDraw(Context->DDevice, Context->DialogBox, &ArrowSrcRect[1], &Context->ArrowDstRect); /* Right Arrow */
         }
         
-        ArrowDstRect.x = Context->DDevice->InternalResolution.x + 240 + Wobble;
-        #ifdef _SDL
-            SDL_BlitSurface(Context->DialogBox, &ArrowSrcRect[0], Context->DDevice->Screen, &ArrowDstRect);
-        #else
-            SDL_RenderCopy(Context->DDevice->Renderer, Context->DialogBox, &ArrowSrcRect[0], &ArrowDstRect); /* Right Arrow */
-        #endif
+        Context->ArrowDstRect.x = 240 + Wobble;
+        ScaledDraw(Context->DDevice, Context->DialogBox, &ArrowSrcRect[0], &Context->ArrowDstRect); /* Right Arrow */
     }
 
-    #ifdef _SDL
-        SDL_BlitSurface(Context->textLayer, NULL, Context->DDevice->Screen, &(Context->TextBounds));
-        SDL_BlitSurface(Context->nameLayer, NULL, Context->DDevice->Screen, &(Context->NameBounds));
-    #else
-        SDL_RenderCopy(Context->DDevice->Renderer, Context->textLayer, NULL, &(Context->TextBounds));
-        SDL_RenderCopy(Context->DDevice->Renderer, Context->nameLayer, NULL, &(Context->NameBounds));
-    #endif
+    ScaledDraw(Context->DDevice, Context->textLayer, NULL, &(Context->TextBounds));
+    ScaledDraw(Context->DDevice, Context->nameLayer, NULL, &(Context->NameBounds));
 }

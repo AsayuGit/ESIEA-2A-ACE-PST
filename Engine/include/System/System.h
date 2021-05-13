@@ -8,5 +8,7 @@
     DisplayDevice* CreateDisplayDevice(int ScreenWidth, int ScreenHeight, char* Title);
     SoundDevice* CreateSoundDevice();
     int SetRenderTarget(DisplayDevice* DDevice, SDL_Texture* surface);
+    int ScaledDrawEx(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect, bool flip);
+    int ScaledDraw(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect);
 
 #endif

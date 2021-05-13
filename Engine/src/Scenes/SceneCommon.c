@@ -106,8 +106,8 @@ BackgroundContext* InitBackground(DisplayDevice* DDevice, char* ScenePath){
         }
     }
 
-    LoadingContext->SrcRect.w = DDevice->InternalResolution.w;
-    LoadingContext->SrcRect.h = DDevice->InternalResolution.h;
+    LoadingContext->SrcRect.w = BASE_RESOLUTION_X;
+    LoadingContext->SrcRect.h = BASE_RESOLUTION_Y;
     LoadingContext->PlayingAnimation = -1;
     LoadingContext->Shown = true;
 
@@ -146,7 +146,8 @@ void BackgroundPlayAnimation(BackgroundContext* Context, int AnimationID, bool* 
 }
 
 void DisplayBackground(DisplayDevice* DDevice, BackgroundContext* Context){ /* Display the background on screen */
-    SDL_Rect AnimSrcRect, BGDstRect;
+    SDL_Rect AnimSrcRect;
+    SDL_Rect BGDstRect = {0, 0, BASE_RESOLUTION_X, BASE_RESOLUTION_Y};
     Uint32 TimeProgress;
     double Progress;
     
@@ -158,8 +159,6 @@ void DisplayBackground(DisplayDevice* DDevice, BackgroundContext* Context){ /* D
     if (!Context->Shown)
         return;
 
-    BGDstRect = DDevice->InternalResolution;
-
     if ((Context->PlayingAnimation >= 0) && (Context->CurrentState < Context->Animation[Context->PlayingAnimation].NbOfAnimStates)){ /* Background slide animation */
         
         if (Context->StartFrame == 0){
@@ -167,16 +166,20 @@ void DisplayBackground(DisplayDevice* DDevice, BackgroundContext* Context){ /* D
         }
 
         if (Context->Animation[Context->PlayingAnimation].AnimRange[Context->CurrentState].y > Context->Animation[Context->PlayingAnimation].AnimRange[Context->CurrentState].x){
+            
             TimeProgress = SDL_GetTicks() - Context->StartFrame;
             Progress = ((double)TimeProgress / (double)Context->Animation[Context->PlayingAnimation].AnimRuntime[Context->CurrentState]) * (Context->Animation[Context->PlayingAnimation].AnimRange[Context->CurrentState].y - Context->Animation[Context->PlayingAnimation].AnimRange[Context->CurrentState].x) + Context->Animation[Context->PlayingAnimation].AnimRange[Context->CurrentState].x;
 
             if (Progress > Context->Animation[Context->PlayingAnimation].AnimRange[Context->CurrentState].y){
                 Progress = Context->Animation[Context->PlayingAnimation].AnimRange[Context->CurrentState].y;
             }
+            
             NewOffset = (Context->Animation[Context->PlayingAnimation].AnimStates[Context->CurrentState].x * (Progress * Progress)) + (Context->Animation[Context->PlayingAnimation].AnimStates[Context->CurrentState].y * Progress);
             Context->ObjectLayerOffset = NewOffset + Context->AnimOffset;
         }else {
+            
             TimeProgress = Context->Animation[Context->PlayingAnimation].AnimRuntime[Context->CurrentState] - (SDL_GetTicks() - Context->StartFrame);
+            
             if (TimeProgress > Context->Animation[Context->PlayingAnimation].AnimRuntime[Context->CurrentState]){
                 TimeProgress = 0;
             }
@@ -193,10 +196,10 @@ void DisplayBackground(DisplayDevice* DDevice, BackgroundContext* Context){ /* D
             Context->ObjectLayerOffset = MaxOffset - NewOffset + Context->AnimOffset;
         }
         AnimSrcRect.x =  Context->ObjectLayerOffset + Context->Animation[Context->PlayingAnimation].AnimRegion.x; /* + Offset */
-        /*printf("Region %d | Offset %d\n", Context->Animation[Context->PlayingAnimation].AnimRegion.x, Context->ObjectLayerOffset); */
+
         AnimSrcRect.y = Context->Animation[Context->PlayingAnimation].AnimRegion.y;
-        AnimSrcRect.w = DDevice->InternalResolution.w;
-        AnimSrcRect.h = DDevice->InternalResolution.h;
+        AnimSrcRect.w = BASE_RESOLUTION_X;
+        AnimSrcRect.h = BASE_RESOLUTION_Y;
 
         /* Effects */
         /* Not used for now :3 */
@@ -215,11 +218,7 @@ void DisplayBackground(DisplayDevice* DDevice, BackgroundContext* Context){ /* D
 
         Context->SrcRect = AnimSrcRect; /* Used to sync up to other layers */
 
-        #ifdef _SDL
-            SDL_BlitSurface(Context->Surface, &AnimSrcRect, DDevice->Screen, &BGDstRect); 
-        #else
-            SDL_RenderCopyEx(DDevice->Renderer, Context->Surface, &AnimSrcRect, &BGDstRect, 0, 0, Context->Flipped);
-        #endif
+        ScaledDraw(DDevice, Context->Surface, &AnimSrcRect, &BGDstRect);
         
         if (Progress == Context->Animation[Context->PlayingAnimation].AnimRange[Context->CurrentState].y){
             Context->CurrentState++;
@@ -238,11 +237,7 @@ void DisplayBackground(DisplayDevice* DDevice, BackgroundContext* Context){ /* D
         }
 
     }else{ /* Display the current background tile if not animated */
-        #ifdef _SDL
-            SDL_BlitSurface(Context->Surface, &Context->SrcRect, DDevice->Screen, &BGDstRect); 
-        #else
-            SDL_RenderCopyEx(DDevice->Renderer, Context->Surface, &Context->SrcRect, &BGDstRect, 0, 0, Context->Flipped);
-        #endif
+        ScaledDraw(DDevice, Context->Surface, &Context->SrcRect, &BGDstRect);
     }
 }
 
@@ -364,7 +359,6 @@ size_t parseDiag(SceneContext* SContext, xmlNode* element){
         if (strcmp((char*)element->name, "char") == 0) {
             CurrentCharacterID = atoi((char*)xmlNodeGetContent(element));
         } else if (strcmp((char*)element->name, "line") == 0) {
-            /*ReturnToDefault = SetDialogueText(DiagContext, (*CurrentCharacter)->DisplayName, "The court is now in session for\nthe trial of Mr. Larry Butz.", 1); */
             DialogueText = (char*)xmlNodeGetContent(element);
         }
         element = element->next;

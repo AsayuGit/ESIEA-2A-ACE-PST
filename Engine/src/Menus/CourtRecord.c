@@ -26,13 +26,14 @@ static SDL_Rect CourtRecordBackground[2]; /* [0] Src; [1] Dst */
 static SDL_Rect CourtDetailBackground[2]; /* [0] Src; [1] Dst */
 static SDL_Rect SelectedSlotSrc;
 static SDL_Rect SelectedSlotPos[NBOFITEMS];
-static SDL_Rect DetailItemPos;
 static SDL_Rect Bars[NBOFBARS][2]; /* [0] Src; [1] Dst */
 static SDL_Rect Arrows[NBOFBARS][3]; /* [0] Src; [1] Dst; [2] Dst2 */
 static SDL_Rect ItemName;
 static SDL_Rect DetailItemName;
-static SDL_Rect ItemDescription;
-static SDL_Rect ItemOrigin;
+
+static const SDL_Rect DetailItemPos = {19, 38, 68, 68};
+static const SDL_Rect ItemDescription = {28, 117, 238, 46};
+static const SDL_Rect ItemOrigin = {102, 61, 123, 39};
 
 /* Sound Effects */
 static Mix_Chunk* MoveCursor;
@@ -65,34 +66,19 @@ void InitCourtDetails(DisplayDevice* DDevice){
     DetailsFont = LoadBitmapFont(ROOT""FONTS"DetailsFont"TEX_EXT, DDevice, 0xff00ff);
 
     /* SetRects */
-    CourtDetailBackground[0].x = 0; CourtDetailBackground[1].x = DDevice->InternalResolution.x;
-    CourtDetailBackground[0].y = 0; CourtDetailBackground[1].y = DDevice->InternalResolution.y + 32;
+    CourtDetailBackground[0].x = 0; CourtDetailBackground[1].x = 0;
+    CourtDetailBackground[0].y = 0; CourtDetailBackground[1].y = 32;
     CourtDetailBackground[0].w = CourtDetailBackground[1].w = 256;
     CourtDetailBackground[0].h = CourtDetailBackground[1].h = 128;
 
-    DetailItemPos.x = DDevice->InternalResolution.x + 19;
-    DetailItemPos.y = DDevice->InternalResolution.y + 38;
-    DetailItemPos.w = 68;
-    DetailItemPos.h = 68;
-
-    DetailItemName.y = DDevice->InternalResolution.y + 43;
-    DetailItemName.w = DDevice->InternalResolution.w;
-    DetailItemName.h = DDevice->InternalResolution.h;
-
-    ItemDescription.x = DDevice->InternalResolution.x + 28;
-    ItemDescription.y = DDevice->InternalResolution.y + 117;
-    ItemDescription.w = 238;
-    ItemDescription.h = 46;
-
-    ItemOrigin.x = DDevice->InternalResolution.x + 102;
-    ItemOrigin.y = DDevice->InternalResolution.y + 61;
-    ItemOrigin.w = 123;
-    ItemOrigin.h = 39;
+    DetailItemName.y = 43;
+    DetailItemName.w = BASE_RESOLUTION_X;
+    DetailItemName.h = BASE_RESOLUTION_Y;
 
     Arrows[0][2] = Arrows[0][1];
     Arrows[1][2] = Arrows[1][1];
 
-    Arrows[0][2].y = Arrows[1][2].y = DDevice->InternalResolution.y + 66;
+    Arrows[0][2].y = Arrows[1][2].y = 66;
 }
 
 /* Init the court Record menu for further use */
@@ -111,8 +97,8 @@ void InitCourtRecord(DisplayDevice* DDevice, Items* ItemBankPointer){
     MoveCursor = LoadSoundEffect(EffectPath[CHK_ButtonUpDown]);
 
     /* Set rects */
-    CourtRecordBackground[0].x = 0; CourtRecordBackground[1].x = DDevice->InternalResolution.x + 24;
-    CourtRecordBackground[0].y = 0; CourtRecordBackground[1].y = DDevice->InternalResolution.y + 36;
+    CourtRecordBackground[0].x = 0; CourtRecordBackground[1].x = 24;
+    CourtRecordBackground[0].y = 0; CourtRecordBackground[1].y = 36;
     CourtRecordBackground[0].w = CourtRecordBackground[1].w = 208;
     CourtRecordBackground[0].h = CourtRecordBackground[1].h = 124;
 
@@ -122,9 +108,9 @@ void InitCourtRecord(DisplayDevice* DDevice, Items* ItemBankPointer){
     Bars[0][0].h = Bars[1][0].h = Bars[0][1].h = Bars[1][1].h = 96;
     Bars[1][0].x = Bars[0][0].x + Bars[0][0].w;
 
-    Bars[0][1].x = DDevice->InternalResolution.x;
-    Bars[1][1].x = DDevice->InternalResolution.x + 240;
-    Bars[0][1].y = Bars[1][1].y = DDevice->InternalResolution.y + 56;
+    Bars[0][1].x = 0;
+    Bars[1][1].x = 240;
+    Bars[0][1].y = Bars[1][1].y = 56;
 
     Arrows[0][0].x = Arrows[1][0].x = 240;
     Arrows[0][0].w = Arrows[1][0].w = Arrows[0][1].w = Arrows[1][1].w = 7;
@@ -149,9 +135,7 @@ void InitCourtRecord(DisplayDevice* DDevice, Items* ItemBankPointer){
         SelectedSlotPos[i].h = SelectedSlotSrc.h;
     }
 
-    ItemName.y = DDevice->InternalResolution.y + 40;
-    ItemName.w = DDevice->InternalResolution.w;
-    ItemName.h = DDevice->InternalResolution.h;
+    ItemName = InitRect(0, 40, BASE_RESOLUTION_X, BASE_RESOLUTION_Y);
     
     MenuSelect = MainCRMenu;
     SelectedSlot = 0;
@@ -318,10 +302,6 @@ char GetSelectedItem(int Slot){
 }
 
 void UpdateItemDetails(int ItemID){
-    /*
-    if (ItemDetails)
-        free(ItemDetails);
-    asprintf(&ItemDetails, "Type:%s\n%s", "Reports", ItemBank->OrignArray[ItemID]);*/
     sprintf(ItemDetails, "Type:%s\n%s", ItemTypes[ItemBank->TypeArray[ItemID]], ItemBank->OrignArray[ItemID]);
 }
 
@@ -441,46 +421,29 @@ void DrawMainCourtRecordMenu(DisplayDevice* DDevice, BitmapFont* Font){
     RightArrowAfterAnim.x += ArrowAnim;
     LeftArrowAfterAnim.x -= ArrowAnim;
 
-    #ifdef _SDL
-        SDL_BlitSurface(CourtRecordSpriteSheet, CourtRecordBackground, DDevice->Renderer, CourtRecordBackground + 1); /* Draw the background */
-        
-        SDL_BlitSurface(CourtRecordSpriteSheet, &(Bars[0][0]), DDevice->Renderer, &(Bars[0][1]));                     /* Draw the bars */
-        SDL_BlitSurface(CourtRecordSpriteSheet, &(Bars[1][0]), DDevice->Renderer, &(Bars[1][1]));
+    ScaledDraw(DDevice, CourtRecordSpriteSheet, CourtRecordBackground, CourtRecordBackground + 1);  /* Draw the background */
 
-        SDL_BlitSurface(CourtRecordSpriteSheet, &(Arrows[0][0]), DDevice->Renderer, &(RightArrowAfterAnim));          /* Draw the arrows */
-        SDL_BlitSurface(CourtRecordSpriteSheet, &(Arrows[1][0]), DDevice->Renderer, &(LeftArrowAfterAnim));
-    #else
-        SDL_RenderCopy(DDevice->Renderer, CourtRecordSpriteSheet, CourtRecordBackground, CourtRecordBackground + 1);  /* Draw the background */
+    ScaledDraw(DDevice, CourtRecordSpriteSheet, &(Bars[0][0]), &(Bars[0][1]));                      /* Draw the bars */
+    ScaledDraw(DDevice, CourtRecordSpriteSheet, &(Bars[1][0]), &(Bars[1][1]));
 
-        SDL_RenderCopy(DDevice->Renderer, CourtRecordSpriteSheet, &(Bars[0][0]), &(Bars[0][1]));                      /* Draw the bars */
-        SDL_RenderCopy(DDevice->Renderer, CourtRecordSpriteSheet, &(Bars[1][0]), &(Bars[1][1]));
-
-        SDL_RenderCopy(DDevice->Renderer, CourtRecordSpriteSheet, &(Arrows[0][0]), &(RightArrowAfterAnim));           /* Draw the arrows */
-        SDL_RenderCopy(DDevice->Renderer, CourtRecordSpriteSheet, &(Arrows[1][0]), &(LeftArrowAfterAnim));
-    #endif
+    ScaledDraw(DDevice, CourtRecordSpriteSheet, &(Arrows[0][0]), &(RightArrowAfterAnim));           /* Draw the arrows */
+    ScaledDraw(DDevice, CourtRecordSpriteSheet, &(Arrows[1][0]), &(LeftArrowAfterAnim));
 
     i = 0;
     StoredItemListIterator = *StoredItemListPointer;
     while (StoredItemListIterator){
         if (i == SelectedSlot){
-            ItemName.x = DDevice->InternalResolution.x + ((DDevice->InternalResolution.w - gstrlen(ItemNameFont, ItemBank->NameArray[StoredItemListIterator->ItemID], 1).x) >> 1);
+            ItemName.x = ((BASE_RESOLUTION_X - gstrlen(ItemNameFont, ItemBank->NameArray[StoredItemListIterator->ItemID], 1).x) >> 1);
             gprintf(DDevice, ItemNameFont, ItemBank->NameArray[StoredItemListIterator->ItemID], 1, &ItemName); /* Draw the item's name */
         }
-        #ifdef _SDL
-            /* SDLFIXME: Size issue */
-            SDL_BlitSurface(ItemBank->ItemSpritesheet, &(ItemBank->ItemSrcRectArray[StoredItemListIterator->ItemID]), DDevice->Screen, &(SelectedSlotPos[i]));
-        #else
-            SDL_RenderCopy(DDevice->Renderer, ItemBank->ItemSpritesheet, &(ItemBank->ItemSrcRectArray[StoredItemListIterator->ItemID]), &(SelectedSlotPos[i])); /* Draw the item */
-        #endif
+
+        ScaledDraw(DDevice, ItemBank->ItemSpritesheet, &(ItemBank->ItemSrcRectArray[StoredItemListIterator->ItemID]), &(SelectedSlotPos[i])); /* Draw the item */
+        
         StoredItemListIterator = StoredItemListIterator->next;
         i++;
     }
 
-    #ifdef _SDL
-        SDL_BlitSurface(CourtRecordSpriteSheet, &SelectedSlotSrc, DDevice->Screen, &(SelectedSlotPos[SelectedSlot]));
-    #else
-        SDL_RenderCopy(DDevice->Renderer, CourtRecordSpriteSheet, &SelectedSlotSrc, &(SelectedSlotPos[SelectedSlot])); /* Draw the cursor */
-    #endif
+    ScaledDraw(DDevice, CourtRecordSpriteSheet, &SelectedSlotSrc, &(SelectedSlotPos[SelectedSlot])); /* Draw the cursor */
 }
 
 void DrawCourtDetails(DisplayDevice* DDevice, BitmapFont* Font, int ItemID){
@@ -496,24 +459,16 @@ void DrawCourtDetails(DisplayDevice* DDevice, BitmapFont* Font, int ItemID){
     RightArrowAfterAnim.x += ArrowAnim;
     LeftArrowAfterAnim.x -= ArrowAnim;
 
-    DetailItemName.x = DDevice->InternalResolution.x + ((144 - gstrlen(ItemNameFont, ItemBank->NameArray[ItemID], 1).x) >> 1) + 91;
+    DetailItemName.x = ((144 - gstrlen(ItemNameFont, ItemBank->NameArray[ItemID], 1).x) >> 1) + 91;
 
-    #ifdef _SDL
-        /* SDLFIXME: Size issue */
-        SDL_BlitSurface(CourtDetailSpriteSheet, CourtDetailBackground, DDevice->Renderer, CourtDetailBackground + 1);           /* Draw the background */
-        SDL_BlitSurface(CourtRecordSpriteSheet, &(Arrows[0][0]), DDevice->Renderer, &(RightArrowAfterAnim));                    /* Draw the arrows */
-        SDL_BlitSurface(CourtRecordSpriteSheet, &(Arrows[1][0]), DDevice->Renderer, &(LeftArrowAfterAnim));
-        SDL_BlitSurface(ItemBank->ItemSpritesheet, &(ItemBank->ItemSrcRectArray[ItemID]), DDevice->Renderer, &(DetailItemPos));  /* Draw the item */
-    #else
-        SDL_RenderCopy(DDevice->Renderer, CourtDetailSpriteSheet, CourtDetailBackground, CourtDetailBackground + 1);            /* Draw the background */
-        SDL_RenderCopy(DDevice->Renderer, CourtRecordSpriteSheet, &(Arrows[0][0]), &(RightArrowAfterAnim));                     /* Draw the arrows */
-        SDL_RenderCopy(DDevice->Renderer, CourtRecordSpriteSheet, &(Arrows[1][0]), &(LeftArrowAfterAnim));
-        SDL_RenderCopy(DDevice->Renderer, ItemBank->ItemSpritesheet, &(ItemBank->ItemSrcRectArray[ItemID]), &(DetailItemPos));  /* Draw the item */
-    #endif
+    ScaledDraw(DDevice, CourtDetailSpriteSheet, CourtDetailBackground, CourtDetailBackground + 1);              /* Draw the background */
+    ScaledDraw(DDevice, CourtRecordSpriteSheet, &(Arrows[0][0]), &(RightArrowAfterAnim));                       /* Draw the arrows */
+    ScaledDraw(DDevice, CourtRecordSpriteSheet, &(Arrows[1][0]), &(LeftArrowAfterAnim));
+    ScaledDraw(DDevice, ItemBank->ItemSpritesheet, &(ItemBank->ItemSrcRectArray[ItemID]), &(DetailItemPos));    /* Draw the item */
 
-    gprintf(DDevice, ItemNameFont, ItemBank->NameArray[ItemID], 1, &DetailItemName); /* Draw the item's name */
-    gprintf(DDevice, DetailsFont, ItemDetails, 1, &ItemOrigin); /* Draw the item's origin */
-    gprintf(DDevice, Font, ItemBank->DescriptionArray[ItemID], 1, &ItemDescription); /* Draw the item's description */
+    gprintf(DDevice, ItemNameFont, ItemBank->NameArray[ItemID], 1, &DetailItemName);                            /* Draw the item's name */
+    gprintf(DDevice, DetailsFont, ItemDetails, 1, &ItemOrigin);                                                 /* Draw the item's origin */
+    gprintf(DDevice, Font, ItemBank->DescriptionArray[ItemID], 1, &ItemDescription);                            /* Draw the item's description */
 }
 
 

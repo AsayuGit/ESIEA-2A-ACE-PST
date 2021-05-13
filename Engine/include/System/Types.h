@@ -47,6 +47,8 @@
         #endif
         SDL_Rect InternalResolution;
         Vector2i ScreenResolution;
+        unsigned int IRScalar;
+        bool OffScreenRender;
     } DisplayDevice;
 
     typedef struct{

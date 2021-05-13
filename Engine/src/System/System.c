@@ -49,14 +49,18 @@ DisplayDevice* CreateDisplayDevice(int ScreenWidth, int ScreenHeight, char* Titl
         SDL_GL_SetSwapInterval(1); /* VSync */
     #endif
 
+    Device->IRScalar = MAX(MIN(ScreenWidth / BASE_RESOLUTION_X, ScreenHeight / BASE_RESOLUTION_Y), 1);
+
     Device->ScreenResolution.x = ScreenWidth;
     Device->ScreenResolution.y = ScreenHeight;
 
-    Device->InternalResolution.w = BASE_RESOLUTION_X;
-    Device->InternalResolution.h = BASE_RESOLUTION_Y;
+    Device->InternalResolution.w = BASE_RESOLUTION_X * Device->IRScalar;
+    Device->InternalResolution.h = BASE_RESOLUTION_Y * Device->IRScalar;
 
     Device->InternalResolution.x = (Device->ScreenResolution.x - Device->InternalResolution.w) >> 1;
     Device->InternalResolution.y = (Device->ScreenResolution.y - Device->InternalResolution.h) >> 1;
+
+    Device->OffScreenRender = false;
 
     return Device;
 }
@@ -70,10 +74,37 @@ SoundDevice* CreateSoundDevice(){
 }
 
 int SetRenderTarget(DisplayDevice* DDevice, SDL_Texture* surface){
+    DDevice->OffScreenRender = (surface != NULL);
 #ifdef _SDL
     DDevice->Renderer = (surface) ? surface : DDevice->Screen;
     return 0;
 #else
     return SDL_SetRenderTarget(DDevice->Renderer, surface);
 #endif
+}
+
+int ScaledDrawEx(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect, bool flip){
+    SDL_Rect ScaledDstRect = {0, 0, BASE_RESOLUTION_X, BASE_RESOLUTION_Y};
+
+    if (RectOnScreen(DDevice, dstrect)){
+        if (dstrect){
+            ScaledDstRect = InitRect(
+                (dstrect->x * DDevice->IRScalar) + DDevice->InternalResolution.x,
+                (dstrect->y * DDevice->IRScalar) + DDevice->InternalResolution.y,
+                dstrect->w * DDevice->IRScalar,
+                dstrect->h * DDevice->IRScalar
+            );
+        }
+
+        #ifdef _SDL
+            return FlipBlitSurface(texture, srcrect, DDevice->Screen, &ScaledDstRect, flip);
+        #else
+            return SDL_RenderCopyEx(DDevice->Renderer, texture, srcrect, &ScaledDstRect, 0, 0, flip);
+        #endif
+    }
+    return 0;
+}
+
+int ScaledDraw(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect){
+    return ScaledDrawEx(DDevice, texture, srcrect, dstrect, false);
 }

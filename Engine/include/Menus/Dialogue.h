@@ -13,9 +13,11 @@
 
         /* Dialog Box */
         SDL_Texture* DialogBox;
+        SDL_Rect DialogBoxSrcBounds;
         SDL_Rect DialogBoxBounds;   /* Region where the dialog box should be drawn */
         SDL_Rect TextBounds;        /* Region where the text should be drawn */
         SDL_Rect NameBounds;        /* Region where the name should be drawn */
+        SDL_Rect ArrowDstRect;
 
         /* Font */
         BitmapFont* MainFont;

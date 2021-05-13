@@ -25,6 +25,14 @@
         SDL_Rect ButtonRight[2];        /* Store the rect for the right side of the button [Activated/Desactivated] */
         SDL_Rect ButtonMiddle;          /* Store the rect for the Mille Part of the button [Activated/Desactivated] */
 
+        SDL_Rect ButtonDstRect;         /* Whole button dst rect */
+        SDL_Rect LeftDstRect;           /* Where to put the left button part ON SCREEN */
+        SDL_Rect RightDstRect;          /* Where to put the right button part ON SCREEN */
+        SDL_Rect CenterDstRect;         /* Where to put the center button part ON SCREEN [Variable length] */
+        #ifdef _SDL
+        int CenterPartLength;
+        #endif
+
         SDL_Rect* Viewport;             /* Scene viewport */
         
         DisplayDevice* DDevice;         /* The Engine's display device */
