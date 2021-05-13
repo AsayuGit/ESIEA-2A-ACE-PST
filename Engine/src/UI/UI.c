@@ -1,4 +1,5 @@
 #include "UI.h"
+#include "math.h"
 
 static void (*currentUI)(DisplayDevice*, InputDevice*);
 
@@ -43,6 +44,9 @@ static bool EffectPlaying;
 void UI_ShowToCourt(DisplayDevice* DDevice, InputDevice* IDevice){
     SDL_Rect ItemPos[2] = {{13, 13, 70, 70}, {173, 13, 70, 70}};
 
+    ItemPos[logoID].x += DDevice->InternalResolution.x;
+    ItemPos[logoID].y += DDevice->InternalResolution.y;
+
     #ifdef _SDL
         SDL_BlitSurface(UIItemBank->ItemSpritesheet, &(UIItemBank->ItemSrcRectArray[StoredItemID]), DDevice->Renderer, &(ItemPos[logoID]));
     #else
@@ -52,6 +56,9 @@ void UI_ShowToCourt(DisplayDevice* DDevice, InputDevice* IDevice){
 
 void UI_Testimony(DisplayDevice* DDevice, InputDevice* IDevice){
     SDL_Rect UITestimonyRect = {0, 0, 64, 32};
+
+    UITestimonyRect.x = DDevice->InternalResolution.x;
+    UITestimonyRect.y = DDevice->InternalResolution.y;
 
     if (UIBlink){
 
@@ -76,6 +83,9 @@ void UI_Lives(DisplayDevice* DDevice, InputDevice* IDevice){
     SDL_Rect DstLives = {245, 16, 10, 16};
     unsigned int i;
 
+    DstLives.x += DDevice->InternalResolution.x;
+    DstLives.y += DDevice->InternalResolution.y;
+
     for (i = 0; i < Lives; i++){
         #ifdef _SDL
             SDL_BlitSurface(UISurface, &SrcLives, DDevice->Renderer, &DstLives);
@@ -93,18 +103,18 @@ void UI_TeCeIntro(DisplayDevice* DDevice, InputDevice* IDevice){ /* Timings to t
 
     switch (UIWTState){
     case 0: /* Setup */
-        UI_ADstRect.x = -192;
-        UI_ADstRect.y = 34;
-        UI_BDstRect.x = 256;
-        UI_BDstRect.y = 74;
+        UI_ADstRect.x = DDevice->InternalResolution.x - 192;
+        UI_ADstRect.y = DDevice->InternalResolution.y + 34;
+        UI_BDstRect.x = DDevice->InternalResolution.x + 256;
+        UI_BDstRect.y = DDevice->InternalResolution.y + 74;
         UIAnimStart = SDL_GetTicks();
         UIAnimEnd = UIAnimStart + UI_SLIDE;
         IDevice->EventEnabled = false;
         Slide = 0;
         UIWTState++;
     case 1: /* Slide On Screen */
-        UI_ADstRect.x = -192 + Slide;
-        UI_BDstRect.x = 256 - Slide;
+        UI_ADstRect.x = DDevice->InternalResolution.x - 192 + Slide;
+        UI_BDstRect.x = DDevice->InternalResolution.x + 256 - Slide;
         if (Slide == 224){
             UIAnimStart = SDL_GetTicks();
             UIAnimEnd = UIAnimStart + UI_SLIDE;
@@ -148,11 +158,11 @@ void UI_TeCeIntro(DisplayDevice* DDevice, InputDevice* IDevice){ /* Timings to t
         break;
     case 6: /* Slide out */
         if (logoID){
-            UI_ADstRect.y = 34 - Slide;
-            UI_BDstRect.y = 74 + Slide;
+            UI_ADstRect.y = DDevice->InternalResolution.y + 34 - Slide;
+            UI_BDstRect.y = DDevice->InternalResolution.y + 74 + Slide;
         } else {
-            UI_ADstRect.x = 32 + Slide;
-            UI_BDstRect.x = 32 - Slide;
+            UI_ADstRect.x = DDevice->InternalResolution.x + 32 + Slide;
+            UI_BDstRect.x = DDevice->InternalResolution.x + 32 - Slide;
         }
         if (Slide == 224){
             UIWTState++;
@@ -168,17 +178,24 @@ void UI_TeCeIntro(DisplayDevice* DDevice, InputDevice* IDevice){ /* Timings to t
     }
 
     #ifdef _SDL
-        SDL_BlitSurface(UISurface, &UIWTASrcRect[logoID], DDevice->Renderer, &UI_ADstRect);
-        SDL_BlitSurface(UISurface, &UIWTBSrcRect[logoID], DDevice->Renderer, &UI_BDstRect);
+        if (RectOnScreen(DDevice, &UI_ADstRect))
+            SDL_BlitSurface(UISurface, &UI_ASrcRect[logoID], DDevice->Renderer, &UI_ADstRect);
+        if (RectOnScreen(DDevice, &UI_BDstRect))
+            SDL_BlitSurface(UISurface, &UI_BSrcRect[logoID], DDevice->Renderer, &UI_BDstRect);
     #else
-        SDL_RenderCopy(DDevice->Renderer, UISurface, &UI_ASrcRect[logoID], &UI_ADstRect);
-        SDL_RenderCopy(DDevice->Renderer, UISurface, &UI_BSrcRect[logoID], &UI_BDstRect);
+        if (RectOnScreen(DDevice, &UI_ADstRect))
+            SDL_RenderCopy(DDevice->Renderer, UISurface, &UI_ASrcRect[logoID], &UI_ADstRect);
+        if (RectOnScreen(DDevice, &UI_BDstRect))
+            SDL_RenderCopy(DDevice->Renderer, UISurface, &UI_BSrcRect[logoID], &UI_BDstRect);
     #endif
 }
 
 void UI_Exclamation(DisplayDevice* DDevice, InputDevice* IDevice){
     SDL_Rect UI_ExclaSrcRect[3] = {{0, 212, 254, 191}, {254, 212, 254, 191}, {510, 212, 254, 191}};
     SDL_Rect UI_ExclaDstRect = {1, 0, 254, 191};
+
+    UI_ExclaDstRect.x += DDevice->InternalResolution.x;
+    UI_ExclaDstRect.y += DDevice->InternalResolution.y;
 
     switch (UIWTState){
     case 0: /* Setup */
@@ -218,7 +235,7 @@ void UI_Exclamation(DisplayDevice* DDevice, InputDevice* IDevice){
     }
 
     #ifdef _SDL
-        SDL_BlitSurface(UISurface, &UI_ExclaSrcRect[LogoID], DDevice->Renderer, &UI_ExclaDstRect);
+        SDL_BlitSurface(UISurface, &UI_ExclaSrcRect[logoID], DDevice->Renderer, &UI_ExclaDstRect);
     #else
         SDL_RenderCopy(DDevice->Renderer, UISurface, &UI_ExclaSrcRect[logoID], &UI_ExclaDstRect);
     #endif

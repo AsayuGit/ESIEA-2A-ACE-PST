@@ -45,6 +45,7 @@
         #else
             SDL_Renderer *Renderer;
         #endif
+        SDL_Rect InternalResolution;
         Vector2i ScreenResolution;
     } DisplayDevice;
 

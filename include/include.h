@@ -50,4 +50,7 @@
     #define MAX(x, y) (((x) > (y)) ? (x) : (y))
     #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 
+    #define BASE_RESOLUTION_X 256
+    #define BASE_RESOLUTION_Y 192
+
 #endif

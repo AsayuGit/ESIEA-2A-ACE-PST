@@ -19,7 +19,7 @@ int Scene_TitleScreen(DisplayDevice* DDevice, InputDevice* IDevice, BitmapFont* 
     /* AddButton(BContext, "Continue"); When the save system is implemented */
     AddButton(BContext, "Back");
 
-    MoveButtonsToCoordinates(BContext, DDevice->ScreenResolution.x, 0);
+    MoveButtonsToCoordinates(BContext, DDevice->InternalResolution.w, 0);
     SetButtonClkSndEffect(BContext, 0, CHK_Gravel);
     SetButtonClkSndEffect(BContext, 1, CHK_ButtonBack);
 

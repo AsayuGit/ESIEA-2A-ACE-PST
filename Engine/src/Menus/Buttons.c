@@ -33,8 +33,8 @@ ButtonsContext* InitButtons(DisplayDevice* DDevice, BackgroundContext* SContext,
         BContext->ObjectDimensions = *ButtonObjectDimensions;
     }else {
         BContext->ObjectDimensions.x = BContext->ObjectDimensions.y = 0;
-        BContext->ObjectDimensions.w = DDevice->ScreenResolution.x;
-        BContext->ObjectDimensions.h = DDevice->ScreenResolution.y;
+        BContext->ObjectDimensions.w = DDevice->InternalResolution.w;
+        BContext->ObjectDimensions.h = DDevice->InternalResolution.h;
     }
 
     /* Buttons Parts / States */
@@ -155,8 +155,8 @@ void DrawButtons(ButtonsContext* ButtonObject){
     #endif
 
     /* Whole button coordinates */
-    ButtonDstRect.x = ButtonObject->ObjectDimensions.x + ((ButtonObject->ObjectDimensions.w - ButtonObject->buttonLength) / 2) - ButtonObject->Viewport->x;
-    ButtonDstRect.y = ButtonObject->ObjectDimensions.y + ((ButtonObject->ObjectDimensions.h - ((ButtonObject->buttonHeight + 5) * ButtonObject->nbOfButtons)) / 2) - ButtonObject->Viewport->y;
+    ButtonDstRect.x = ButtonObject->DDevice->InternalResolution.x + ButtonObject->ObjectDimensions.x + ((ButtonObject->ObjectDimensions.w - ButtonObject->buttonLength) / 2) - ButtonObject->Viewport->x;
+    ButtonDstRect.y = ButtonObject->DDevice->InternalResolution.y + ButtonObject->ObjectDimensions.y + ((ButtonObject->ObjectDimensions.h - ((ButtonObject->buttonHeight + 5) * ButtonObject->nbOfButtons)) / 2) - ButtonObject->Viewport->y;
     ButtonDstRect.w = ButtonObject->buttonLength;
     ButtonDstRect.h = ButtonObject->buttonHeight;
 
@@ -184,19 +184,25 @@ void DrawButtons(ButtonsContext* ButtonObject){
 
         Selected = (unsigned char)(i == ButtonObject->selButtonID); /* If the button is selected */
         /* Draw button */
-        LeftDstRect.y = RightDstRect.y = CenterDstRect.y =  ButtonDstRect.y; /* Update Position */
+        LeftDstRect.y = RightDstRect.y = CenterDstRect.y = ButtonDstRect.y; /* Update Position */
         CenterDstRect.x = LeftDstRect.x + LeftDstRect.w;
         #ifdef _SDL
-            for (j = 0; j < CenterPartLength; j++){
-                SDL_BlitSurface(ButtonObject->ButtonsSurface, &(ButtonObject->ButtonLeft[Selected]), ButtonObject->DDevice->Screen, &LeftDstRect); /* Left part */
+            if (RectOnScreen(ButtonObject->DDevice, &LeftDstRect))
+                    SDL_BlitSurface(ButtonObject->ButtonsSurface, &(ButtonObject->ButtonLeft[Selected]), ButtonObject->DDevice->Screen, &LeftDstRect); /* Left part */
+            if (RectOnScreen(ButtonObject->DDevice, &RightDstRect))
                 SDL_BlitSurface(ButtonObject->ButtonsSurface, &(ButtonObject->ButtonRight[Selected]), ButtonObject->DDevice->Screen, &RightDstRect); /* Right part */
-                SDL_BlitSurface(ButtonObject->ButtonsSurface, &(ButtonObject->ButtonMiddle), ButtonObject->DDevice->Screen, &CenterDstRect); /* Center part */
+            for (j = 0; j < CenterPartLength; j++){
+                if (RectOnScreen(ButtonObject->DDevice, &CenterDstRect))
+                    SDL_BlitSurface(ButtonObject->ButtonsSurface, &(ButtonObject->ButtonMiddle), ButtonObject->DDevice->Screen, &CenterDstRect); /* Center part */
                 CenterDstRect.x++;
             }
         #else
-            SDL_RenderCopy(ButtonObject->DDevice->Renderer, ButtonObject->ButtonsSurface, &(ButtonObject->ButtonLeft[Selected]), &LeftDstRect); /* Left part */
-            SDL_RenderCopy(ButtonObject->DDevice->Renderer, ButtonObject->ButtonsSurface, &(ButtonObject->ButtonRight[Selected]), &RightDstRect); /* Right part */
-            SDL_RenderCopy(ButtonObject->DDevice->Renderer, ButtonObject->ButtonsSurface, &(ButtonObject->ButtonMiddle), &CenterDstRect); /* Center part */
+            if (RectOnScreen(ButtonObject->DDevice, &LeftDstRect))
+                SDL_RenderCopy(ButtonObject->DDevice->Renderer, ButtonObject->ButtonsSurface, &(ButtonObject->ButtonLeft[Selected]), &LeftDstRect); /* Left part */
+            if (RectOnScreen(ButtonObject->DDevice, &RightDstRect))
+                SDL_RenderCopy(ButtonObject->DDevice->Renderer, ButtonObject->ButtonsSurface, &(ButtonObject->ButtonRight[Selected]), &RightDstRect); /* Right part */
+            if (RectOnScreen(ButtonObject->DDevice, &CenterDstRect))
+                SDL_RenderCopy(ButtonObject->DDevice->Renderer, ButtonObject->ButtonsSurface, &(ButtonObject->ButtonMiddle), &CenterDstRect); /* Center part */
         #endif
 
         TextPosition = ButtonDstRect;

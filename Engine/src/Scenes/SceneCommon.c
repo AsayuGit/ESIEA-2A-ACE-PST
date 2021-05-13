@@ -106,8 +106,8 @@ BackgroundContext* InitBackground(DisplayDevice* DDevice, char* ScenePath){
         }
     }
 
-    LoadingContext->SrcRect.w = DDevice->ScreenResolution.x;
-    LoadingContext->SrcRect.h = DDevice->ScreenResolution.y;
+    LoadingContext->SrcRect.w = DDevice->InternalResolution.w;
+    LoadingContext->SrcRect.h = DDevice->InternalResolution.h;
     LoadingContext->PlayingAnimation = -1;
     LoadingContext->Shown = true;
 
@@ -146,7 +146,7 @@ void BackgroundPlayAnimation(BackgroundContext* Context, int AnimationID, bool* 
 }
 
 void DisplayBackground(DisplayDevice* DDevice, BackgroundContext* Context){ /* Display the background on screen */
-    SDL_Rect AnimSrcRect, AnimDstRect;
+    SDL_Rect AnimSrcRect, BGDstRect;
     Uint32 TimeProgress;
     double Progress;
     
@@ -157,6 +157,8 @@ void DisplayBackground(DisplayDevice* DDevice, BackgroundContext* Context){ /* D
     /* Only process the following if the background is actually shown*/
     if (!Context->Shown)
         return;
+
+    BGDstRect = DDevice->InternalResolution;
 
     if ((Context->PlayingAnimation >= 0) && (Context->CurrentState < Context->Animation[Context->PlayingAnimation].NbOfAnimStates)){ /* Background slide animation */
         
@@ -193,12 +195,8 @@ void DisplayBackground(DisplayDevice* DDevice, BackgroundContext* Context){ /* D
         AnimSrcRect.x =  Context->ObjectLayerOffset + Context->Animation[Context->PlayingAnimation].AnimRegion.x; /* + Offset */
         /*printf("Region %d | Offset %d\n", Context->Animation[Context->PlayingAnimation].AnimRegion.x, Context->ObjectLayerOffset); */
         AnimSrcRect.y = Context->Animation[Context->PlayingAnimation].AnimRegion.y;
-        AnimSrcRect.w = DDevice->ScreenResolution.x;
-        AnimSrcRect.h = DDevice->ScreenResolution.y;
-
-        AnimDstRect.x = AnimDstRect.y = 0;
-        AnimDstRect.w = DDevice->ScreenResolution.x;
-        AnimDstRect.h = DDevice->ScreenResolution.y;
+        AnimSrcRect.w = DDevice->InternalResolution.w;
+        AnimSrcRect.h = DDevice->InternalResolution.h;
 
         /* Effects */
         /* Not used for now :3 */
@@ -218,9 +216,9 @@ void DisplayBackground(DisplayDevice* DDevice, BackgroundContext* Context){ /* D
         Context->SrcRect = AnimSrcRect; /* Used to sync up to other layers */
 
         #ifdef _SDL
-            SDL_BlitSurface(Context->Surface, &AnimSrcRect, DDevice->Screen, &AnimDstRect); 
+            SDL_BlitSurface(Context->Surface, &AnimSrcRect, DDevice->Screen, &BGDstRect); 
         #else
-            SDL_RenderCopyEx(DDevice->Renderer, Context->Surface, &AnimSrcRect, &AnimDstRect, 0, 0, Context->Flipped);
+            SDL_RenderCopyEx(DDevice->Renderer, Context->Surface, &AnimSrcRect, &BGDstRect, 0, 0, Context->Flipped);
         #endif
         
         if (Progress == Context->Animation[Context->PlayingAnimation].AnimRange[Context->CurrentState].y){
@@ -241,9 +239,9 @@ void DisplayBackground(DisplayDevice* DDevice, BackgroundContext* Context){ /* D
 
     }else{ /* Display the current background tile if not animated */
         #ifdef _SDL
-            SDL_BlitSurface(Context->Surface, &Context->SrcRect, DDevice->Screen, NULL); 
+            SDL_BlitSurface(Context->Surface, &Context->SrcRect, DDevice->Screen, &BGDstRect); 
         #else
-            SDL_RenderCopyEx(DDevice->Renderer, Context->Surface, &Context->SrcRect, NULL, 0, 0, Context->Flipped);
+            SDL_RenderCopyEx(DDevice->Renderer, Context->Surface, &Context->SrcRect, &BGDstRect, 0, 0, Context->Flipped);
         #endif
     }
 }

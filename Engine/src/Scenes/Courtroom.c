@@ -40,13 +40,13 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
 
     ButtonsRect.x = 0;
     ButtonsRect.y = 0;
-    ButtonsRect.w = DDevice->ScreenResolution.x;
-    ButtonsRect.h = DDevice->ScreenResolution.y - (DiagContext->TextBounds.h + DiagContext->NameBounds.h);
+    ButtonsRect.w = DDevice->InternalResolution.w;
+    ButtonsRect.h = DDevice->InternalResolution.h - (DiagContext->TextBounds.h + DiagContext->NameBounds.h);
 
     /* Button Init */
     ButtonLayer = InitBackground(DDevice, "Assets/Anim/ButtonHorizontal.xml");
     BContext = InitButtons(DDevice, ButtonLayer, Context->ButtonFont, 224, &ButtonsRect);
-    MoveButtonsToCoordinates(BContext, DDevice->ScreenResolution.x, 0);
+    MoveButtonsToCoordinates(BContext, DDevice->InternalResolution.w, 0);
     Context->ButtonActivated = 0;
 
     /* Load the ItemBank in memory */

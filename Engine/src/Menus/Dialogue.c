@@ -27,9 +27,9 @@ size_t SetDialogueText(DialogueContext* Context, char* Name, char* Text, char Sn
 
     SetRenderTarget(Context->DDevice, Context->nameLayer);
     NameDest.w = gstrlen(Context->NameFont, Name, 1).x;
-    NameDest.x = ((Context->NameBounds.w - Context->NameBounds.x) - NameDest.w) / 2;
+    NameDest.x = (Context->NameBounds.w - NameDest.w) >> 1;
     NameDest.h = Context->NameFont->Rects[0].h;
-    NameDest.y = (Context->NameBounds.h - NameDest.h) / 2;
+    NameDest.y = (Context->NameBounds.h - NameDest.h) >> 1;
     NameDest.y = 0;
     gprintf(Context->DDevice, Context->NameFont, Name, 1, &NameDest);
     SetRenderTarget(Context->DDevice, NULL);
@@ -71,12 +71,12 @@ DialogueContext* InitDialog(DisplayDevice* DDevice, BitmapFont* MainFont, Bitmap
         SDL_QueryTexture(DiagContext->DialogBox, NULL, NULL, &(DiagContext->DialogBoxBounds.w), &(DiagContext->DialogBoxBounds.h));
     #endif
 
-    DiagContext->DialogBoxBounds.x = 0;
-    DiagContext->DialogBoxBounds.y = DDevice->ScreenResolution.y - DiagContext->DialogBoxBounds.h;
+    DiagContext->DialogBoxBounds.x = DDevice->InternalResolution.x;
+    DiagContext->DialogBoxBounds.y = DDevice->InternalResolution.y + (DDevice->InternalResolution.h - DiagContext->DialogBoxBounds.h);
 
     DiagContext->NameBounds.w = 42;
     DiagContext->NameBounds.h = 8;
-    DiagContext->NameBounds.x = NameMargin;
+    DiagContext->NameBounds.x = DDevice->InternalResolution.x + NameMargin;
     DiagContext->NameBounds.y = DiagContext->DialogBoxBounds.y + NameMargin + 1;
 
     DiagContext->TextBounds = DiagContext->DialogBoxBounds;
@@ -130,6 +130,8 @@ void Dialogue(DialogueContext* Context, bool bothWay){
     InLayerTextBounds = Context->TextBounds;
     InLayerTextBounds.x = InLayerTextBounds.y = 0;
 
+    ArrowDstRect.y += Context->DDevice->InternalResolution.y;
+
     Wobble = sin((double)SDL_GetTicks() / 50.0f) * 2.0f;
 
     /* DialogBox Rendering */
@@ -164,7 +166,7 @@ void Dialogue(DialogueContext* Context, bool bothWay){
         }
     } else {
         if (bothWay){
-            ArrowDstRect.x = 7 - Wobble;
+            ArrowDstRect.x = Context->DDevice->InternalResolution.x + (7 - Wobble);
             #ifdef _SDL
                 SDL_BlitSurface(Context->DialogBox, &ArrowSrcRect[1], Context->DDevice->Screen, &ArrowDstRect);
             #else
@@ -172,7 +174,7 @@ void Dialogue(DialogueContext* Context, bool bothWay){
             #endif
         }
         
-        ArrowDstRect.x = 240 + Wobble;
+        ArrowDstRect.x = Context->DDevice->InternalResolution.x + 240 + Wobble;
         #ifdef _SDL
             SDL_BlitSurface(Context->DialogBox, &ArrowSrcRect[0], Context->DDevice->Screen, &ArrowDstRect);
         #else

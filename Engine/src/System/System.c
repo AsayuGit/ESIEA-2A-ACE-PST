@@ -52,6 +52,12 @@ DisplayDevice* CreateDisplayDevice(int ScreenWidth, int ScreenHeight, char* Titl
     Device->ScreenResolution.x = ScreenWidth;
     Device->ScreenResolution.y = ScreenHeight;
 
+    Device->InternalResolution.w = BASE_RESOLUTION_X;
+    Device->InternalResolution.h = BASE_RESOLUTION_Y;
+
+    Device->InternalResolution.x = (Device->ScreenResolution.x - Device->InternalResolution.w) >> 1;
+    Device->InternalResolution.y = (Device->ScreenResolution.y - Device->InternalResolution.h) >> 1;
+
     return Device;
 }
 

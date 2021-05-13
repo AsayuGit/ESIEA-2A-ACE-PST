@@ -165,15 +165,19 @@ void DisplayCharacter(DisplayDevice* DDevice, Characters* Character, SDL_Rect Vi
     SpriteWindow.h = Character->Anim[Character->PlayingAnimation].SrcRect.h;
 
     SpriteLayer = Character->Anim[Character->PlayingAnimation].DstRect;
-    SpriteLayer.x += Coordinates.x - Viewport.x;
-    SpriteLayer.y += Coordinates.y - Viewport.y;
+    SpriteLayer.x += DDevice->InternalResolution.x + Coordinates.x - Viewport.x;
+    SpriteLayer.y += DDevice->InternalResolution.y + Coordinates.y - Viewport.y;
 
-    /* On affiche la frame d'animation a l'écran */
-    #ifdef _SDL
-        FlipBlitSurface(Character->Surface, &SpriteWindow, DDevice->Screen, &SpriteLayer, Flip); /* Curent Character on screen */
-    #else
-        SDL_RenderCopyEx(DDevice->Renderer, Character->Surface, &SpriteWindow, &SpriteLayer, 0, 0, Flip);
-    #endif
+    if (RectOnScreen(DDevice, &SpriteLayer)){
+        /* On affiche la frame d'animation a l'écran */
+        #ifdef _SDL
+            FlipBlitSurface(Character->Surface, &SpriteWindow, DDevice->Screen, &SpriteLayer, Flip); /* Curent Character on screen */
+        #else
+            SDL_RenderCopyEx(DDevice->Renderer, Character->Surface, &SpriteWindow, &SpriteLayer, 0, 0, Flip);
+        #endif
+    }
+    
+    
     if (SDL_GetTicks() > Character->LastFrame + Character->Anim[Character->PlayingAnimation].Framerate){
         Character->LastFrame = SDL_GetTicks();
         Character->CurrentFrame++;

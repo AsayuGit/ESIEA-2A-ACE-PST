@@ -108,3 +108,19 @@ void FlipBlitSurface(SDL_Surface* SourceSurface, SDL_Rect* SrcRect, SDL_Surface*
         SDL_BlitSurface(SourceSurface, SrcRect, ScreenTarget, DstRect);
     }
 }
+
+bool RectOnRect(SDL_Rect* SrcRect, SDL_Rect* DstRect){
+    if ((SrcRect->x + SrcRect->w) < DstRect->x)
+        return false;
+    if (SrcRect->x > (DstRect->x + DstRect->w))
+        return false;
+    if ((SrcRect->y + SrcRect->h) < DstRect->y)
+        return false;
+    if (SrcRect->y > (DstRect->y + DstRect->h))
+        return false;
+    return true;
+}
+
+bool RectOnScreen(DisplayDevice* DDevice, SDL_Rect* Rect){
+    return RectOnRect(Rect, &DDevice->InternalResolution);
+}

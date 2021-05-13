@@ -65,34 +65,34 @@ void InitCourtDetails(DisplayDevice* DDevice){
     DetailsFont = LoadBitmapFont(ROOT""FONTS"DetailsFont"TEX_EXT, DDevice, 0xff00ff);
 
     /* SetRects */
-    CourtDetailBackground[0].x = 0; CourtDetailBackground[1].x = 0;
-    CourtDetailBackground[0].y = 0; CourtDetailBackground[1].y = 32;
+    CourtDetailBackground[0].x = 0; CourtDetailBackground[1].x = DDevice->InternalResolution.x;
+    CourtDetailBackground[0].y = 0; CourtDetailBackground[1].y = DDevice->InternalResolution.y + 32;
     CourtDetailBackground[0].w = CourtDetailBackground[1].w = 256;
     CourtDetailBackground[0].h = CourtDetailBackground[1].h = 128;
 
-    DetailItemPos.x = 19;
-    DetailItemPos.y = 38;
+    DetailItemPos.x = DDevice->InternalResolution.x + 19;
+    DetailItemPos.y = DDevice->InternalResolution.y + 38;
     DetailItemPos.w = 68;
     DetailItemPos.h = 68;
 
-    DetailItemName.y = 43;
-    DetailItemName.w = DDevice->ScreenResolution.x;
-    DetailItemName.h = DDevice->ScreenResolution.y;
+    DetailItemName.y = DDevice->InternalResolution.y + 43;
+    DetailItemName.w = DDevice->InternalResolution.w;
+    DetailItemName.h = DDevice->InternalResolution.h;
 
-    ItemDescription.x = 28;
-    ItemDescription.y = 117;
+    ItemDescription.x = DDevice->InternalResolution.x + 28;
+    ItemDescription.y = DDevice->InternalResolution.y + 117;
     ItemDescription.w = 238;
     ItemDescription.h = 46;
 
-    ItemOrigin.x = 102;
-    ItemOrigin.y = 61;
+    ItemOrigin.x = DDevice->InternalResolution.x + 102;
+    ItemOrigin.y = DDevice->InternalResolution.y + 61;
     ItemOrigin.w = 123;
     ItemOrigin.h = 39;
 
     Arrows[0][2] = Arrows[0][1];
     Arrows[1][2] = Arrows[1][1];
 
-    Arrows[0][2].y = Arrows[1][2].y = 66;
+    Arrows[0][2].y = Arrows[1][2].y = DDevice->InternalResolution.y + 66;
 }
 
 /* Init the court Record menu for further use */
@@ -111,8 +111,8 @@ void InitCourtRecord(DisplayDevice* DDevice, Items* ItemBankPointer){
     MoveCursor = LoadSoundEffect(EffectPath[CHK_ButtonUpDown]);
 
     /* Set rects */
-    CourtRecordBackground[0].x = 0; CourtRecordBackground[1].x = 24;
-    CourtRecordBackground[0].y = 0; CourtRecordBackground[1].y = 36;
+    CourtRecordBackground[0].x = 0; CourtRecordBackground[1].x = DDevice->InternalResolution.x + 24;
+    CourtRecordBackground[0].y = 0; CourtRecordBackground[1].y = DDevice->InternalResolution.y + 36;
     CourtRecordBackground[0].w = CourtRecordBackground[1].w = 208;
     CourtRecordBackground[0].h = CourtRecordBackground[1].h = 124;
 
@@ -122,9 +122,9 @@ void InitCourtRecord(DisplayDevice* DDevice, Items* ItemBankPointer){
     Bars[0][0].h = Bars[1][0].h = Bars[0][1].h = Bars[1][1].h = 96;
     Bars[1][0].x = Bars[0][0].x + Bars[0][0].w;
 
-    Bars[0][1].x = 0;
-    Bars[1][1].x = 240;
-    Bars[0][1].y = Bars[1][1].y = 56;
+    Bars[0][1].x = DDevice->InternalResolution.x;
+    Bars[1][1].x = DDevice->InternalResolution.x + 240;
+    Bars[0][1].y = Bars[1][1].y = DDevice->InternalResolution.y + 56;
 
     Arrows[0][0].x = Arrows[1][0].x = 240;
     Arrows[0][0].w = Arrows[1][0].w = Arrows[0][1].w = Arrows[1][1].w = 7;
@@ -149,9 +149,9 @@ void InitCourtRecord(DisplayDevice* DDevice, Items* ItemBankPointer){
         SelectedSlotPos[i].h = SelectedSlotSrc.h;
     }
 
-    ItemName.y = 40;
-    ItemName.w = DDevice->ScreenResolution.x;
-    ItemName.h = DDevice->ScreenResolution.y;
+    ItemName.y = DDevice->InternalResolution.y + 40;
+    ItemName.w = DDevice->InternalResolution.w;
+    ItemName.h = DDevice->InternalResolution.h;
     
     MenuSelect = MainCRMenu;
     SelectedSlot = 0;
@@ -164,6 +164,7 @@ void InitCourtRecord(DisplayDevice* DDevice, Items* ItemBankPointer){
 }
 
 void FreeCourtRecord(){
+    /* FIXME: We should really Implement this now !*/
 }
 
 void AddItemToCourtRecord(int ItemID){
@@ -462,7 +463,7 @@ void DrawMainCourtRecordMenu(DisplayDevice* DDevice, BitmapFont* Font){
     StoredItemListIterator = *StoredItemListPointer;
     while (StoredItemListIterator){
         if (i == SelectedSlot){
-            ItemName.x = (DDevice->ScreenResolution.x - gstrlen(ItemNameFont, ItemBank->NameArray[StoredItemListIterator->ItemID], 1).x) / 2;
+            ItemName.x = DDevice->InternalResolution.x + ((DDevice->InternalResolution.w - gstrlen(ItemNameFont, ItemBank->NameArray[StoredItemListIterator->ItemID], 1).x) >> 1);
             gprintf(DDevice, ItemNameFont, ItemBank->NameArray[StoredItemListIterator->ItemID], 1, &ItemName); /* Draw the item's name */
         }
         #ifdef _SDL
@@ -495,7 +496,7 @@ void DrawCourtDetails(DisplayDevice* DDevice, BitmapFont* Font, int ItemID){
     RightArrowAfterAnim.x += ArrowAnim;
     LeftArrowAfterAnim.x -= ArrowAnim;
 
-    DetailItemName.x = ((144 - gstrlen(ItemNameFont, ItemBank->NameArray[ItemID], 1).x) / 2) + 91;
+    DetailItemName.x = DDevice->InternalResolution.x + ((144 - gstrlen(ItemNameFont, ItemBank->NameArray[ItemID], 1).x) >> 1) + 91;
 
     #ifdef _SDL
         /* SDLFIXME: Size issue */
