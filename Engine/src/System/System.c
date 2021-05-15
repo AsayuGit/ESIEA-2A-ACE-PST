@@ -25,6 +25,30 @@ InputDevice* InitInputs(bool JoyEnabled){
     return Inputs;
 }
 
+void UpdateResolution(DisplayDevice* DDevice){
+    int ScreenWidth, ScreenHeight;
+
+    SDL_GetWindowSize(DDevice->Screen, &ScreenWidth, &ScreenHeight);
+
+    DDevice->IRScalar = MAX(MIN(ScreenWidth / BASE_RESOLUTION_X, ScreenHeight / BASE_RESOLUTION_Y), 1);
+
+    DDevice->ScreenResolution.x = ScreenWidth;
+    DDevice->ScreenResolution.y = ScreenHeight;
+
+    DDevice->InternalResolution.w = BASE_RESOLUTION_X * DDevice->IRScalar;
+    DDevice->InternalResolution.h = BASE_RESOLUTION_Y * DDevice->IRScalar;
+
+    DDevice->InternalResolution.x = (DDevice->ScreenResolution.x - DDevice->InternalResolution.w) >> 1;
+    DDevice->InternalResolution.y = (DDevice->ScreenResolution.y - DDevice->InternalResolution.h) >> 1;
+
+    DDevice->OffScreenRender = false;
+
+    DDevice->Frame[0] = InitRect(0, 0, DDevice->InternalResolution.x, ScreenHeight);                                                                                                            /* Left Frame */
+    DDevice->Frame[1] = InitRect(DDevice->InternalResolution.x + DDevice->InternalResolution.w, 0, DDevice->InternalResolution.x, ScreenHeight);                                                /* Right Frame */
+    DDevice->Frame[2] = InitRect(DDevice->InternalResolution.x, 0, DDevice->InternalResolution.w, DDevice->InternalResolution.y);                                                               /* Top Frame */
+    DDevice->Frame[3] = InitRect(DDevice->InternalResolution.x, DDevice->InternalResolution.y + DDevice->InternalResolution.h, DDevice->InternalResolution.w, DDevice->InternalResolution.y);   /* Bottom Frame */
+}
+
 DisplayDevice* CreateDisplayDevice(int ScreenWidth, int ScreenHeight, char* Title){
     DisplayDevice* Device = (DisplayDevice*)malloc(sizeof(DisplayDevice));
     
@@ -34,7 +58,7 @@ DisplayDevice* CreateDisplayDevice(int ScreenWidth, int ScreenHeight, char* Titl
 	    SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 1); /* VSync */
         Device->Renderer = Device->Screen;
     #else
-        Device->Screen = SDL_CreateWindow(Title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, ScreenWidth, ScreenHeight, SDL_WINDOW_SHOWN);
+        Device->Screen = SDL_CreateWindow(Title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, ScreenWidth, ScreenHeight, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
     #endif
     if (Device->Screen == NULL){
         fprintf(stderr, "Can't create main window\n - %s\n", SDL_GetError());
@@ -49,23 +73,7 @@ DisplayDevice* CreateDisplayDevice(int ScreenWidth, int ScreenHeight, char* Titl
         SDL_GL_SetSwapInterval(1); /* VSync */
     #endif
 
-    Device->IRScalar = MAX(MIN(ScreenWidth / BASE_RESOLUTION_X, ScreenHeight / BASE_RESOLUTION_Y), 1);
-
-    Device->ScreenResolution.x = ScreenWidth;
-    Device->ScreenResolution.y = ScreenHeight;
-
-    Device->InternalResolution.w = BASE_RESOLUTION_X * Device->IRScalar;
-    Device->InternalResolution.h = BASE_RESOLUTION_Y * Device->IRScalar;
-
-    Device->InternalResolution.x = (Device->ScreenResolution.x - Device->InternalResolution.w) >> 1;
-    Device->InternalResolution.y = (Device->ScreenResolution.y - Device->InternalResolution.h) >> 1;
-
-    Device->OffScreenRender = false;
-
-    Device->Frame[0] = InitRect(0, 0, Device->InternalResolution.x, ScreenHeight);                                                                                                      /* Left Frame */
-    Device->Frame[1] = InitRect(Device->InternalResolution.x + Device->InternalResolution.w, 0, Device->InternalResolution.x, ScreenHeight);                                            /* Right Frame */
-    Device->Frame[2] = InitRect(Device->InternalResolution.x, 0, Device->InternalResolution.w, Device->InternalResolution.y);                                                           /* Top Frame */
-    Device->Frame[3] = InitRect(Device->InternalResolution.x, Device->InternalResolution.y + Device->InternalResolution.h, Device->InternalResolution.w, Device->InternalResolution.y); /* Bottom Frame */
+    UpdateResolution(Device);
 
     return Device;
 }
@@ -117,4 +125,37 @@ int ScaledDraw(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* src
 void FinishFrame(DisplayDevice* DDevice){
     DrawFrame(DDevice);
     SDL_RenderPresent(DDevice->Renderer);
+}
+
+void SystemEvents(DisplayDevice* DDevice, InputDevice* IDevice){
+
+    switch (IDevice->event.type){
+        case SDL_WINDOWEVENT:
+            switch (IDevice->event.window.event)
+            {
+            case SDL_WINDOWEVENT_RESIZED:
+                UpdateResolution(DDevice);
+                break;
+            
+            default:
+                break;
+            }
+            break;
+
+        case SDL_KEYDOWN:
+            switch (IDevice->event.PADKEY)
+            {
+            case SDL_SCANCODE_ESCAPE:
+                exit(0); /* FIXME: We need a cleaner way of exiting out of the game */
+                break;
+
+            default:
+                break;
+            }
+            break;
+
+        default:
+            break;
+    }
+
 }

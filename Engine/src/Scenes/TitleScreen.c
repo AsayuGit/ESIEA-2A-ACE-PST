@@ -31,6 +31,7 @@ int Scene_TitleScreen(DisplayDevice* DDevice, InputDevice* IDevice, BitmapFont* 
     while (1){
         /* Events Loop */
         while(SDL_PollEvent(&IDevice->event)){
+            SystemEvents(DDevice, IDevice);
             if (Menu)
                 HandleButtonsEvents(BContext, IDevice);
             switch (IDevice->event.type)

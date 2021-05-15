@@ -66,6 +66,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
     while (true){
         /* Events Loop */
         while(SDL_PollEvent(&IDevice->event)){
+            SystemEvents(DDevice, IDevice);
             /* Global events */
             switch (IDevice->event.type)
             {

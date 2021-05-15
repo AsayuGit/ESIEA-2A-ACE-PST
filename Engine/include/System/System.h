@@ -11,5 +11,6 @@
     int ScaledDrawEx(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect, bool flip);
     int ScaledDraw(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect);
     void FinishFrame(DisplayDevice* DDevice);
-
+    void SystemEvents(DisplayDevice* DDevice, InputDevice* IDevice);
+    
 #endif
