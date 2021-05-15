@@ -12,7 +12,7 @@ WINCC = x86_64-w64-mingw32-gcc
 CFLAGS += -c -Wall -std=c89 -pedantic-errors -g
 LDFLAGS = $$(sdl2-config --libs) $$(xml2-config --libs) -lSDL2_image -lSDL2_mixer
 
-LEGACYLDFLAGS = "$$(sdl-config --libs) $$(xml2-config --libs) -lSDL_image -lSDL_mixer"
+LEGACYLDFLAGS = "$$(sdl-config --libs) $$(xml2-config --libs) -lSDL_image -lSDL_mixer -lSDL_gfx"
 WINLDFLAGS = "-L /usr/x86_64-w64-mingw32/lib/ -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_mixer -lxml2 -lz -llzma -lm -mwindows"
 
 # Main target and filename of the executable
@@ -31,6 +31,7 @@ OBJ_DIR = $(call uniq, $(dir $(OBJ)))
 # List of all includes directory
 INCLUDES = $(patsubst %, -I %, $(call uniq, $(dir $(call rwildcard,,*.h))))
 LIBS = $$(sdl2-config --cflags) $$(xml2-config --cflags)
+LEGACYLIBS = "-I/usr/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT -I/usr/include/libxml2"
 
 WINLIBS = "-I /usr/x86_64-w64-mingw32/include/libxml2/"
 
@@ -64,7 +65,7 @@ run:
 	./$(OUT)
 
 legacy:
-	@$(MAKE) --no-print-directory rebuild CFLAGS="-c -Wall -std=c89 -D _SDL -g" LDFLAGS=$(LEGACYLDFLAGS)
+	@$(MAKE) --no-print-directory rebuild CFLAGS="-c -Wall -std=c89 -D _SDL -g" LIBS=$(LEGACYLIBS) LDFLAGS=$(LEGACYLDFLAGS)
 
 windows:
 	@$(MAKE) --no-print-directory rebuild CC=$(WINCC) OUT=ACE.exe LIBS=$(WINLIBS) LDFLAGS+=$(WINLDFLAGS)

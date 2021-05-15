@@ -16,7 +16,7 @@ int main(int argc, char* argv[]){
     CourtContext = (CourtroomContext*)calloc(1, sizeof(CourtroomContext));
 
     InitSDL();
-    DDevice = CreateDisplayDevice(256, 192, "Mia's Legacy");
+    DDevice = CreateDisplayDevice(256*2, 192*2, "Mia's Legacy");
     IDevice = InitInputs(false);
     /*SDevice = CreateSoundDevice();  */ /* Always return null so we don't need to store it for now */
     CreateSoundDevice();

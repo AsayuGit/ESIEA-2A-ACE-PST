@@ -89,8 +89,8 @@ DialogueContext* InitDialog(DisplayDevice* DDevice, BitmapFont* MainFont, Bitmap
     DiagContext->textLayer = NULL;
     DiagContext->nameLayer = NULL;
     #ifdef _SDL
-        DiagContext->textLayer = CreateEmptySurface(DiagContext->TextBounds.w, DiagContext->TextBounds.h);
-        DiagContext->nameLayer = CreateEmptySurface(DiagContext->NameBounds.w, DiagContext->NameBounds.h);
+        DiagContext->textLayer = CreateEmptySurface(SDL_HWSURFACE, DiagContext->TextBounds.w, DiagContext->TextBounds.h);
+        DiagContext->nameLayer = CreateEmptySurface(SDL_HWSURFACE, DiagContext->NameBounds.w, DiagContext->NameBounds.h);
     #else
         DiagContext->textLayer = SDL_CreateTexture(DDevice->Renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, DiagContext->TextBounds.w, DiagContext->TextBounds.h);
         DiagContext->nameLayer = SDL_CreateTexture(DDevice->Renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, DiagContext->NameBounds.w, DiagContext->NameBounds.h);

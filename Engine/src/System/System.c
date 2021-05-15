@@ -116,8 +116,23 @@ int Draw(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, 
 
 int ScaledDrawEx(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect, bool flip){
     SDL_Rect ScaledDstRect = {0, 0, BASE_RESOLUTION_X, BASE_RESOLUTION_Y};
+    #ifdef _SDL
+        SDL_Rect ScaledSrcRect;
+    #endif
 
     if (RectOnScreen(DDevice, dstrect)){
+        
+        #ifdef _SDL
+            if (srcrect){
+                ScaledSrcRect = InitRect(
+                    (srcrect->x * DDevice->IRScalar) + DDevice->InternalResolution.x,
+                    (srcrect->y * DDevice->IRScalar) + DDevice->InternalResolution.y,
+                    srcrect->w * DDevice->IRScalar,
+                    srcrect->h * DDevice->IRScalar
+                );
+            }
+        #endif
+
         if (dstrect){
             ScaledDstRect = InitRect(
                 (dstrect->x * DDevice->IRScalar) + DDevice->InternalResolution.x,
@@ -126,7 +141,11 @@ int ScaledDrawEx(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* s
                 dstrect->h * DDevice->IRScalar
             );
         }
-        return DrawEx(DDevice, texture, srcrect, &ScaledDstRect, flip);
+        #ifdef _SDL
+            return DrawEx(DDevice, texture, &ScaledSrcRect, &ScaledDstRect, flip);
+        #else
+            return DrawEx(DDevice, texture, srcrect, &ScaledDstRect, flip);
+        #endif
     }
     return 0;
 }

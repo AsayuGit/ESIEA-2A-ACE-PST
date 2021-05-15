@@ -53,11 +53,11 @@ Uint32 getpixel(SDL_Surface *surface, int x, int y)
     return 0;
 }
 
-SDL_Surface* CreateEmptySurface(int Width, int Height){
+SDL_Surface* CreateEmptySurface(Uint32 flags, int Width, int Height){
     #if SDL_BYTEORDER == SDL_BIG_ENDIAN
-        return SDL_CreateRGBSurface(SDL_HWSURFACE, Width, Height, 32, 0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF);
+        return SDL_CreateRGBSurface(flags, Width, Height, 32, 0x00000000, 0x00000000, 0x00000000, 0x000000FF);
     #else
-        return SDL_CreateRGBSurface(SDL_HWSURFACE, Width, Height, 32, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
+        return SDL_CreateRGBSurface(flags, Width, Height, 32, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
     #endif
 }
 

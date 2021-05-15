@@ -1,6 +1,10 @@
 #include "Load.h"
 
 #ifdef _SDL
+    #include <SDL/SDL_rotozoom.h>
+#endif
+
+#ifdef _SDL
     SDL_Surface* UseAlphaChannel(SDL_Surface* AlphaSurface){
         SDL_SetAlpha(AlphaSurface, SDL_SRCALPHA, SDL_ALPHA_OPAQUE);
         AlphaSurface->format->Amask = 0xFF000000;
@@ -9,17 +13,50 @@
     }
 #endif
 
+#ifdef _SDL
+SDL_Surface* ResizeSurface(SDL_Surface* Source, int Scalar){
+    SDL_Surface* newSurface;
+    SDL_Surface* convertedSurface;
+    SDL_Surface* ResizedSurface;
+    SDL_Surface* AcceleratedSurface;
+
+    newSurface = CreateEmptySurface(SDL_HWSURFACE, Source->w * Scalar, Source->h * Scalar);
+    if (!newSurface)
+        printf("ERROR: Couldn't create new surface !\n");
+    convertedSurface = SDL_ConvertSurface(newSurface, Source->format, Source->flags);
+    if (!convertedSurface)
+        printf("ERROR: Couldn't convert surface format !\n");
+    SDL_FreeSurface(newSurface);
+    SDL_BlitSurface(Source, NULL, convertedSurface, NULL);
+    /*SDL_FreeSurface(LoadingSurface);*/
+    ResizedSurface = zoomSurface(convertedSurface, Scalar, Scalar, false);
+    if (!ResizedSurface){
+        printf("ERROR: Couldn't resize surface !\n");
+        ResizedSurface = convertedSurface;
+    } else {
+        SDL_FreeSurface(convertedSurface);
+    }
+    AcceleratedSurface = SDL_DisplayFormat(ResizedSurface);
+    if (!AcceleratedSurface)
+        printf("ERROR: Couldn't optimize surface !\n");
+    SDL_FreeSurface(ResizedSurface);
+
+    return AcceleratedSurface;
+}
+#endif
+
 SDL_Surface* LoadSDLSurface(char FilePath[], DisplayDevice* Device){
     SDL_Surface* LoadingSurface;
-    
+
     #ifdef _SDL
         SDL_Surface* AcceleratedSurface;
     #endif
 
     LoadingSurface = SDL_LoadBMP(FilePath);
     #ifdef _SDL
-        AcceleratedSurface = SDL_DisplayFormat(LoadingSurface); /* Optimize the surface for blitting */
+        AcceleratedSurface = ResizeSurface(LoadingSurface, Device->IRScalar);
         SDL_FreeSurface(LoadingSurface);
+
         return AcceleratedSurface;
     #else
         return LoadingSurface;
@@ -83,7 +120,7 @@ BitmapFont* LoadBitmapFont(char FilePath[], DisplayDevice* DDevice, Uint32 FontC
 
     /* Fill-in rects for each letter */
     SDL_LockSurface(LoadingSurface); /* Ensure that the pixel data is available for hw surfaces */ /* VERRRY SLOW AND INEFICIENT */
-    while (FontPixX < FontTexW){
+    while ((FontPixX < FontTexW) && (LetterIndex < 95)){
 
         /* Get letter coordinates */
         FontPixY = 0;
@@ -123,7 +160,7 @@ SDL_Texture* CreateTargetSurface(DisplayDevice* DDevice, int w, int h){
 
     LoadingSurface = NULL;
 #ifdef _SDL
-    LoadingSurface = CreateEmptySurface(w, h);
+    LoadingSurface = CreateEmptySurface(SDL_HWSURFACE, w, h);
 #else
     LoadingSurface = SDL_CreateTexture(DDevice->Renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, w, h);
     SDL_SetTextureBlendMode(LoadingSurface, SDL_BLENDMODE_BLEND);
