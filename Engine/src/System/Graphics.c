@@ -61,7 +61,7 @@ SDL_Surface* CreateEmptySurface(int Width, int Height){
     #endif
 }
 
-void FlipBlitSurface(SDL_Surface* SourceSurface, SDL_Rect* SrcRect, SDL_Surface* ScreenTarget, SDL_Rect* DstRect, bool flipFlag){
+void FlipBlitSurface(SDL_Surface* SourceSurface, const SDL_Rect* SrcRect, SDL_Surface* ScreenTarget, const SDL_Rect* DstRect, bool flipFlag){
     SDL_Rect LocalSrcRect;
     SDL_Rect LocalDstRect;
     
@@ -105,7 +105,17 @@ void FlipBlitSurface(SDL_Surface* SourceSurface, SDL_Rect* SrcRect, SDL_Surface*
             }
         }
     }else{
-        SDL_BlitSurface(SourceSurface, SrcRect, ScreenTarget, DstRect);
+        if (SrcRect){
+            LocalSrcRect = *SrcRect;
+        } else {
+            LocalSrcRect = InitRect(0, 0, SourceSurface->w, SourceSurface->h);
+        }
+        if (DstRect){
+            LocalDstRect = *DstRect;
+        } else {
+            LocalDstRect = InitRect(0, 0, BASE_RESOLUTION_X, BASE_RESOLUTION_Y);
+        }
+        SDL_BlitSurface(SourceSurface, &LocalSrcRect, ScreenTarget, &LocalDstRect);
     }
 }
 
@@ -128,8 +138,15 @@ bool RectOnScreen(DisplayDevice* DDevice, const SDL_Rect* Rect){
 }
 
 void DrawFrame(DisplayDevice* DDevice){
-    SDL_RenderFillRect(DDevice->Renderer, &DDevice->Frame[0]);
-    SDL_RenderFillRect(DDevice->Renderer, &DDevice->Frame[1]);
-    SDL_RenderFillRect(DDevice->Renderer, &DDevice->Frame[2]);
-    SDL_RenderFillRect(DDevice->Renderer, &DDevice->Frame[3]);
+    #ifdef _SDL
+        SDL_FillRect(DDevice->Renderer, &DDevice->Frame[0], 0x000000);
+        SDL_FillRect(DDevice->Renderer, &DDevice->Frame[1], 0x000000);
+        SDL_FillRect(DDevice->Renderer, &DDevice->Frame[2], 0x000000);
+        SDL_FillRect(DDevice->Renderer, &DDevice->Frame[3], 0x000000);
+    #else
+        SDL_RenderFillRect(DDevice->Renderer, &DDevice->Frame[0]);
+        SDL_RenderFillRect(DDevice->Renderer, &DDevice->Frame[1]);
+        SDL_RenderFillRect(DDevice->Renderer, &DDevice->Frame[2]);
+        SDL_RenderFillRect(DDevice->Renderer, &DDevice->Frame[3]);
+    #endif
 }

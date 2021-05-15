@@ -24,7 +24,7 @@ char* EffectPath[NumberOfEffectTracks] = {
 
 static Mix_Music* Track_INTRO = NULL;
 static Mix_Music* Track_LOOP = NULL;
-static int PlayingTrack;
+static int PlayingTrack = -1;
 
 /* MUSIC QUEUE SYSTEM */
 

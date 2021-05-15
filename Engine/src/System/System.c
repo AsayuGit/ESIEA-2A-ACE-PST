@@ -28,7 +28,12 @@ InputDevice* InitInputs(bool JoyEnabled){
 void UpdateResolution(DisplayDevice* DDevice){
     int ScreenWidth, ScreenHeight;
 
-    SDL_GetWindowSize(DDevice->Screen, &ScreenWidth, &ScreenHeight);
+    #ifdef _SDL
+        ScreenWidth = DDevice->Screen->w;
+        ScreenHeight = DDevice->Screen->h;
+    #else
+        SDL_GetWindowSize(DDevice->Screen, &ScreenWidth, &ScreenHeight);
+    #endif
 
     DDevice->IRScalar = MAX(MIN(ScreenWidth / BASE_RESOLUTION_X, ScreenHeight / BASE_RESOLUTION_Y), 1);
 
@@ -96,6 +101,19 @@ int SetRenderTarget(DisplayDevice* DDevice, SDL_Texture* surface){
 #endif
 }
 
+int DrawEx(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect, bool flip){
+    #ifdef _SDL
+        FlipBlitSurface(texture, srcrect, DDevice->Renderer, dstrect, flip);
+        return 0;
+    #else
+        return SDL_RenderCopyEx(DDevice->Renderer, texture, srcrect, dstrect, 0, 0, flip);
+    #endif
+}
+
+int Draw(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect){
+    return DrawEx(DDevice, texture, srcrect, dstrect, 0);
+}
+
 int ScaledDrawEx(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect, bool flip){
     SDL_Rect ScaledDstRect = {0, 0, BASE_RESOLUTION_X, BASE_RESOLUTION_Y};
 
@@ -108,12 +126,7 @@ int ScaledDrawEx(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* s
                 dstrect->h * DDevice->IRScalar
             );
         }
-
-        #ifdef _SDL
-            return FlipBlitSurface(texture, srcrect, DDevice->Screen, &ScaledDstRect, flip);
-        #else
-            return SDL_RenderCopyEx(DDevice->Renderer, texture, srcrect, &ScaledDstRect, 0, 0, flip);
-        #endif
+        return DrawEx(DDevice, texture, srcrect, &ScaledDstRect, flip);
     }
     return 0;
 }
@@ -124,12 +137,17 @@ int ScaledDraw(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* src
 
 void FinishFrame(DisplayDevice* DDevice){
     DrawFrame(DDevice);
-    SDL_RenderPresent(DDevice->Renderer);
+    #ifdef _SDL
+        SDL_Flip(DDevice->Screen);
+    #else
+        SDL_RenderPresent(DDevice->Renderer);
+    #endif
 }
 
 void SystemEvents(DisplayDevice* DDevice, InputDevice* IDevice){
 
     switch (IDevice->event.type){
+        #ifndef _SDL
         case SDL_WINDOWEVENT:
             switch (IDevice->event.window.event)
             {
@@ -145,14 +163,25 @@ void SystemEvents(DisplayDevice* DDevice, InputDevice* IDevice){
         case SDL_KEYDOWN:
             switch (IDevice->event.PADKEY)
             {
-            case SDL_SCANCODE_ESCAPE:
+            case PAD_QUIT:
                 exit(0); /* FIXME: We need a cleaner way of exiting out of the game */
+                break;
+            
+            case PAD_FULLSCREEN:
+                SDL_SetWindowFullscreen(DDevice->Screen, (SDL_GetWindowFlags(DDevice->Screen) & SDL_WINDOW_FULLSCREEN_DESKTOP) ? 0 : SDL_WINDOW_FULLSCREEN_DESKTOP);
+                break;
+
+            case PAD_SNAP:
+                SDL_SetWindowSize(DDevice->Screen, BASE_RESOLUTION_X * DDevice->IRScalar, BASE_RESOLUTION_Y * DDevice->IRScalar);
+                UpdateResolution(DDevice);
                 break;
 
             default:
                 break;
             }
             break;
+
+        #endif
 
         default:
             break;

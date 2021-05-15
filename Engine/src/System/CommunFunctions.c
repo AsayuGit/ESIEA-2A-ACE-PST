@@ -25,7 +25,7 @@ int gputc(DisplayDevice* DDevice, BitmapFont* Font, char c, unsigned int x, unsi
 
     /* Logic */
     if (DDevice->OffScreenRender){
-        SDL_RenderCopy(DDevice->Renderer, Font->FontSurface, &Font->Rects[(int)c], &DstLetter);
+        Draw(DDevice, Font->FontSurface, &Font->Rects[(int)c], &DstLetter);
     } else {
         ScaledDraw(DDevice, Font->FontSurface, &Font->Rects[(int)c], &DstLetter);
     }

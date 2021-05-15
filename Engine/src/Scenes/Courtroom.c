@@ -200,11 +200,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
         if (Context->ShowCourtRecord){
             DrawCourtRecord(DDevice, Context->MainFont);        /* Draw the court Record */
         }
-        #ifdef _SDL
-            SDL_Flip(DDevice->Screen);
-        #else
-            FinishFrame(DDevice);               /* Update the main window */
-        #endif
+        FinishFrame(DDevice);                                   /* Update the main window */
     }
 
 

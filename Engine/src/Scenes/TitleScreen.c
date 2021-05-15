@@ -85,17 +85,10 @@ int Scene_TitleScreen(DisplayDevice* DDevice, InputDevice* IDevice, BitmapFont* 
         }
 
         /* Rendering */
-        #ifdef _SDL
-            DisplayBackground(DDevice, SContext); /* Background */
-            DrawButtons(BContext);
-
-            SDL_Flip(DDevice->Screen);
-        #else
-            DisplayBackground(DDevice, SContext); /* Background */
-            DrawButtons(BContext);
-            
-            FinishFrame(DDevice);
-        #endif
+        DisplayBackground(DDevice, SContext); /* Background */
+        DrawButtons(BContext);
+        
+        FinishFrame(DDevice);
     }
 
 Exit:

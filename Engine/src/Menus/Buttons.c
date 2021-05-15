@@ -59,7 +59,7 @@ ButtonsContext* InitButtons(DisplayDevice* DDevice, BackgroundContext* SContext,
     BContext->CenterDstRect.h = BContext->LeftDstRect.h;
     #ifdef _SDL
         BContext->CenterDstRect.w = 1;
-        CenterPartLength = BContext->buttonLength - (BContext->ButtonLeft[0].w << 1);
+        BContext->CenterPartLength = BContext->buttonLength - (BContext->ButtonLeft[0].w << 1);
     #else
         BContext->CenterDstRect.w = BContext->buttonLength - (BContext->ButtonLeft[0].w << 1);
     #endif
@@ -145,7 +145,6 @@ void DrawButtons(ButtonsContext* ButtonObject){ /* Ran each frame */
     unsigned char i;
     #ifdef _SDL
         unsigned int j;
-        unsigned int CenterPartLength;
     #endif
     int YButtonOffset;
 
@@ -166,11 +165,11 @@ void DrawButtons(ButtonsContext* ButtonObject){ /* Ran each frame */
         ScaledDraw(ButtonObject->DDevice, ButtonObject->ButtonsSurface, &(ButtonObject->ButtonLeft[Selected]), &ButtonObject->LeftDstRect); /* Left part */
         ScaledDraw(ButtonObject->DDevice, ButtonObject->ButtonsSurface, &(ButtonObject->ButtonRight[Selected]), &ButtonObject->RightDstRect); /* Right part */
         #ifdef _SDL
-            for (j = 0; j < CenterPartLength; j++){
+            for (j = 0; j < ButtonObject->CenterPartLength; j++){
         #endif
                 ScaledDraw(ButtonObject->DDevice, ButtonObject->ButtonsSurface, &(ButtonObject->ButtonMiddle), &ButtonObject->CenterDstRect); /* Center part */
         #ifdef _SDL
-                CenterDstRect.x++;
+                ButtonObject->CenterDstRect.x++;
             }
         #endif
         
