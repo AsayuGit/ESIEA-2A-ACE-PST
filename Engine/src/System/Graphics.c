@@ -126,3 +126,10 @@ bool RectOnScreen(DisplayDevice* DDevice, const SDL_Rect* Rect){
 
     return RectOnRect(Rect, &BaseRect);
 }
+
+void DrawFrame(DisplayDevice* DDevice){
+    SDL_RenderFillRect(DDevice->Renderer, &DDevice->Frame[0]);
+    SDL_RenderFillRect(DDevice->Renderer, &DDevice->Frame[1]);
+    SDL_RenderFillRect(DDevice->Renderer, &DDevice->Frame[2]);
+    SDL_RenderFillRect(DDevice->Renderer, &DDevice->Frame[3]);
+}

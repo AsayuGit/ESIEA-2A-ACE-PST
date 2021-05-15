@@ -45,6 +45,9 @@
         #else
             SDL_Renderer *Renderer;
         #endif
+
+        SDL_Rect Frame[4];
+
         SDL_Rect InternalResolution;
         Vector2i ScreenResolution;
         unsigned int IRScalar;

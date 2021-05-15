@@ -202,7 +202,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
         #ifdef _SDL
             SDL_Flip(DDevice->Screen);
         #else
-            SDL_RenderPresent(DDevice->Renderer);               /* Update the main window */
+            FinishFrame(DDevice);               /* Update the main window */
         #endif
     }
 

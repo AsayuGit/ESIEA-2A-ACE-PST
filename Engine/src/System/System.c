@@ -62,6 +62,11 @@ DisplayDevice* CreateDisplayDevice(int ScreenWidth, int ScreenHeight, char* Titl
 
     Device->OffScreenRender = false;
 
+    Device->Frame[0] = InitRect(0, 0, Device->InternalResolution.x, ScreenHeight);                                                                                                      /* Left Frame */
+    Device->Frame[1] = InitRect(Device->InternalResolution.x + Device->InternalResolution.w, 0, Device->InternalResolution.x, ScreenHeight);                                            /* Right Frame */
+    Device->Frame[2] = InitRect(Device->InternalResolution.x, 0, Device->InternalResolution.w, Device->InternalResolution.y);                                                           /* Top Frame */
+    Device->Frame[3] = InitRect(Device->InternalResolution.x, Device->InternalResolution.y + Device->InternalResolution.h, Device->InternalResolution.w, Device->InternalResolution.y); /* Bottom Frame */
+
     return Device;
 }
 
@@ -107,4 +112,9 @@ int ScaledDrawEx(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* s
 
 int ScaledDraw(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect){
     return ScaledDrawEx(DDevice, texture, srcrect, dstrect, false);
+}
+
+void FinishFrame(DisplayDevice* DDevice){
+    DrawFrame(DDevice);
+    SDL_RenderPresent(DDevice->Renderer);
 }

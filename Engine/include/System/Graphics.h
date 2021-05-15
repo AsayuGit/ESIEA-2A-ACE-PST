@@ -8,5 +8,6 @@
     void FlipBlitSurface(SDL_Surface* SourceSurface, SDL_Rect* SrcRect, SDL_Surface* ScreenTarget, SDL_Rect* DstRect, bool flipFlag);
     bool RectOnRect(const SDL_Rect* SrcRect, const SDL_Rect* DstRect);
     bool RectOnScreen(DisplayDevice* DDevice, const SDL_Rect* Rect);
+    void DrawFrame(DisplayDevice* DDevice);
 
 #endif
