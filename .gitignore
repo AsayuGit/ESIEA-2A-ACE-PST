@@ -71,3 +71,7 @@ vgcore.*
 # Visual Studio
 *.ncb
 *.suo
+
+Debug/BuildLog.htm
+
+Debug/

@@ -62,7 +62,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
     InitUI(DDevice, ItemBank, SContext);
     
     /* Main Loop */
-    parseScene(SContext);
+    parseScene(DDevice, SContext);
     while (true){
         /* Events Loop */
         while(SDL_PollEvent(&IDevice->event)){
@@ -88,7 +88,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                         case PAD_SELECT:
                             CharacterPlayAnimation(SContext->CharactersIndex[Context->CurrentCharacter], Context->IdleAnimation); /* Mouaif */
                             SceneForward(SContext);
-                            parseScene(SContext);
+                            parseScene(DDevice, SContext);
                             break;
 
                         case PAD_BACK:
@@ -96,7 +96,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                             if (Context->diagRewind){
                                 CharacterPlayAnimation(SContext->CharactersIndex[Context->CurrentCharacter], Context->IdleAnimation); /* Mouaif */
                                 SceneBackward(SContext);
-                                parseScene(SContext);
+                                parseScene(DDevice, SContext);
                             }
                         
                             break;
@@ -133,7 +133,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                             SContext->entry = searchNodeLabel(SContext->entry, Context->ButtonJumpLabels[ButtonInput]);
                             MoveBackground(ButtonLayer, 0, 0);
                             CharacterPlayAnimation(SContext->CharactersIndex[Context->CurrentCharacter], Context->IdleAnimation); /* Mouaif */
-                            parseScene(SContext);
+                            parseScene(DDevice, SContext);
                             break;
                         case PAD_COURTRECORD:
                             Context->ShowCourtRecord = true;
@@ -188,9 +188,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
 
         /* Rendering (Back to front) */
         DisplayBackground(DDevice, SContext->BGContext);        /* Background */
-#ifndef _XBOX
 		DisplayCharacterLayer(DDevice, SContext->CharaLayer);   /* Character Layer */
-#endif
         DisplayBackground(DDevice, SContext->ScenePics);        /* Exposition Pictures */
         if (SContext->DiagShown)
             Dialogue(DiagContext, Context->diagRewind);         /* Dialog */

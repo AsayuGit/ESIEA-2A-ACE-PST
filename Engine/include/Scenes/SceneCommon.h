@@ -24,7 +24,7 @@
 
     /* Scenes Functions */
     SceneContext* InitScene(DisplayDevice* DDevice, InputDevice* IDevice, DialogueContext* DiagContext, ButtonsContext* BContext, CourtroomContext* CContext, char* ScenePath);
-    void parseScene(SceneContext* SContext);
+    void parseScene(DisplayDevice* DDevice, SceneContext* SContext);
     void SceneForward(SceneContext* SContext);
     void SceneBackward(SceneContext* SContext);
     void FreeBGAnimation(BGAnimation* AnimationToFree);

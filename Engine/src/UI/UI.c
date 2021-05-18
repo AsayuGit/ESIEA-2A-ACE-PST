@@ -185,7 +185,7 @@ void UI_Exclamation(DisplayDevice* DDevice, InputDevice* IDevice){
         break;
     case 2:
         if (SDL_GetTicks() > UIAnimEnd){
-            parseScene(SContextPtr);
+            parseScene(DDevice, SContextPtr);
             currentUI = NULL;
             IDevice->EventEnabled = true;
             SContextPtr->DiagShown = true;
@@ -212,7 +212,7 @@ void InitUI(DisplayDevice* DDevice, Items* UIItemBankPointer, SceneContext* SCon
     UISurface = LoadSurface(ROOT""TEXTURES"UI"SL"UI.bmp", DDevice, 0xff00ff, SURFACE_KEYED);
 	if (!UISurface){
 		printf("ERROR: Couldn't load UISurface !\n");
-		//exit(-1);
+		/*exit(-1);*/
 	}
 
     UI_ADstRect.w = UI_ASrcRect[logoID].w;

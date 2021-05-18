@@ -58,4 +58,12 @@
     #define BASE_RESOLUTION_X 256
     #define BASE_RESOLUTION_Y 192
 
+    #ifdef _XBOX
+        #define DEFAULT_RESOLUTION_X 640
+        #define DEFAULT_RESOLUTION_Y 480
+    #else
+        #define DEFAULT_RESOLUTION_X 1280
+        #define DEFAULT_RESOLUTION_Y 960
+    #endif
+
 #endif

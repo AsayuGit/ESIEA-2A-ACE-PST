@@ -105,48 +105,45 @@ void InitCharacterLayer(CharacterLayer** CharaLayer, BackgroundContext* SContext
     }
 }
 
-void AddCharacterToLayer(CharacterLayer* CharaLayer, Characters* Character, BackgroundContext* BGContext, int TileID, bool Flip, DisplayDevice* DDevice){  /* Add a new character to a CharacterLayer */
+void AddCharacterToLayer(CharacterLayer* CharaLayer, Characters* Character, BackgroundContext* BGContext, int TileID, bool Flip){  /* Add a new character to a CharacterLayer */
     CharacterList** CharaList;
 
     if (!CharaLayer)
         return; /* error */
     CharaList = &(CharaLayer->CharaList);
+    
     while ((*CharaList) != NULL){
+        if ((*CharaList)->Character == Character)
+            break;
         CharaList = &((*CharaList)->NextCharacter);
     }
-    (*CharaList) = (CharacterList*)malloc(sizeof(CharacterList));
-    (*CharaList)->Character = Character;
-
+    if (!(*CharaList)){
+        (*CharaList) = (CharacterList*)malloc(sizeof(CharacterList));
+        (*CharaList)->Character = Character;
+        (*CharaList)->NextCharacter = NULL;
+    }
     (*CharaList)->Coordinates = BGContext->ScenesCoordinates[TileID];
     (*CharaList)->Flip = Flip;
-    (*CharaList)->NextCharacter = NULL;
 }
 
-void DeleteCharacterFromLayer(CharacterLayer* CharaLayer, Characters* Character){ /* Delete a character from a CharacterLayer, Due for a rework */
-    CharacterList** CurrentCharacter;
-    CharacterList* PrevLayer;
-    CharacterList* NextLayer;
+void DeleteCharacterFromLayer(CharacterLayer* CharaLayer, Characters* Character){
+    CharacterList** CharaList;
+    CharacterList* NextCharacter;
 
-    if (!CharaLayer)
+    if (!CharaLayer || !Character)
         return; /* error */
-    CurrentCharacter = &(CharaLayer->CharaList);
-    
-    if ((*CurrentCharacter)->Character == Character){
-        NextLayer = (*CurrentCharacter)->NextCharacter;
-        free(*CurrentCharacter);
-        (*CurrentCharacter) = NextLayer;
-    }else{
-        do {
-            PrevLayer = (*CurrentCharacter);
-            CurrentCharacter = &((*CurrentCharacter)->NextCharacter);
-            if ((*CurrentCharacter)->Character == Character){
-                NextLayer = (*CurrentCharacter)->NextCharacter;
-                free(*CurrentCharacter);
-                PrevLayer->NextCharacter = NextLayer;
-                break;
-            }
-        } while ((*CurrentCharacter) != NULL);
+    CharaList = &(CharaLayer->CharaList);
+
+    while ((*CharaList) != NULL){
+        if ((*CharaList)->Character == Character){
+            NextCharacter = (*CharaList)->NextCharacter;
+            free(*CharaList);
+            (*CharaList) = NextCharacter;
+            break;
+        }
+        CharaList = &((*CharaList)->NextCharacter);
     }
+
 }
 
 void DisplayCharacter(DisplayDevice* DDevice, Characters* Character, SDL_Rect Viewport, Vector2i Coordinates, char Flip){ /* Display "A" Character on screen  */

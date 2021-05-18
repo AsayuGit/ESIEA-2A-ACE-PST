@@ -290,119 +290,7 @@ Characters** initCharArray(DisplayDevice* DDevice, xmlNode* array){
     return CharactersIndex;
 }
 
-SceneContext* InitScene(DisplayDevice* DDevice, InputDevice* IDevice, DialogueContext* DiagContext, ButtonsContext* BContext, CourtroomContext* CContext, char* ScenePath){
-    /* Declaration */
-    xmlDoc* sceneFile;
-    SceneContext* LoadingScene;
-    xmlNode* rootNode, *element;
-    char* Buffer;
-
-    /* Init */
-    LoadingScene = (SceneContext*)malloc(sizeof(SceneContext));
-    sceneFile = loadXml(ScenePath);
-    rootNode = xmlDocGetRootElement(sceneFile);
-    LoadingScene->BGContext = InitBackground(DDevice, (char*)xmlGetProp(rootNode, (xmlChar*)"background"));
-    LoadingScene->ScenePics = InitBackground(DDevice, (char*)xmlGetProp(rootNode, (xmlChar*)"scenePics"));
-    LoadingScene->ScenePics->Shown = false;
-
-    LoadingScene->IDevice = IDevice;
-    LoadingScene->DiagContext = DiagContext;
-    LoadingScene->BContext = BContext;
-    LoadingScene->CContext = CContext;
-    LoadingScene->press = NULL;
-    LoadingScene->Jump = false;
-    LoadingScene->presentItem = -1;
-    LoadingScene->presentMatch = NULL;
-    LoadingScene->presentDefault = NULL;
-    LoadingScene->DiagShown = true;
-
-    LoadingScene->CharactersIndex = NULL;
-    LoadingScene->CharaLayer = NULL;
-    InitCharacterLayer(&LoadingScene->CharaLayer, LoadingScene->BGContext);
-
-    element = searchNode(rootNode->children, "setup");
-    if (element) {
-        element = element->children;
-        while (element){
-            if (strcmp((char*)element->name, "initChar") == 0) {
-                LoadingScene->CharactersIndex = initCharArray(DDevice, element);
-            } else if (strcmp((char*)element->name, "addToLayer") == 0) {
-                Buffer = (char*)xmlGetProp(element, (xmlChar*)"flip");
-                AddCharacterToLayer(
-                    LoadingScene->CharaLayer,
-                    LoadingScene->CharactersIndex[(unsigned int)atoi((char*)xmlGetProp(element, (xmlChar*)"char"))],
-                    LoadingScene->BGContext,
-                    (int)atoi((char*)xmlGetProp(element, (xmlChar*)"dest")),
-                    (Buffer) ? (bool)atoi(Buffer) : 0,
-                    DDevice
-                );
-            }
-            element = element->next;
-        }
-    }
-    LoadingScene->entry = searchNode(rootNode->children, "entry");;
-    LoadingScene->returnTarget = LoadingScene->entry;
-    LoadingScene->next = LoadingScene->entry->next;
-
-    return LoadingScene;
-}
-
-void FreeScene(SceneContext* SceneContext){
-
-}
-
-size_t parseDiag(SceneContext* SContext, xmlNode* element){
-    int CurrentCharacterID; /* Hold the name of the character who is talking during the dialog */
-    char* DialogueText; /* Hold the text of the dialogue itself */
-
-    while (element){
-        if (strcmp((char*)element->name, "char") == 0) {
-            CurrentCharacterID = atoi((char*)xmlNodeGetContent(element));
-        } else if (strcmp((char*)element->name, "line") == 0) {
-            DialogueText = (char*)xmlNodeGetContent(element);
-        }
-        element = element->next;
-    }
-    SContext->CContext->CurrentCharacter = CurrentCharacterID;
-
-    return SetDialogueText(SContext->DiagContext, SContext->CharactersIndex[CurrentCharacterID]->DisplayName, DialogueText, 1);
-}
-
-void parseAnim(SceneContext* SContext, xmlNode* element){
-    int animTarget;
-    int animationID;
-
-    while (element){
-        if (strcmp((char*)element->name, "animTarget") == 0) {
-            animTarget = atoi((char*)xmlNodeGetContent(element));
-        } else if (strcmp((char*)element->name, "animation") == 0) {
-            animationID = atoi((char*)xmlNodeGetContent(element));
-        } else if (strcmp((char*)element->name, "idleAnim") == 0) {
-            SContext->CContext->IdleAnimation = atoi((char*)xmlNodeGetContent(element)); /* Need to be setup */
-        }
-        element = element->next;
-    }
-    CharacterPlayAnimation(SContext->CharactersIndex[animTarget], animationID);
-}
-
-void parseButtons(SceneContext* SContext, xmlNode* element){
-    int buttonJumpIndex;
-
-    ClearButtons(SContext->BContext);
-    buttonJumpIndex = 0;
-    while (element){
-        if (strcmp((char*)element->name, "option") == 0) {
-            AddButton(SContext->BContext, (char*)xmlNodeGetContent(element));
-            SContext->CContext->ButtonJumpLabels[buttonJumpIndex] = (char*)xmlGetProp(element, (xmlChar*)"jump");
-            buttonJumpIndex++;
-        }
-        element = element->next;
-    }
-    SContext->IDevice->EventEnabled = false;
-    SContext->CContext->ButtonActivated = 1;
-}
-
-void parseFlags(SceneContext* SContext, xmlNode* element){
+void parseFlags(DisplayDevice* DDevice, SceneContext* SContext, xmlNode* element){
     char* CharBuffer;
     int IntBuffer;
     xmlNode *searchNode;
@@ -468,12 +356,130 @@ void parseFlags(SceneContext* SContext, xmlNode* element){
             }
         } else if (strcmp((char*)element->name, "return") == 0){
             SContext->next = SContext->returnTarget;
+        } else if (strcmp((char*)element->name, "moveToLayer") == 0) {
+            CharBuffer = (char*)xmlGetProp(element, (xmlChar*)"flip");
+            AddCharacterToLayer(
+                SContext->CharaLayer,
+                SContext->CharactersIndex[(unsigned int)atoi((char*)xmlGetProp(element, (xmlChar*)"char"))],
+                SContext->BGContext,
+                (int)atoi((char*)xmlGetProp(element, (xmlChar*)"dest")),
+                (CharBuffer) ? (bool)atoi(CharBuffer) : 0
+            );
+        } else if (strcmp((char*)element->name, "removeFromLayer") == 0) {
+            DeleteCharacterFromLayer(
+                SContext->CharaLayer,
+                SContext->CharactersIndex[(unsigned int)atoi((char*)xmlGetProp(element, (xmlChar*)"char"))]
+            );
         }
         element = element->next;
     }
 }
 
-void parseScene(SceneContext* SContext){
+SceneContext* InitScene(DisplayDevice* DDevice, InputDevice* IDevice, DialogueContext* DiagContext, ButtonsContext* BContext, CourtroomContext* CContext, char* ScenePath){
+    /* Declaration */
+    xmlDoc* sceneFile;
+    SceneContext* LoadingScene;
+    xmlNode* rootNode, *element;
+
+    /* Init */
+    LoadingScene = (SceneContext*)malloc(sizeof(SceneContext));
+    sceneFile = loadXml(ScenePath);
+    rootNode = xmlDocGetRootElement(sceneFile);
+    LoadingScene->BGContext = InitBackground(DDevice, (char*)xmlGetProp(rootNode, (xmlChar*)"background"));
+    LoadingScene->ScenePics = InitBackground(DDevice, (char*)xmlGetProp(rootNode, (xmlChar*)"scenePics"));
+    LoadingScene->ScenePics->Shown = false;
+
+    LoadingScene->IDevice = IDevice;
+    LoadingScene->DiagContext = DiagContext;
+    LoadingScene->BContext = BContext;
+    LoadingScene->CContext = CContext;
+    LoadingScene->press = NULL;
+    LoadingScene->Jump = false;
+    LoadingScene->presentItem = -1;
+    LoadingScene->presentMatch = NULL;
+    LoadingScene->presentDefault = NULL;
+    LoadingScene->DiagShown = true;
+
+    LoadingScene->CharactersIndex = NULL;
+    LoadingScene->CharaLayer = NULL;
+    InitCharacterLayer(&LoadingScene->CharaLayer, LoadingScene->BGContext);
+
+    LoadingScene->entry = searchNode(rootNode->children, "entry");
+    LoadingScene->returnTarget = LoadingScene->entry;
+    LoadingScene->next = LoadingScene->entry->next;
+
+    element = searchNode(rootNode->children, "setup");
+    if (element) {
+        element = element->children;
+        while (element){
+            if (strcmp((char*)element->name, "initChar") == 0) {
+                LoadingScene->CharactersIndex = initCharArray(DDevice, element);
+            } else if (strcmp((char*)element->name, "flags") == 0) {
+                parseFlags(DDevice, LoadingScene, element->children);
+            }
+            element = element->next;
+        }
+    }
+
+    return LoadingScene;
+}
+
+void FreeScene(SceneContext* SceneContext){
+
+}
+
+size_t parseDiag(SceneContext* SContext, xmlNode* element){
+    int CurrentCharacterID; /* Hold the name of the character who is talking during the dialog */
+    char* DialogueText; /* Hold the text of the dialogue itself */
+
+    while (element){
+        if (strcmp((char*)element->name, "char") == 0) {
+            CurrentCharacterID = atoi((char*)xmlNodeGetContent(element));
+        } else if (strcmp((char*)element->name, "line") == 0) {
+            DialogueText = (char*)xmlNodeGetContent(element);
+        }
+        element = element->next;
+    }
+    SContext->CContext->CurrentCharacter = CurrentCharacterID;
+
+    return SetDialogueText(SContext->DiagContext, SContext->CharactersIndex[CurrentCharacterID]->DisplayName, DialogueText, 1);
+}
+
+void parseAnim(SceneContext* SContext, xmlNode* element){
+    int animTarget;
+    int animationID;
+
+    while (element){
+        if (strcmp((char*)element->name, "animTarget") == 0) {
+            animTarget = atoi((char*)xmlNodeGetContent(element));
+        } else if (strcmp((char*)element->name, "animation") == 0) {
+            animationID = atoi((char*)xmlNodeGetContent(element));
+        } else if (strcmp((char*)element->name, "idleAnim") == 0) {
+            SContext->CContext->IdleAnimation = atoi((char*)xmlNodeGetContent(element)); /* Need to be setup */
+        }
+        element = element->next;
+    }
+    CharacterPlayAnimation(SContext->CharactersIndex[animTarget], animationID);
+}
+
+void parseButtons(SceneContext* SContext, xmlNode* element){
+    int buttonJumpIndex;
+
+    ClearButtons(SContext->BContext);
+    buttonJumpIndex = 0;
+    while (element){
+        if (strcmp((char*)element->name, "option") == 0) {
+            AddButton(SContext->BContext, (char*)xmlNodeGetContent(element));
+            SContext->CContext->ButtonJumpLabels[buttonJumpIndex] = (char*)xmlGetProp(element, (xmlChar*)"jump");
+            buttonJumpIndex++;
+        }
+        element = element->next;
+    }
+    SContext->IDevice->EventEnabled = false;
+    SContext->CContext->ButtonActivated = 1;
+}
+
+void parseScene(DisplayDevice* DDevice, SceneContext* SContext){
     /* Declaration */
     xmlNode *property;
     /* diag */
@@ -490,7 +496,7 @@ void parseScene(SceneContext* SContext){
         } else if (strcmp((char*)property->name, "buttons") == 0) {
             parseButtons(SContext, property->children);
         } else if (strcmp((char*)property->name, "flags") == 0) {
-            parseFlags(SContext, property->children);
+            parseFlags(DDevice, SContext, property->children);
         }
         property = property->next;
     }
