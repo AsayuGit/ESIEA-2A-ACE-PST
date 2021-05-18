@@ -91,7 +91,7 @@ SoundDevice* CreateSoundDevice(){
     return NULL;
 }
 
-int SetRenderTarget(DisplayDevice* DDevice, SDL_Texture* surface){
+int ACE_SetRenderTarget(DisplayDevice* DDevice, SDL_Texture* surface){
     DDevice->OffScreenRender = (surface != NULL);
 #ifdef _SDL
     DDevice->Renderer = (surface) ? surface : DDevice->Screen;
@@ -102,7 +102,7 @@ int SetRenderTarget(DisplayDevice* DDevice, SDL_Texture* surface){
 }
 
 int DrawEx(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect, bool flip){
-    #ifdef _SDL
+	#ifdef _SDL
         FlipBlitSurface(texture, srcrect, DDevice->Renderer, dstrect, flip);
         return 0;
     #else
@@ -120,7 +120,8 @@ int ScaledDrawEx(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* s
         SDL_Rect ScaledSrcRect;
     #endif
 
-    if (RectOnScreen(DDevice, dstrect)){
+
+    if (texture && RectOnScreen(DDevice, dstrect)){
         
         #ifdef _SDL
             if (srcrect){
@@ -164,6 +165,7 @@ void FinishFrame(DisplayDevice* DDevice){
 }
 
 void SystemEvents(DisplayDevice* DDevice, InputDevice* IDevice){
+	SDL_Event assertedEvent;
 
     switch (IDevice->event.type){
         #ifndef _SDL
@@ -178,6 +180,30 @@ void SystemEvents(DisplayDevice* DDevice, InputDevice* IDevice){
                 break;
             }
             break;
+
+		case SDL_JOYHATMOTION:
+			assertedEvent.type = PAD_KEYDOWN;
+			switch (IDevice->event.jhat.value){
+				case SDL_HAT_LEFT:
+					assertedEvent.PADKEY = PAD_LEFT;
+					SDL_PushEvent(&assertedEvent);
+					break;
+				case SDL_HAT_RIGHT:
+					assertedEvent.PADKEY = PAD_RIGHT;
+					SDL_PushEvent(&assertedEvent);
+					break;
+				case SDL_HAT_UP:
+					assertedEvent.PADKEY = PAD_UP;
+					SDL_PushEvent(&assertedEvent);
+					break;
+				case SDL_HAT_DOWN:
+					assertedEvent.PADKEY = PAD_DOWN;
+					SDL_PushEvent(&assertedEvent);
+					break;
+				default:
+					break;
+			}
+			break;
 
         case SDL_KEYDOWN:
             switch (IDevice->event.PADKEY)

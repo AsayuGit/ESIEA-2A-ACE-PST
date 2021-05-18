@@ -194,5 +194,10 @@ Mix_Chunk* LoadSoundEffect(char FilePath[]){
 
 xmlDoc* loadXml(char* filePath){
     xmlKeepBlanksDefault(0); /* Ignore white space */
-    return xmlReadFile(filePath, NULL, 0); /* Load File into memory */
+
+	#ifdef _XBOX
+		return xmlParseFile(filePath); /* Load File into memory */
+	#else
+		return xmlReadFile(filePath, NULL, 0); /* Load File into memory */
+	#endif
 }

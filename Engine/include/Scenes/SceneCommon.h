@@ -6,8 +6,12 @@
     #include "Dialogue.h"
     #include "CharactersStructures.h"
     #include "Buttons.h"
-
-    #include <libxml2/libxml/parser.h>
+	
+	#ifdef _XBOX
+		#include <libxml/parser.h>
+	#else
+		#include <libxml2/libxml/parser.h>
+	#endif
 
     /* Backgrounds functions */
     BackgroundContext* InitBackground(DisplayDevice* DDevice, char* ScenePath);

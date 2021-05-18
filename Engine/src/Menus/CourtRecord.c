@@ -1,7 +1,12 @@
 #include "CourtRecord.h"
 #include "UI.h"
-#include <libxml2/libxml/parser.h>
 #include <math.h>
+
+#ifdef _XBOX
+	#include <libxml/parser.h>
+#else
+	#include <libxml2/libxml/parser.h>
+#endif
 
 #define NBOFITEMS 8
 #define NBOFBARS 2
@@ -235,7 +240,13 @@ Items* LoadItemsFromFile(DisplayDevice* DDevice, char* filePath){ /* TIPS : Mayb
     /* Logic */
     loadedItem = NULL;
     xmlKeepBlanksDefault(0); /* Ignore white space */
+
+#ifdef _XBOX
+	itemListFile = xmlParseFile(filePath); /* Load File into memory */
+#else
     itemListFile = xmlReadFile(filePath, NULL, 0); /* Load File into memory */
+#endif
+
     itemList = xmlDocGetRootElement(itemListFile); /* get the first chidlren */
 
     if (strcmp((char*)itemList->name, "itemList") == 0){
@@ -313,7 +324,7 @@ void HandleCourtRecordEvents(SDL_Event* event, SceneContext* SContext){
     case MainCRMenu:
         switch (event->type)
         {
-        case SDL_KEYDOWN:
+        case PAD_KEYDOWN:
             switch (event->PADKEY)
             {
             case PAD_UP:
@@ -349,7 +360,7 @@ void HandleCourtRecordEvents(SDL_Event* event, SceneContext* SContext){
     case DetailsMenu:
         switch (event->type)
         {
-        case SDL_KEYDOWN:
+        case PAD_KEYDOWN:
             switch (event->PADKEY)
             {
             case PAD_LEFT:

@@ -44,7 +44,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
     ButtonsRect.h = BASE_RESOLUTION_Y - (DiagContext->TextBounds.h + DiagContext->NameBounds.h);
 
     /* Button Init */
-    ButtonLayer = InitBackground(DDevice, "Assets/Anim/ButtonHorizontal.xml");
+	ButtonLayer = InitBackground(DDevice, ROOT"Assets"SL"Anim"SL"ButtonHorizontal.xml");
     BContext = InitButtons(DDevice, ButtonLayer, Context->ButtonFont, 224, &ButtonsRect);
     MoveButtonsToCoordinates(BContext, BASE_RESOLUTION_X, 0);
     Context->ButtonActivated = 0;
@@ -82,7 +82,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                 case MainEvents: /* Regular events */
                     switch (IDevice->event.type)
                     {
-                    case SDL_KEYDOWN:
+                    case PAD_KEYDOWN:
                         switch (IDevice->event.PADKEY)
                         {
                         case PAD_SELECT:
@@ -123,7 +123,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                     HandleButtonsEvents(BContext, IDevice);
                     switch (IDevice->event.type)
                     {
-                    case SDL_KEYDOWN:
+                    case PAD_KEYDOWN:
                         switch (IDevice->event.PADKEY)
                         {
                         case PAD_SELECT:
@@ -150,7 +150,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                     HandleCourtRecordEvents(&IDevice->event, SContext);
                     switch (IDevice->event.type)
                     {
-                    case SDL_KEYDOWN:
+                    case PAD_KEYDOWN:
                         switch (IDevice->event.PADKEY)
                         {
                         case PAD_COURTRECORD:
@@ -188,7 +188,9 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
 
         /* Rendering (Back to front) */
         DisplayBackground(DDevice, SContext->BGContext);        /* Background */
-        DisplayCharacterLayer(DDevice, SContext->CharaLayer);   /* Character Layer */
+#ifndef _XBOX
+		DisplayCharacterLayer(DDevice, SContext->CharaLayer);   /* Character Layer */
+#endif
         DisplayBackground(DDevice, SContext->ScenePics);        /* Exposition Pictures */
         if (SContext->DiagShown)
             Dialogue(DiagContext, Context->diagRewind);         /* Dialog */

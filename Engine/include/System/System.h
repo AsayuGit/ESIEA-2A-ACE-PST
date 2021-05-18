@@ -7,7 +7,7 @@
     InputDevice* InitInputs(bool JoyEnabled);
     DisplayDevice* CreateDisplayDevice(int ScreenWidth, int ScreenHeight, char* Title);
     SoundDevice* CreateSoundDevice();
-    int SetRenderTarget(DisplayDevice* DDevice, SDL_Texture* surface);
+    int ACE_SetRenderTarget(DisplayDevice* DDevice, SDL_Texture* surface);
     int DrawEx(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect, bool flip);
     int Draw(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect);
     int ScaledDrawEx(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect, bool flip);

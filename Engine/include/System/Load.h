@@ -2,8 +2,12 @@
 #define _LOAD_H
 
     #include "include.h"
-    #include <libxml2/libxml/parser.h>
-
+	
+	#ifdef _XBOX
+		#include <libxml/parser.h>
+	#else
+		#include <libxml2/libxml/parser.h>
+	#endif
     enum {
         SURFACE_OPAQUE = 0,
         SURFACE_ALPHA = 1,

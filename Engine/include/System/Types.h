@@ -1,11 +1,20 @@
 #ifndef _TYPES_H
 #define _TYPES_H
-
-    #include <stdbool.h>
+	
+	#ifdef _XBOX
+		typedef enum{
+			false,
+			true
+		} bool;
+	#else
+		#include <stdbool.h>
+	#endif
 
     #ifdef _SDL
         #include <SDL/SDL.h>
-    #else
+    #elif defined(_XBOX)
+		#include <SDL.h>
+	#else
         #include <SDL2/SDL.h>
     #endif
 
@@ -15,10 +24,15 @@
         typedef SDL_Surface SDL_Texture;
         #define SDL_GetKeyboardState SDL_GetKeyState
         #define PADKEY key.keysym.sym
+		#define PAD_KEYDOWN SDL_KEYDOWN
+	#elif defined(_XBOX)
+		#define SDL_HWSURFACE SDL_SWSURFACE
+        #define PADKEY jbutton.button
+		#define PAD_KEYDOWN SDL_JOYBUTTONDOWN
     #else
-        /*typedef SDL_Texture Surface;*/
         #define SDL_HWSURFACE SDL_SWSURFACE
         #define PADKEY key.keysym.scancode
+		#define PAD_KEYDOWN SDL_KEYDOWN
     #endif
 
     typedef struct{

@@ -16,8 +16,8 @@ int main(int argc, char* argv[]){
     CourtContext = (CourtroomContext*)calloc(1, sizeof(CourtroomContext));
 
     InitSDL();
-    DDevice = CreateDisplayDevice(256*2, 192*2, "Mia's Legacy");
-    IDevice = InitInputs(false);
+    DDevice = CreateDisplayDevice(640, 480, "Mia's Legacy");
+    IDevice = InitInputs(true); /* WAT */
     /*SDevice = CreateSoundDevice();  */ /* Always return null so we don't need to store it for now */
     CreateSoundDevice();
 
@@ -35,7 +35,7 @@ int main(int argc, char* argv[]){
         if (argc > 1){
             Scene_Courtroom(DDevice, IDevice, CourtContext, argv[1]);
         } else {
-            Scene_Courtroom(DDevice, IDevice, CourtContext, "Assets/Dialogue/cross.xml");
+            Scene_Courtroom(DDevice, IDevice, CourtContext, ROOT"Assets"SL"Dialogue"SL"cross.xml");
         }
     }
     

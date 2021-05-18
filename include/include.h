@@ -1,18 +1,23 @@
 #ifndef _INCLUDE
 #define _INLCUDE
 
-    /*define _GNU_SOURCE*/  /*Maybe temporary*/
-
     #include <stdio.h>
     #include <stdlib.h>
+#ifdef _XBOX
+	#include <io.h>
+#else
     #include <unistd.h>
-
+#endif
     #define EXIT_INIT -2
     #ifdef _SDL
     #define SDLMAIN <SDL/SDL.h>
     #define SDLIMAGE <SDL/SDL_image.h>
     #define SDLMIXER <SDL/SDL_mixer.h>
-    #else
+    #elif defined(_XBOX)
+	#define SDLMAIN <SDL.h>
+    /*#define SDLIMAGE <SDL2/SDL_image.h>*/
+    #define SDLMIXER <SDL_mixer.h>
+	#else
     #define SDLMAIN <SDL2/SDL.h>
     #define SDLIMAGE <SDL2/SDL_image.h>
     #define SDLMIXER <SDL2/SDL_mixer.h>
@@ -27,7 +32,7 @@
     #endif
 
     #include SDLMAIN
-    #include SDLIMAGE
+    /*#include SDLIMAGE*/
     #include SDLMIXER
 
     #include "Flags.h"

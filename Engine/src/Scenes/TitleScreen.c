@@ -11,8 +11,12 @@ int Scene_TitleScreen(DisplayDevice* DDevice, InputDevice* IDevice, BitmapFont* 
     char Menu;
 
     Mix_Chunk* ToMenu;
-
-    SContext = InitBackground(DDevice, "Assets/Anim/TitleScreen.xml");
+	
+	#ifdef _XBOX
+		SContext = InitBackground(DDevice, "D:\\Assets\\Anim\\TitleScreen.xml");
+	#else
+		SContext = InitBackground(DDevice, "Assets/Anim/TitleScreen.xml");
+	#endif
     BContext = InitButtons(DDevice, SContext, Font, 148, NULL);
 
     AddButton(BContext, "New Game");
@@ -32,6 +36,7 @@ int Scene_TitleScreen(DisplayDevice* DDevice, InputDevice* IDevice, BitmapFont* 
         /* Events Loop */
         while(SDL_PollEvent(&IDevice->event)){
             SystemEvents(DDevice, IDevice);
+
             if (Menu)
                 HandleButtonsEvents(BContext, IDevice);
             switch (IDevice->event.type)
@@ -41,7 +46,7 @@ int Scene_TitleScreen(DisplayDevice* DDevice, InputDevice* IDevice, BitmapFont* 
                 goto Exit;
                 break;
 
-            case SDL_KEYDOWN:
+            case PAD_KEYDOWN:
                 switch (IDevice->event.PADKEY)
                 {
                 case PAD_SELECT:
@@ -79,6 +84,12 @@ int Scene_TitleScreen(DisplayDevice* DDevice, InputDevice* IDevice, BitmapFont* 
             }
             
         }
+/*		
+		SDL_JoystickUpdate();
+		if (SDL_JoystickGetButton(IDevice->Joy1, 0)){
+			goto PRESS;
+        }
+*/
 
         if (IDevice->EventEnabled){
             Menu = Slide;

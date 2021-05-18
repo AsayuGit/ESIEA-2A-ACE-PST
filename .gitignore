@@ -60,8 +60,14 @@ Assets/Fonts/
 Assets/Sound/
 Assets/Textures/
 
+xboxAssets/
+
 # Executable
 ACE
 
 # Valgrind
 vgcore.*
+
+# Visual Studio
+*.ncb
+*.suo

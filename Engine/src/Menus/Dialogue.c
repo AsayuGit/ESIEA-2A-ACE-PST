@@ -8,11 +8,13 @@ void ClearDialogueText(DialogueContext* Context){
         SDL_FillRect(Context->textLayer, NULL, 0x000000);
         SDL_FillRect(Context->nameLayer, NULL, 0x000000);
     #else
-        SDL_SetRenderTarget(Context->DDevice->Renderer, Context->textLayer);
-        SDL_RenderClear(Context->DDevice->Renderer);
-        SDL_SetRenderTarget(Context->DDevice->Renderer, Context->nameLayer);
-        SDL_RenderClear(Context->DDevice->Renderer);        
-        SDL_SetRenderTarget(Context->DDevice->Renderer, NULL);
+        #ifndef _XBOX
+			SDL_SetRenderTarget(Context->DDevice->Renderer, Context->textLayer);
+			SDL_RenderClear(Context->DDevice->Renderer);
+			SDL_SetRenderTarget(Context->DDevice->Renderer, Context->nameLayer);
+			SDL_RenderClear(Context->DDevice->Renderer);        
+			SDL_SetRenderTarget(Context->DDevice->Renderer, NULL);
+		#endif
     #endif
 }
 
@@ -24,15 +26,19 @@ size_t SetDialogueText(DialogueContext* Context, char* Name, char* Text, char Sn
     Context->DstLetter.x = 0;
     Context->DstLetter.y = 0;
     ClearDialogueText(Context);
-
-    SetRenderTarget(Context->DDevice, Context->nameLayer);
+	
+	#ifndef _XBOX
+		ACE_SetRenderTarget(Context->DDevice, Context->nameLayer);
+	#endif
     NameDest.w = gstrlen(Context->NameFont, Name, 1).x;
     NameDest.x = (Context->NameBounds.w - NameDest.w) >> 1;
     NameDest.h = Context->NameFont->Rects[0].h;
     NameDest.y = (Context->NameBounds.h - NameDest.h) >> 1;
     NameDest.y = 0;
     gprintf(Context->DDevice, Context->NameFont, Name, 1, &NameDest);
-    SetRenderTarget(Context->DDevice, NULL);
+    #ifndef _XBOX
+		ACE_SetRenderTarget(Context->DDevice, NULL);
+	#endif
 
     switch (SndEffType){
         case 0:
@@ -139,7 +145,9 @@ void Dialogue(DialogueContext* Context, bool bothWay){
     /* Write text */
     if (Context->Text[Context->progress] != '\0') {
         if (SDL_GetTicks() >= Context->LastLetter + Context->TextSpeed){
-            SetRenderTarget(Context->DDevice, Context->textLayer);
+			#ifndef _XBOX
+				ACE_SetRenderTarget(Context->DDevice, Context->textLayer);
+			#endif
             if (!Context->letterLag){
                 Mix_PlayChannel(-1, Context->Letter, 0);
                 Context->letterLag = 1;
@@ -157,15 +165,17 @@ void Dialogue(DialogueContext* Context, bool bothWay){
             
             Context->progress++;
             Context->LastLetter = SDL_GetTicks();
-            SetRenderTarget(Context->DDevice, NULL);
+			#ifndef _XBOX
+				ACE_SetRenderTarget(Context->DDevice, NULL);
+			#endif
         }
     } else {
         if (bothWay){
-            Context->ArrowDstRect.x = 7 - Wobble;
+            Context->ArrowDstRect.x = (int)(7 - Wobble);
             ScaledDraw(Context->DDevice, Context->DialogBox, &ArrowSrcRect[1], &Context->ArrowDstRect); /* Right Arrow */
         }
         
-        Context->ArrowDstRect.x = 240 + Wobble;
+        Context->ArrowDstRect.x = (int)(240 + Wobble);
         ScaledDraw(Context->DDevice, Context->DialogBox, &ArrowSrcRect[0], &Context->ArrowDstRect); /* Right Arrow */
     }
 

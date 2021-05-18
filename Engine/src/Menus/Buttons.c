@@ -99,7 +99,7 @@ void MoveButtonsToCoordinates(ButtonsContext* ButtonObject, int x, int y){
 void HandleButtonsEvents(ButtonsContext* ButtonObject, InputDevice* IDevice){
     switch (IDevice->event.type)
     {
-    case SDL_KEYDOWN:
+    case PAD_KEYDOWN:
         switch (IDevice->event.PADKEY)
         {
         case PAD_UP:

@@ -8,7 +8,7 @@ static SceneContext* SContextPtr;
 static unsigned int StoredItemID;
 
 /* Surface and rects */
-static SDL_Texture* UISurface;
+static SDL_Texture* UISurface = NULL;
 static unsigned int UILastBlink;
 static bool UIBlink;
 static unsigned int UIBlinkDelay;
@@ -210,7 +210,10 @@ void InitUI(DisplayDevice* DDevice, Items* UIItemBankPointer, SceneContext* SCon
     StoredItemID = 0;
 
     UISurface = LoadSurface(ROOT""TEXTURES"UI"SL"UI.bmp", DDevice, 0xff00ff, SURFACE_KEYED);
-    /* FIXME : We should really check for the validity of UISurface */
+	if (!UISurface){
+		printf("ERROR: Couldn't load UISurface !\n");
+		//exit(-1);
+	}
 
     UI_ADstRect.w = UI_ASrcRect[logoID].w;
     UI_ADstRect.h = UI_ASrcRect[logoID].h;
