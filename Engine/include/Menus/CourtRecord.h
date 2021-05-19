@@ -26,5 +26,7 @@
     void AddItemToCourtRecord(int ItemID);                                     /* Adds an Item to the court record */
     void RemoveItemFromCourtRecord(int ItemID);                                /* Remove an Item from the court record */
     void EmptyCourtRecord();                                                   /* Empty out the court record */
+    void ShowCourtRecord(InputDevice* IDevice);
+    void ResetCourtRecordPos();
 
 #endif

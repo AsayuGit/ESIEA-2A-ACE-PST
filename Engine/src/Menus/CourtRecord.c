@@ -22,6 +22,13 @@ enum {
     DetailsMenu
 };
 
+/* Viewports */
+static SDL_Rect* CRViewport;                                /* Background Layer Viewport */
+static const Vector2i CRPosition = {BASE_RESOLUTION_X, 0};  /* CourtRecord position relative to the BGL Viewport */
+
+/* Layers */
+static BackgroundContext* courtRecordLayer;
+
 /* Surfaces */
 static SDL_Texture* CourtRecordSpriteSheet;
 static SDL_Texture* CourtDetailSpriteSheet;
@@ -62,6 +69,8 @@ static char* ItemTypes[3] = {
     "Reports",
     "Weapons"
 };
+
+static bool courtRecordShown = false;
 
 void InitCourtDetails(DisplayDevice* DDevice){
     /* Load textures */
@@ -148,6 +157,9 @@ void InitCourtRecord(DisplayDevice* DDevice, Items* ItemBankPointer){
     StoredItemList = NULL;
     StoredItemListPointer = &StoredItemList;
     ItemBank = ItemBankPointer;
+
+    courtRecordLayer = InitBackground(DDevice, ROOT"Assets"SL"Anim"SL"CourtRecord.xml");
+    CRViewport = &(courtRecordLayer->SrcRect); /* FIXME */
 
     InitCourtDetails(DDevice); /* Once done with the court Record init, we init the court details */
 }
@@ -341,13 +353,18 @@ void HandleCourtRecordEvents(SDL_Event* event, SceneContext* SContext){
                 Mix_PlayChannel(-1, MoveCursor, 0);
                 break;
             case PAD_SELECT:
-
                 SelectedItem = GetSelectedItem(SelectedSlot);
                 if (SelectedItem >= 0) {
                     MenuSelect = DetailsMenu;
                     UpdateItemDetails(SelectedItem);
                     Mix_PlayChannel(-1, MoveCursor, 0);
                 }
+                break;
+            case PAD_COURTRECORD:
+                /* Dissable the court reccord */
+                BackgroundPlayAnimation(courtRecordLayer, 1, &courtRecordShown, false);
+                SContext->IDevice->EventEnabled = true;
+                SContext->CContext->EventSelect = 0;
                 break;
             default:
                 break;
@@ -391,9 +408,9 @@ void HandleCourtRecordEvents(SDL_Event* event, SceneContext* SContext){
                 break;
             case PAD_PRESS:
                 if (SContext->presentDefault){
-                    SContext->CContext->ShowCourtRecord = false;
+                    courtRecordShown = false;
                     SContext->CContext->EventSelect = 0;
-                    SContext->CContext->diagRewind = false;
+                    SContext->diagMode = 1;
                     if (SContext->presentItem == SelectedItem){
                         setUI(OBJECTION, 0);
                         if (SContext->presentMatch)
@@ -404,6 +421,12 @@ void HandleCourtRecordEvents(SDL_Event* event, SceneContext* SContext){
                             SContext->entry = SContext->presentDefault;
                     }
                 }
+                break;
+            case PAD_COURTRECORD:
+                /* Dissable the court reccord */
+                BackgroundPlayAnimation(courtRecordLayer, 1, &courtRecordShown, false);
+                SContext->IDevice->EventEnabled = true;
+                SContext->CContext->EventSelect = 0;
                 break;
             default:
                 break;
@@ -421,6 +444,7 @@ void DrawMainCourtRecordMenu(DisplayDevice* DDevice, BitmapFont* Font){
     int i;
     int ArrowAnim;
     SDL_Rect RightArrowAfterAnim, LeftArrowAfterAnim;
+    SDL_Rect CRDstRect;
     ItemList* StoredItemListIterator;
 
     /* Arrow wiggle */
@@ -432,34 +456,43 @@ void DrawMainCourtRecordMenu(DisplayDevice* DDevice, BitmapFont* Font){
     RightArrowAfterAnim.x += ArrowAnim;
     LeftArrowAfterAnim.x -= ArrowAnim;
 
-    ScaledDraw(DDevice, CourtRecordSpriteSheet, CourtRecordBackground, CourtRecordBackground + 1);  /* Draw the background */
+    CRDstRect = RectToVieport(CourtRecordBackground + 1, CRViewport, &CRPosition);
+    ScaledDraw(DDevice, CourtRecordSpriteSheet, CourtRecordBackground, &CRDstRect);                 /* Draw the background */
 
-    ScaledDraw(DDevice, CourtRecordSpriteSheet, &(Bars[0][0]), &(Bars[0][1]));                      /* Draw the bars */
-    ScaledDraw(DDevice, CourtRecordSpriteSheet, &(Bars[1][0]), &(Bars[1][1]));
+    CRDstRect = RectToVieport(&(Bars[0][1]), CRViewport, &CRPosition);
+    ScaledDraw(DDevice, CourtRecordSpriteSheet, &(Bars[0][0]), &CRDstRect);                      /* Draw the bars */
+    CRDstRect = RectToVieport(&(Bars[1][1]), CRViewport, &CRPosition);
+    ScaledDraw(DDevice, CourtRecordSpriteSheet, &(Bars[1][0]), &CRDstRect);
 
-    ScaledDraw(DDevice, CourtRecordSpriteSheet, &(Arrows[0][0]), &(RightArrowAfterAnim));           /* Draw the arrows */
-    ScaledDraw(DDevice, CourtRecordSpriteSheet, &(Arrows[1][0]), &(LeftArrowAfterAnim));
+    CRDstRect = RectToVieport(&(RightArrowAfterAnim), CRViewport, &CRPosition);
+    ScaledDraw(DDevice, CourtRecordSpriteSheet, &(Arrows[0][0]), &CRDstRect);           /* Draw the arrows */
+    CRDstRect = RectToVieport(&(LeftArrowAfterAnim), CRViewport, &CRPosition);
+    ScaledDraw(DDevice, CourtRecordSpriteSheet, &(Arrows[1][0]), &CRDstRect);
 
     i = 0;
     StoredItemListIterator = *StoredItemListPointer;
     while (StoredItemListIterator){
         if (i == SelectedSlot){
             ItemName.x = ((BASE_RESOLUTION_X - gstrlen(ItemNameFont, ItemBank->NameArray[StoredItemListIterator->ItemID], 1).x) >> 1);
-            gprintf(DDevice, ItemNameFont, ItemBank->NameArray[StoredItemListIterator->ItemID], 1, &ItemName); /* Draw the item's name */
+            CRDstRect = RectToVieport(&ItemName, CRViewport, &CRPosition);
+            gprintf(DDevice, ItemNameFont, ItemBank->NameArray[StoredItemListIterator->ItemID], 1, &CRDstRect); /* Draw the item's name */
         }
 
-        ScaledDraw(DDevice, ItemBank->ItemSpritesheet, &(ItemBank->ItemSrcRectArray[StoredItemListIterator->ItemID]), &(SelectedSlotPos[i])); /* Draw the item */
+        CRDstRect = RectToVieport(&(SelectedSlotPos[i]), CRViewport, &CRPosition);
+        ScaledDraw(DDevice, ItemBank->ItemSpritesheet, &(ItemBank->ItemSrcRectArray[StoredItemListIterator->ItemID]), &CRDstRect); /* Draw the item */
         
         StoredItemListIterator = StoredItemListIterator->next;
         i++;
     }
 
-    ScaledDraw(DDevice, CourtRecordSpriteSheet, &SelectedSlotSrc, &(SelectedSlotPos[SelectedSlot])); /* Draw the cursor */
+    CRDstRect = RectToVieport(&(SelectedSlotPos[SelectedSlot]), CRViewport, &CRPosition);
+    ScaledDraw(DDevice, CourtRecordSpriteSheet, &SelectedSlotSrc, &CRDstRect); /* Draw the cursor */
 }
 
 void DrawCourtDetails(DisplayDevice* DDevice, BitmapFont* Font, int ItemID){
     int ArrowAnim;
     SDL_Rect RightArrowAfterAnim, LeftArrowAfterAnim;
+    SDL_Rect CRDstRect;
 
     /* Arrow wiggle */
     ArrowAnim = sin((double)SDL_GetTicks() / 50) * 2;
@@ -472,26 +505,45 @@ void DrawCourtDetails(DisplayDevice* DDevice, BitmapFont* Font, int ItemID){
 
     DetailItemName.x = ((144 - gstrlen(ItemNameFont, ItemBank->NameArray[ItemID], 1).x) >> 1) + 91;
 
-    ScaledDraw(DDevice, CourtDetailSpriteSheet, CourtDetailBackground, CourtDetailBackground + 1);              /* Draw the background */
-    ScaledDraw(DDevice, CourtRecordSpriteSheet, &(Arrows[0][0]), &(RightArrowAfterAnim));                       /* Draw the arrows */
-    ScaledDraw(DDevice, CourtRecordSpriteSheet, &(Arrows[1][0]), &(LeftArrowAfterAnim));
-    ScaledDraw(DDevice, ItemBank->ItemSpritesheet, &(ItemBank->ItemSrcRectArray[ItemID]), &(DetailItemPos));    /* Draw the item */
+    CRDstRect = RectToVieport(CourtDetailBackground + 1, CRViewport, &CRPosition);
+    ScaledDraw(DDevice, CourtDetailSpriteSheet, CourtDetailBackground, &CRDstRect);                     /* Draw the background */
+    CRDstRect = RectToVieport(&(RightArrowAfterAnim), CRViewport, &CRPosition);
+    ScaledDraw(DDevice, CourtRecordSpriteSheet, &(Arrows[0][0]), &CRDstRect);                           /* Draw the arrows */
+    CRDstRect = RectToVieport(&(LeftArrowAfterAnim), CRViewport, &CRPosition);
+    ScaledDraw(DDevice, CourtRecordSpriteSheet, &(Arrows[1][0]), &CRDstRect);
+    CRDstRect = RectToVieport(&(DetailItemPos), CRViewport, &CRPosition);
+    ScaledDraw(DDevice, ItemBank->ItemSpritesheet, &(ItemBank->ItemSrcRectArray[ItemID]), &CRDstRect);  /* Draw the item */
 
-    gprintf(DDevice, ItemNameFont, ItemBank->NameArray[ItemID], 1, &DetailItemName);                            /* Draw the item's name */
-    gprintf(DDevice, DetailsFont, ItemDetails, 1, &ItemOrigin);                                                 /* Draw the item's origin */
-    gprintf(DDevice, Font, ItemBank->DescriptionArray[ItemID], 1, &ItemDescription);                            /* Draw the item's description */
+    CRDstRect = RectToVieport(&DetailItemName, CRViewport, &CRPosition);
+    gprintf(DDevice, ItemNameFont, ItemBank->NameArray[ItemID], 1, &CRDstRect);                         /* Draw the item's name */
+    CRDstRect = RectToVieport(&ItemOrigin, CRViewport, &CRPosition);
+    gprintf(DDevice, DetailsFont, ItemDetails, 1, &CRDstRect);                                          /* Draw the item's origin */
+    CRDstRect = RectToVieport(&ItemDescription, CRViewport, &CRPosition);
+    gprintf(DDevice, Font, ItemBank->DescriptionArray[ItemID], 1, &CRDstRect);                          /* Draw the item's description */
 }
 
 
 void DrawCourtRecord(DisplayDevice* DDevice, BitmapFont* Font){
-    switch (MenuSelect)
-    {
-    case MainCRMenu:
-        DrawMainCourtRecordMenu(DDevice, Font); /* Draw the main menu */
-        break;
-    
-    case DetailsMenu:
-        DrawCourtDetails(DDevice, Font, SelectedItem); /* Draw the CourtDetails menu */
-        break;
+    DisplayBackground(DDevice, courtRecordLayer);
+    if (courtRecordShown){
+        switch (MenuSelect)
+        {
+        case MainCRMenu:
+            DrawMainCourtRecordMenu(DDevice, Font); /* Draw the main menu */
+            break;
+        
+        case DetailsMenu:
+            DrawCourtDetails(DDevice, Font, SelectedItem); /* Draw the CourtDetails menu */
+            break;
+        }
     }
+}
+
+void ShowCourtRecord(InputDevice* IDevice){
+    courtRecordShown = true;
+    BackgroundPlayAnimation(courtRecordLayer, 0, &IDevice->EventEnabled, true);
+}
+
+void ResetCourtRecordPos(){
+    MoveBackground(courtRecordLayer, 0, 0);
 }

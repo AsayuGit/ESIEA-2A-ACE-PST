@@ -13,9 +13,6 @@
         int IdleAnimation;
         int CurrentCharacter;
         size_t ReturnToDefault;
-
-        bool diagRewind;
-        bool ShowCourtRecord;
         char EventSelect;
 
         char* ButtonJumpLabels[4];

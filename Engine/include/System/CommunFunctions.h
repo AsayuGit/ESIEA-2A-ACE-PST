@@ -9,4 +9,6 @@
     int      map(int SrcA, int SrcB, int DstA, int DstB, int Value);
     double   dmap(double DstA, double DstB, double SrcA, double SrcB, double Value);
     char*    astrcpy(char** dst, char* src);
+    SDL_Rect RectToVieport(const SDL_Rect* InputRect, const SDL_Rect* ViewPort, const Vector2i* Position);
+
 #endif

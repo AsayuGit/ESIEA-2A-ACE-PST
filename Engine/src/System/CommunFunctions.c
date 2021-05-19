@@ -108,3 +108,14 @@ char* astrcpy(char** dst, char* src){
 
     return *dst;
 }
+
+SDL_Rect RectToVieport(const SDL_Rect* InputRect, const SDL_Rect* ViewPort, const Vector2i* Position){
+    SDL_Rect Return;
+
+    Return.x = InputRect->x + Position->x - ViewPort->x;
+    Return.y = InputRect->y + Position->y - ViewPort->y;
+    Return.w = InputRect->w;
+    Return.h = InputRect->h;
+
+    return Return;
+}

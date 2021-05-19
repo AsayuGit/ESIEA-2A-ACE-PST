@@ -13,7 +13,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
     enum {
         MainEvents,
         ButtonEvents,
-        CourtRecordEvents
+        CREvents
     };
 
     DialogueContext* DiagContext;
@@ -53,7 +53,6 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
     ItemBank = LoadItemsFromFile(DDevice, ROOT""TEXTURES"Evidences"SL"Evidences.xml");
     /* CourtRecord Init */
     InitCourtRecord(DDevice, ItemBank);
-    Context->ShowCourtRecord = false;
 
     /* InitScene */
     SContext = InitScene(DDevice, IDevice, DiagContext, BContext, Context, DialogPath);
@@ -67,6 +66,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
         /* Events Loop */
         while(SDL_PollEvent(&IDevice->event)){
             SystemEvents(DDevice, IDevice);
+
             /* Global events */
             switch (IDevice->event.type)
             {
@@ -86,14 +86,16 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                         switch (IDevice->event.PADKEY)
                         {
                         case PAD_SELECT:
-                            CharacterPlayAnimation(SContext->CharactersIndex[Context->CurrentCharacter], Context->IdleAnimation); /* Mouaif */
-                            SceneForward(SContext);
-                            parseScene(DDevice, SContext);
+                            if (SContext->diagMode > 0){
+                                CharacterPlayAnimation(SContext->CharactersIndex[Context->CurrentCharacter], Context->IdleAnimation); /* Mouaif */
+                                SceneForward(SContext);
+                                parseScene(DDevice, SContext);
+                            }
                             break;
 
                         case PAD_BACK:
                             /* FIXME: We need a nice way to toogle dialogue's booth way mode */
-                            if (Context->diagRewind){
+                            if (SContext->diagMode == 2){
                                 CharacterPlayAnimation(SContext->CharactersIndex[Context->CurrentCharacter], Context->IdleAnimation); /* Mouaif */
                                 SceneBackward(SContext);
                                 parseScene(DDevice, SContext);
@@ -102,15 +104,17 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                             break;
 
                         case PAD_COURTRECORD:
-                            Context->ShowCourtRecord = true;
-                            Context->EventSelect = CourtRecordEvents;
+                            ShowCourtRecord(IDevice);
+                            Context->EventSelect = CREvents;
                             break;
 
                         case PAD_PRESS:
-                            if (SContext->press){
-                                SContext->entry = SContext->press;
-                                Context->diagRewind = false;
-                                setUI(HOLD_IT, 0);
+                            if (SContext->diagMode > 0){
+                                if (SContext->press){
+                                    SContext->entry = SContext->press;
+                                    SContext->diagMode = 0;
+                                    setUI(HOLD_IT, 0);
+                                }
                             }
                             break;
                         default:
@@ -136,37 +140,19 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                             parseScene(DDevice, SContext);
                             break;
                         case PAD_COURTRECORD:
-                            Context->ShowCourtRecord = true;
-                            Context->EventSelect = CourtRecordEvents;
+                            ShowCourtRecord(IDevice);
+                            Context->EventSelect = CREvents;
                             break;
                         default:
                             break;
                         }
                         break;
                     }
+                    break;
+                case CREvents:
+                    HandleCourtRecordEvents(&IDevice->event, SContext);
                     break;
 
-                case CourtRecordEvents:
-                    HandleCourtRecordEvents(&IDevice->event, SContext);
-                    switch (IDevice->event.type)
-                    {
-                    case PAD_KEYDOWN:
-                        switch (IDevice->event.PADKEY)
-                        {
-                        case PAD_COURTRECORD:
-                            Context->ShowCourtRecord = false;
-                            if (!Context->ButtonActivated){
-                                Context->EventSelect = MainEvents;
-                            } else {
-                                Context->EventSelect = ButtonEvents;
-                            }
-                            break;
-                        default:
-                            break;
-                        }
-                        break;
-                    }
-                    break;
                 default:
                     break;
                 }
@@ -178,8 +164,13 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
             CharacterPlayAnimation(SContext->CharactersIndex[Context->CurrentCharacter], Context->IdleAnimation);
             Context->ReturnToDefault = -1;
             if (Context->ButtonActivated){ /* We do that here because we want to wait for the dialogue to end before showing the buttons */
-                BackgroundPlayAnimation(ButtonLayer, 0, &IDevice->EventEnabled);
+                BackgroundPlayAnimation(ButtonLayer, 0, &IDevice->EventEnabled, true);
                 Context->EventSelect = ButtonEvents;
+            }
+            if (SContext->activateCourtRecord){
+                ShowCourtRecord(IDevice);
+                Context->EventSelect = CREvents;
+                SContext->activateCourtRecord = false;
             }
         }
 
@@ -191,15 +182,13 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
 		DisplayCharacterLayer(DDevice, SContext->CharaLayer);   /* Character Layer */
         DisplayBackground(DDevice, SContext->ScenePics);        /* Exposition Pictures */
         if (SContext->DiagShown)
-            Dialogue(DiagContext, Context->diagRewind);         /* Dialog */
+            Dialogue(DiagContext, SContext->diagMode);         /* Dialog */
         if (Context->ButtonActivated){                          /* Check if the buttons are actually on screen to save ressources */
             DisplayBackground(DDevice, ButtonLayer);            /* Animate the button layer */
             DrawButtons(BContext);                              /* Draw the actual buttons (Maybe merge ?) */
         }
         DrawUI(DDevice, IDevice);                               /* Draw teh user interface */
-        if (Context->ShowCourtRecord){
-            DrawCourtRecord(DDevice, Context->MainFont);        /* Draw the court Record */
-        }
+        DrawCourtRecord(DDevice, Context->MainFont);        /* Draw the court Record */
         FinishFrame(DDevice);                                   /* Update the main window */
     }
 

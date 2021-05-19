@@ -137,14 +137,16 @@ void MoveBackground(BackgroundContext* Context, int TileID, char Effect){ /* Cha
     }
 }
 
-void BackgroundPlayAnimation(BackgroundContext* Context, int AnimationID, bool* AnimState){ /* Start the background animation */
+void BackgroundPlayAnimation(BackgroundContext* Context, int AnimationID, bool* EndSignal, bool EndSignalValue){ /* Start the background animation */
     Context->PlayingAnimation = AnimationID;
     Context->StartFrame = Context->CurrentState = Context->AnimOffset = 0;
     Context->ObjectLayerOffset = 0;
-    (*AnimState) = false;
-    Context->AnimState = AnimState;
+    (*EndSignal) = !EndSignalValue;
+    Context->EndSignal = EndSignal;
+    Context->EndSignalValue = EndSignalValue;
 }
 
+/* FIXME: Curently only support Horizontal motion. It would be great to be able to have vertical animations as well */
 void DisplayBackground(DisplayDevice* DDevice, BackgroundContext* Context){ /* Display the background on screen */
     SDL_Rect AnimSrcRect;
     SDL_Rect BGDstRect = {0, 0, BASE_RESOLUTION_X, BASE_RESOLUTION_Y};
@@ -230,8 +232,8 @@ void DisplayBackground(DisplayDevice* DDevice, BackgroundContext* Context){ /* D
                 Context->SrcRect.x = Context->Animation[Context->PlayingAnimation].AnimRegion.w;
                 Context->SrcRect.y = Context->Animation[Context->PlayingAnimation].AnimRegion.h;
                 Context->PlayingAnimation = -1;
-                if (Context->AnimState){
-                    *(Context->AnimState) = 1;
+                if (Context->EndSignal){
+                    *(Context->EndSignal) = Context->EndSignalValue;
                 }
             }
         }
@@ -303,7 +305,7 @@ void parseFlags(DisplayDevice* DDevice, SceneContext* SContext, xmlNode* element
         if (strcmp((char*)element->name, "setBG") == 0) {
             MoveBackground(SContext->BGContext, atoi((char*)xmlGetProp(element, (xmlChar*)"value")), 0);
         } else if (strcmp((char*)element->name, "setBGAnim") == 0) {
-            BackgroundPlayAnimation(SContext->BGContext, atoi((char*)xmlGetProp(element, (xmlChar*)"value")), &SContext->IDevice->EventEnabled);
+            BackgroundPlayAnimation(SContext->BGContext, atoi((char*)xmlGetProp(element, (xmlChar*)"value")), &SContext->IDevice->EventEnabled, true);
         } else if (strcmp((char*)element->name, "setPic") == 0) {
             MoveBackground(SContext->ScenePics, atoi((char*)xmlNodeGetContent(element)), 0);
         } else if (strcmp((char*)element->name, "setBGM") == 0){
@@ -318,9 +320,14 @@ void parseFlags(DisplayDevice* DDevice, SceneContext* SContext, xmlNode* element
             CharBuffer = (char*)xmlGetProp(element, (xmlChar*)"param");
             setUI((unsigned int)atoi((char*)xmlGetProp(element, (xmlChar*)"value")), (CharBuffer) ? atoi(CharBuffer) : 0);
         } else if (strcmp((char*)element->name, "setREW") == 0){
-            SContext->CContext->diagRewind = (bool)atoi((char*)xmlGetProp(element, (xmlChar*)"value"));
+            SContext->diagMode = (unsigned char)(atoi((char*)xmlGetProp(element, (xmlChar*)"value")) + 1);
         } else if (strcmp((char*)element->name, "setDIAG") == 0){
             SContext->DiagShown = (bool)atoi((char*)xmlGetProp(element, (xmlChar*)"value"));
+        } else if (strcmp((char*)element->name, "setCR") == 0){
+            ResetCourtRecordPos();
+            SContext->activateCourtRecord = true;
+            SContext->IDevice->EventEnabled = false;
+            SContext->diagMode = 0;
         } else if (strcmp((char*)element->name, "jump") == 0) {
             CharBuffer = (char*)xmlNodeGetContent(element);
             searchNode = searchNodeLabel(SContext->entry, CharBuffer);
@@ -399,6 +406,8 @@ SceneContext* InitScene(DisplayDevice* DDevice, InputDevice* IDevice, DialogueCo
     LoadingScene->presentMatch = NULL;
     LoadingScene->presentDefault = NULL;
     LoadingScene->DiagShown = true;
+    LoadingScene->activateCourtRecord = false;
+    LoadingScene->diagMode = 1;
 
     LoadingScene->CharactersIndex = NULL;
     LoadingScene->CharaLayer = NULL;

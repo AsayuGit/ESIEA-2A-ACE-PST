@@ -53,7 +53,7 @@ int Scene_TitleScreen(DisplayDevice* DDevice, InputDevice* IDevice, BitmapFont* 
                     if (Slide == 0){
                         Mix_PlayChannel(-1, ToMenu, 0);
                         SetSlkdButtonID(BContext, 0);
-                        BackgroundPlayAnimation(SContext, 0, &IDevice->EventEnabled);
+                        BackgroundPlayAnimation(SContext, 0, &IDevice->EventEnabled, true);
                         Slide = 1;
                     } else {
                         switch (GetClkdButtonID(BContext))
@@ -63,7 +63,7 @@ int Scene_TitleScreen(DisplayDevice* DDevice, InputDevice* IDevice, BitmapFont* 
                             goto Exit;
                             break;
                         case 1:
-                            BackgroundPlayAnimation(SContext, 1, &IDevice->EventEnabled);
+                            BackgroundPlayAnimation(SContext, 1, &IDevice->EventEnabled, true);
                             Slide = 0;
                             Menu = 0;
                             break;

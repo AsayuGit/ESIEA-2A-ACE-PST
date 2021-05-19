@@ -32,7 +32,8 @@
         Vector2i* ScenesCoordinates;
 
         /* Metadata */
-        bool* AnimState;
+        bool* EndSignal;
+        bool EndSignalValue;
         char Flipped;
         int ObjectLayerOffset;
         
@@ -53,6 +54,8 @@
         int presentItem;
         bool Jump;
         bool DiagShown;
+        bool activateCourtRecord;
+        unsigned char diagMode;
         
         /* Dialogue */
         DialogueContext* DiagContext;   /* Ref */

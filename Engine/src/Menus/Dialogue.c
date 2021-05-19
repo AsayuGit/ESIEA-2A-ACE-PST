@@ -129,7 +129,7 @@ DialogueContext* InitDialog(DisplayDevice* DDevice, BitmapFont* MainFont, Bitmap
 }
 
 /* Fonction non bloquante gérant les dialogues */
-void Dialogue(DialogueContext* Context, bool bothWay){
+void Dialogue(DialogueContext* Context, unsigned char mode){
     const SDL_Rect ArrowSrcRect[2] = {{256, 0, 9, 9}, {256, 9, 9, 9}};
     SDL_Rect InLayerTextBounds;
     double Wobble;
@@ -170,13 +170,21 @@ void Dialogue(DialogueContext* Context, bool bothWay){
 			#endif
         }
     } else {
-        if (bothWay){
+        switch (mode)
+        {
+        case 0:
+            break;
+        case 2:
             Context->ArrowDstRect.x = (int)(7 - Wobble);
-            ScaledDraw(Context->DDevice, Context->DialogBox, &ArrowSrcRect[1], &Context->ArrowDstRect); /* Right Arrow */
-        }
+            ScaledDraw(Context->DDevice, Context->DialogBox, &ArrowSrcRect[1], &Context->ArrowDstRect); /* Left Arrow */
+        case 1:
+            Context->ArrowDstRect.x = (int)(240 + Wobble);
+            ScaledDraw(Context->DDevice, Context->DialogBox, &ArrowSrcRect[0], &Context->ArrowDstRect); /* Right Arrow */
+            break;
         
-        Context->ArrowDstRect.x = (int)(240 + Wobble);
-        ScaledDraw(Context->DDevice, Context->DialogBox, &ArrowSrcRect[0], &Context->ArrowDstRect); /* Right Arrow */
+        default:
+            break;
+        }
     }
 
     ScaledDraw(Context->DDevice, Context->textLayer, NULL, &(Context->TextBounds));

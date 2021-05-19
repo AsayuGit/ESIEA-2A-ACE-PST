@@ -16,7 +16,7 @@
     /* Backgrounds functions */
     BackgroundContext* InitBackground(DisplayDevice* DDevice, char* ScenePath);
     void MoveBackground(BackgroundContext* Context, int TileID, char Effect);
-    void BackgroundPlayAnimation(BackgroundContext* Context, int AnimationID, bool* AnimState);
+    void BackgroundPlayAnimation(BackgroundContext* Context, int AnimationID, bool* EndSignal, bool EndSignalValue);
     void DisplayBackground(DisplayDevice* DDevice, BackgroundContext* Context);
 
     /* Xml Funcitons */

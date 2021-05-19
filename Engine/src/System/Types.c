@@ -28,3 +28,25 @@ Vector2i InitVector2i(int x, int y){
 
     return vector;
 }
+
+SDL_Rect RectPlusVector2i(SDL_Rect* Rect, Vector2i* Vect){
+    SDL_Rect Result;
+
+    Result.x = Rect->x + Vect->x;
+    Result.y = Rect->y + Vect->y;
+    Result.w = Rect->w;
+    Result.h = Rect->h;
+
+    return Result;
+}
+
+SDL_Rect RectMinusVector2i(SDL_Rect* Rect, Vector2i* Vect){
+    SDL_Rect Result;
+
+    Result.x = Rect->x - Vect->x;
+    Result.y = Rect->y - Vect->y;
+    Result.w = Rect->w;
+    Result.h = Rect->h;
+
+    return Result;
+}

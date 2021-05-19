@@ -93,5 +93,7 @@
     SDL_Rect InitRect(int x, int y, int w, int h);
     Vector2d InitVector2d(double x, double y);
     Vector2i InitVector2i(int x, int y);
+    SDL_Rect RectPlusVector2i(SDL_Rect* Rect, Vector2i* Vect);
+    SDL_Rect RectMinusVector2i(SDL_Rect* Rect, Vector2i* Vect);
 
 #endif
