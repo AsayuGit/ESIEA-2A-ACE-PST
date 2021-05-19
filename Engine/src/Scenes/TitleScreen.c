@@ -2,10 +2,13 @@
 #include "SceneCommon.h"
 #include "Buttons.h"
 
-int Scene_TitleScreen(DisplayDevice* DDevice, InputDevice* IDevice, BitmapFont* Font){
+/* CourtContext->ButtonFont */
+
+int Scene_TitleScreen(DisplayDevice* DDevice, InputDevice* IDevice){
     int ReturnValue;
     BackgroundContext* SContext;
     ButtonsContext* BContext;
+    BitmapFont* Font;
 
     int Slide;
     char Menu;
@@ -17,6 +20,8 @@ int Scene_TitleScreen(DisplayDevice* DDevice, InputDevice* IDevice, BitmapFont* 
 	#else
 		SContext = InitBackground(DDevice, "Assets/Anim/TitleScreen.xml");
 	#endif
+
+    Font = LoadBitmapFont(ROOT""FONTS"MainMenuFont"TEX_EXT, DDevice, 0xff00ff);
     BContext = InitButtons(DDevice, SContext, Font, 148, NULL);
 
     AddButton(BContext, "New Game");

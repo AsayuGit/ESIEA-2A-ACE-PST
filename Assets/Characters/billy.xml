@@ -1,0 +1,29 @@
+<character colorKey="0xb5a5d5" texture="./Assets/Textures/Characters/billy.bmp">
+    <name>Billy</name>
+    <animArray>
+        <anim framerate="125" nbOfFrames="4"> <!-- Talk 1 blasée-->
+            <src H="177" W="151" Y="657" X="257"/> 		
+            <dst H="177" W="151" Y="26" X="158"/>
+        </anim>
+        <anim framerate="125" nbOfFrames="4"> <!-- Talk 2 sur de lui-->
+            <src H="183" W="158" Y="20" X="655"/> 
+            <dst H="183" W="158" Y="26" X="158"/>
+        </anim>
+        <anim framerate="125" nbOfFrames="4"> <!-- Talk 3 chiale avec menottes-->
+            <src H="177" W="97" Y="465" X="1244"/> 
+			<dst H="177" W="97" Y="26" X="158"/>
+        </anim>
+        <anim framerate="125" nbOfFrames="4"> <!-- Talk 4 heureux-->
+            <src H="177" W="146" Y="4" X="2020"/> 
+			<dst H="177" W="146" Y="26" X="158"/>
+        </anim>
+		<anim framerate="125" nbOfFrames="4"> <!-- Talk 5 un peu géné-->
+            <src H="177" W="174" Y="401" X="2221"/> 
+			<dst H="177" W="174" Y="26" X="158"/>
+        </anim>
+		<anim framerate="125" nbOfFrames="4"> <!-- Talk 6 penseur-->
+            <src H="171" W="112" Y="579" X="2102"/> 
+			<dst H="171" W="112" Y="26" X="158"/>
+        </anim>
+    </animArray>
+</character>

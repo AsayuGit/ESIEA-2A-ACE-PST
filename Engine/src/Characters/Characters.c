@@ -120,6 +120,7 @@ void AddCharacterToLayer(CharacterLayer* CharaLayer, Characters* Character, Back
     (*CharaList)->NextCharacter = NULL;
     (*CharaList)->Coordinates = BGContext->ScenesCoordinates[TileID];
     (*CharaList)->Flip = Flip;
+    (*CharaList)->Shown = true;
 }
 
 void MoveCharacterOnLayer(CharacterLayer* CharaLayer, BackgroundContext* BGContext, const unsigned int charaInLayerID, const int TileID, const bool Flip){
@@ -136,28 +137,51 @@ void MoveCharacterOnLayer(CharacterLayer* CharaLayer, BackgroundContext* BGConte
         CharaList = &((*CharaList)->NextCharacter);
         i++;
     }
-    (*CharaList)->Coordinates = BGContext->ScenesCoordinates[TileID];
-    (*CharaList)->Flip = Flip;
+    if (*CharaList){
+        (*CharaList)->Coordinates = BGContext->ScenesCoordinates[TileID];
+        (*CharaList)->Flip = Flip;
+    }
 }
 
-void DeleteCharacterFromLayer(CharacterLayer* CharaLayer, Characters* Character){
+void removeCharacterFromLayer(CharacterLayer* CharaLayer, const unsigned int charaInLayerID){
     CharacterList** CharaList;
     CharacterList* NextCharacter;
+    unsigned int i = 0;
 
-    if (!CharaLayer || !Character)
+    if (!CharaLayer)
         return; /* error */
     CharaList = &(CharaLayer->CharaList);
-
+    
     while ((*CharaList) != NULL){
-        if ((*CharaList)->Character == Character){
-            NextCharacter = (*CharaList)->NextCharacter;
-            free(*CharaList);
-            (*CharaList) = NextCharacter;
+        if (i == charaInLayerID)
             break;
-        }
         CharaList = &((*CharaList)->NextCharacter);
+        i++;
     }
+    if (*CharaList){
+        NextCharacter = (*CharaList)->NextCharacter;
+        free(*CharaList);
+        (*CharaList) = NextCharacter;
+    }
+}
 
+void setCharacterVisiblity(CharacterLayer* CharaLayer, const unsigned int charaInLayerID, bool Shown){
+    CharacterList** CharaList;
+    unsigned int i = 0;
+
+    if (!CharaLayer)
+        return; /* error */
+    CharaList = &(CharaLayer->CharaList);
+    
+    while ((*CharaList) != NULL){
+        if (i == charaInLayerID)
+            break;
+        CharaList = &((*CharaList)->NextCharacter);
+        i++;
+    }
+    if (*CharaList){
+        (*CharaList)->Shown = Shown;
+    }
 }
 
 void DisplayCharacter(DisplayDevice* DDevice, Characters* Character, SDL_Rect Viewport, Vector2i Coordinates, char Flip){ /* Display "A" Character on screen  */
@@ -189,7 +213,8 @@ void DisplayCharacterLayer(DisplayDevice* DDevice, CharacterLayer* CharaLayer){
 
     CharaList = CharaLayer->CharaList;
     while (CharaList != NULL){
-        DisplayCharacter(DDevice, CharaList->Character, *(CharaLayer->Viewport), CharaList->Coordinates, CharaList->Flip);
+        if (CharaList->Shown)
+            DisplayCharacter(DDevice, CharaList->Character, *(CharaLayer->Viewport), CharaList->Coordinates, CharaList->Flip);
         CharaList = CharaList->NextCharacter;
     }
 }

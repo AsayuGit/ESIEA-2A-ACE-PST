@@ -4,8 +4,11 @@
     #include "include.h"
 
     void InitSDL();
-    InputDevice* InitInputs(bool JoyEnabled);
+    void FreeInputDevice(InputDevice* IDevice);
+    InputDevice* InitInputs(void);
+    void FreeDisplayDevice(DisplayDevice* DDevice);
     DisplayDevice* CreateDisplayDevice(int ScreenWidth, int ScreenHeight, char* Title);
+    void FreeSoundDevice(void);
     SoundDevice* CreateSoundDevice();
     int ACE_SetRenderTarget(DisplayDevice* DDevice, SDL_Texture* surface);
     int DrawEx(DisplayDevice* DDevice, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect, bool flip);

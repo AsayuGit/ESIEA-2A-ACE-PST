@@ -43,7 +43,8 @@
     typedef struct CharacterList_s{
         Characters* Character;
         Vector2i Coordinates;
-        char Flip;
+        bool Flip;
+        bool Shown;
         struct CharacterList_s* NextCharacter;
     } CharacterList;
 

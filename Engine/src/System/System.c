@@ -7,12 +7,18 @@ void InitSDL(){
     }
 }
 
-InputDevice* InitInputs(bool JoyEnabled){
+void FreeInputDevice(InputDevice* IDevice){
+    if (IDevice->Joy1)
+        SDL_JoystickClose(IDevice->Joy1);
+    free(IDevice);
+}
+
+InputDevice* InitInputs(void){
     InputDevice* Inputs;
     
-    Inputs = (InputDevice*)malloc(sizeof(InputDevice));
+    Inputs = (InputDevice*)calloc(1, sizeof(InputDevice));
     Inputs->Joy1 = NULL;
-    if (SDL_NumJoysticks() && JoyEnabled){
+    if (SDL_NumJoysticks()){
         Inputs->Joy1 = SDL_JoystickOpen(0); /* Open Joystick */
     }
     Inputs->KeyStates = SDL_GetKeyboardState(NULL); /* Open Keyboard */
@@ -54,6 +60,16 @@ void UpdateResolution(DisplayDevice* DDevice){
     DDevice->Frame[3] = InitRect(DDevice->InternalResolution.x, DDevice->InternalResolution.y + DDevice->InternalResolution.h, DDevice->InternalResolution.w, DDevice->InternalResolution.y);   /* Bottom Frame */
 }
 
+void FreeDisplayDevice(DisplayDevice* DDevice){
+    #ifdef _SDL
+        SDL_FreeSurface(DDevice->Screen);
+    #else
+        SDL_DestroyRenderer(DDevice->Renderer);
+        SDL_DestroyWindow(DDevice->Screen);
+    #endif
+    free(DDevice);
+}
+
 DisplayDevice* CreateDisplayDevice(int ScreenWidth, int ScreenHeight, char* Title){
     DisplayDevice* Device = (DisplayDevice*)malloc(sizeof(DisplayDevice));
     
@@ -81,6 +97,10 @@ DisplayDevice* CreateDisplayDevice(int ScreenWidth, int ScreenHeight, char* Titl
     UpdateResolution(Device);
 
     return Device;
+}
+
+void FreeSoundDevice(void){
+    Mix_CloseAudio();
 }
 
 SoundDevice* CreateSoundDevice(){

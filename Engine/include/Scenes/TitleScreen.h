@@ -3,6 +3,6 @@
 
     #include "include.h"
 
-    int Scene_TitleScreen(DisplayDevice* DDevice, InputDevice* IDevice, BitmapFont* Font);
+    int Scene_TitleScreen(DisplayDevice* DDevice, InputDevice* IDevice);
 
 #endif

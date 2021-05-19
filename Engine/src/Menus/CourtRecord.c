@@ -364,7 +364,7 @@ void HandleCourtRecordEvents(SDL_Event* event, SceneContext* SContext){
                 /* Dissable the court reccord */
                 BackgroundPlayAnimation(courtRecordLayer, 1, &courtRecordShown, false);
                 SContext->IDevice->EventEnabled = true;
-                SContext->CContext->EventSelect = 0;
+                SContext->CContext->EventSelect = (SContext->CContext->ButtonActivated) ? 1 : 0;
                 break;
             default:
                 break;
@@ -426,7 +426,7 @@ void HandleCourtRecordEvents(SDL_Event* event, SceneContext* SContext){
                 /* Dissable the court reccord */
                 BackgroundPlayAnimation(courtRecordLayer, 1, &courtRecordShown, false);
                 SContext->IDevice->EventEnabled = true;
-                SContext->CContext->EventSelect = 0;
+                SContext->CContext->EventSelect = (SContext->CContext->ButtonActivated) ? 1 : 0;
                 break;
             default:
                 break;

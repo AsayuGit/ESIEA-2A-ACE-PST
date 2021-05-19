@@ -8,7 +8,7 @@
     #include "Courtroom.h"
 
     typedef struct{
-        int NbOfAnimStates;
+        unsigned int NbOfAnimStates;
         Vector2d* AnimStates;
         int* AnimRuntime;
         Vector2d* AnimRange;
@@ -17,7 +17,7 @@
 
     typedef struct{
         /* Background Texture properties */
-        SDL_Texture* Surface; /* Background Surface */
+        SDL_Texture* Surface;           /* Background Surface */
         int TileID;
         SDL_Rect SrcRect;
         
@@ -26,13 +26,15 @@
         Uint32 StartFrame;
         int CurrentState;
         int AnimOffset;
+        unsigned int nbOfAnimations;
         BGAnimation* Animation;
 
         /* Scenes index */
+        unsigned int nbOfCoordinates;
         Vector2i* ScenesCoordinates;
 
         /* Metadata */
-        bool* EndSignal;
+        bool* EndSignal;                /* Reference */
         bool EndSignalValue;
         char Flipped;
         int ObjectLayerOffset;

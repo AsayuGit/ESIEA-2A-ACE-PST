@@ -14,6 +14,7 @@
 	#endif
 
     /* Backgrounds functions */
+    void FreeBackground(BackgroundContext* SceneToFree);
     BackgroundContext* InitBackground(DisplayDevice* DDevice, char* ScenePath);
     void MoveBackground(BackgroundContext* Context, int TileID, char Effect);
     void BackgroundPlayAnimation(BackgroundContext* Context, int AnimationID, bool* EndSignal, bool EndSignalValue);
@@ -27,7 +28,5 @@
     void parseScene(DisplayDevice* DDevice, SceneContext* SContext);
     void SceneForward(SceneContext* SContext);
     void SceneBackward(SceneContext* SContext);
-    void FreeBGAnimation(BGAnimation* AnimationToFree);
-    void FreeBackground(BackgroundContext* SceneToFree);
 
 #endif

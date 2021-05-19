@@ -18,6 +18,8 @@
         char* ButtonJumpLabels[4];
     } CourtroomContext;
 
+    void FreeCourtroom(CourtroomContext* CourtContext);
+    CourtroomContext* InitCourtroom(DisplayDevice* DDevice);
     int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomContext* Context, char* DialogPath);
 
 #endif

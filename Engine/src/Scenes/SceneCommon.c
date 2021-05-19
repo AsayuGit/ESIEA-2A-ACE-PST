@@ -6,36 +6,66 @@
 
 /* Idée : Remplacer BackgroundID avec un "Background*" de cette façon les scènes gêrent elles meme leurs bg */
 
-BGAnimation* ParseBGAnimation(xmlNode* property){
-    BGAnimation* LoadingAnimation;
+void FreeBGAnimation(BGAnimation* AnimationToFree){
+    if (AnimationToFree->AnimStates)
+        free(AnimationToFree->AnimStates);
+    
+    if (AnimationToFree->AnimRuntime)
+        free(AnimationToFree->AnimRuntime);
+
+    if (AnimationToFree->AnimRange)
+        free(AnimationToFree->AnimRange);
+}
+
+void FreeBGAnimationArray(BGAnimation** ArrayToFree, unsigned int nbOfAnimations){
+    unsigned int i;
+
+    for (i = 0; i < nbOfAnimations; i++){
+        FreeBGAnimation(&(*ArrayToFree)[i]);
+    }
+    free(*ArrayToFree);
+}
+
+int ParseBGAnimationArray(xmlNode* property, BGAnimation** AnimationArray){
     xmlNode *array, *entry;
     unsigned int ArrayID, EntryID;
+    unsigned long nbOfAnimations;
 
-    LoadingAnimation = (BGAnimation*)malloc(xmlChildElementCount(property)*sizeof(BGAnimation));
+    nbOfAnimations = xmlChildElementCount(property);
+    (*AnimationArray) = NULL;
+    (*AnimationArray) = (BGAnimation*)calloc(nbOfAnimations, sizeof(BGAnimation));
+    if (!(*AnimationArray)){
+        printf("ERROR: Not enough memory!\n");
+        goto ERROR;
+    }
     array = property->children;
 
     ArrayID = 0;
     while (array){
         if (strcmp((char*)array->name, "anim") == 0) {
-            LoadingAnimation[ArrayID].NbOfAnimStates = xmlChildElementCount(array);
-            LoadingAnimation[ArrayID].AnimRegion = InitRect(
+            (*AnimationArray)[ArrayID].NbOfAnimStates = xmlChildElementCount(array);
+            (*AnimationArray)[ArrayID].AnimRegion = InitRect(
                 atoi((char*)xmlGetProp(array, (xmlChar*)"X")),
                 atoi((char*)xmlGetProp(array, (xmlChar*)"Y")),
                 atoi((char*)xmlGetProp(array, (xmlChar*)"W")), 
                 atoi((char*)xmlGetProp(array, (xmlChar*)"H"))
             );
             
-            LoadingAnimation[ArrayID].AnimStates = (Vector2d*)malloc(sizeof(Vector2d)*LoadingAnimation[ArrayID].NbOfAnimStates);
-            LoadingAnimation[ArrayID].AnimRange = (Vector2d*)malloc(sizeof(Vector2d)*LoadingAnimation[ArrayID].NbOfAnimStates);
-            LoadingAnimation[ArrayID].AnimRuntime = (int*)malloc(sizeof(int)*LoadingAnimation[ArrayID].NbOfAnimStates);
+            (*AnimationArray)[ArrayID].AnimStates = (Vector2d*)malloc(sizeof(Vector2d)*(*AnimationArray)[ArrayID].NbOfAnimStates);
+            (*AnimationArray)[ArrayID].AnimRange = (Vector2d*)malloc(sizeof(Vector2d)*(*AnimationArray)[ArrayID].NbOfAnimStates);
+            (*AnimationArray)[ArrayID].AnimRuntime = (int*)malloc(sizeof(int)*(*AnimationArray)[ArrayID].NbOfAnimStates);
+            if (!(*AnimationArray)[ArrayID].AnimStates || !(*AnimationArray)[ArrayID].AnimRange || !(*AnimationArray)[ArrayID].AnimRuntime){
+                printf("ERROR: Not enough memory!\n");
+                goto ERROR;
+            }
             entry = array->children;
             
             EntryID = 0;
             while (entry){
                 if (strcmp((char*)entry->name, "entry") == 0){
-                    LoadingAnimation[ArrayID].AnimStates[EntryID] = InitVector2d(atof((char*)xmlGetProp(entry, (xmlChar*)"stateA")), atof((char*)xmlGetProp(entry, (xmlChar*)"stateB")));
-                    LoadingAnimation[ArrayID].AnimRange[EntryID] = InitVector2d(atof((char*)xmlGetProp(entry, (xmlChar*)"rangeA")), atof((char*)xmlGetProp(entry, (xmlChar*)"rangeB")));
-                    LoadingAnimation[ArrayID].AnimRuntime[EntryID] = atoi((char*)xmlGetProp(entry, (xmlChar*)"runtime"));
+                    (*AnimationArray)[ArrayID].AnimStates[EntryID] = InitVector2d(atof((char*)xmlGetProp(entry, (xmlChar*)"stateA")), atof((char*)xmlGetProp(entry, (xmlChar*)"stateB")));
+                    (*AnimationArray)[ArrayID].AnimRange[EntryID] = InitVector2d(atof((char*)xmlGetProp(entry, (xmlChar*)"rangeA")), atof((char*)xmlGetProp(entry, (xmlChar*)"rangeB")));
+                    (*AnimationArray)[ArrayID].AnimRuntime[EntryID] = atoi((char*)xmlGetProp(entry, (xmlChar*)"runtime"));
                     EntryID++;
                 }
                 entry = entry->next;
@@ -46,27 +76,61 @@ BGAnimation* ParseBGAnimation(xmlNode* property){
         array = array->next;
     }
 
-    return LoadingAnimation;
+    return nbOfAnimations;
+
+ERROR:
+
+    FreeBGAnimationArray(AnimationArray, nbOfAnimations);
+
+    return 0;
 }
 
-Vector2i* ParseScenesCoordinates(xmlNode* property){
-    Vector2i* LoadingScenesCoordinates;
-    xmlNode* entry;
+int ParseScenesCoordinatesArray(xmlNode* property, Vector2i** CoordinatesArray){
+    xmlNode* entry = NULL;
     unsigned int EntryID;
+    unsigned long nbOfCoordinates;
 
-    LoadingScenesCoordinates = (Vector2i*)malloc(xmlChildElementCount(property)*sizeof(Vector2i));
+    nbOfCoordinates = xmlChildElementCount(property);
+    (*CoordinatesArray) = NULL;
+    (*CoordinatesArray) = (Vector2i*)calloc(nbOfCoordinates, sizeof(Vector2i));
+    if (!(*CoordinatesArray)){
+        printf("ERROR: Not enough memory!\n");
+        goto ERROR;
+    }
     entry = property->children;
 
     EntryID = 0;
     while (entry){
         if (strcmp((char*)entry->name, "scene") == 0){
-            LoadingScenesCoordinates[EntryID] = InitVector2i(atoi((char*)xmlGetProp(entry, (xmlChar*)"X")), atoi((char*)xmlGetProp(entry, (xmlChar*)"Y")));
+            (*CoordinatesArray)[EntryID] = InitVector2i(atoi((char*)xmlGetProp(entry, (xmlChar*)"X")), atoi((char*)xmlGetProp(entry, (xmlChar*)"Y")));
             EntryID++;
         }
         entry = entry->next;
     }
 
-    return LoadingScenesCoordinates;
+    return nbOfCoordinates;
+
+ERROR:
+
+    return 0;
+}
+
+void FreeBackground(BackgroundContext* SceneToFree){
+    if (SceneToFree->Surface)
+    #ifdef _SDL
+        free(SceneToFree->Surface);
+    #else 
+        SDL_DestroyTexture(SceneToFree->Surface);
+    #endif
+
+    if (SceneToFree->Animation){
+        FreeBGAnimationArray(&SceneToFree->Animation, SceneToFree->nbOfAnimations);
+    }
+
+    if (SceneToFree->ScenesCoordinates)
+        free(SceneToFree->ScenesCoordinates);
+
+    free(SceneToFree);
 }
 
 BackgroundContext* InitBackground(DisplayDevice* DDevice, char* ScenePath){
@@ -79,10 +143,18 @@ BackgroundContext* InitBackground(DisplayDevice* DDevice, char* ScenePath){
 
     /* Init */
     LoadingContext = (BackgroundContext*)calloc(1, sizeof(BackgroundContext));
+    if (!LoadingContext){
+        printf("ERROR: Not enough memory!\n");
+        goto ERROR;
+    }
 
     /* Logic */
     if (ScenePath){
         SceneFile = loadXml(ScenePath);                 /* Load the xml file in memory */
+        if (!SceneFile){
+            printf("ERROR: \"%s\" not found or not enough memory!\n", ScenePath);
+            goto ERROR;
+        }
         background = xmlDocGetRootElement(SceneFile);   /* root node */
 
         if ((SurfacePath = (char*)xmlGetProp(background, (xmlChar*)"texture"))){
@@ -98,12 +170,14 @@ BackgroundContext* InitBackground(DisplayDevice* DDevice, char* ScenePath){
         property = background->children;
         while (property){
             if (strcmp((char*)property->name, "animArray") == 0){
-                LoadingContext->Animation = ParseBGAnimation(property);
+                LoadingContext->nbOfAnimations = ParseBGAnimationArray(property, &LoadingContext->Animation);
             } else if (strcmp((char*)property->name, "sceneArray") == 0){
-                LoadingContext->ScenesCoordinates = ParseScenesCoordinates(property);
+                LoadingContext->nbOfCoordinates = ParseScenesCoordinatesArray(property, &LoadingContext->ScenesCoordinates);
             }
             property = property->next;
         }
+
+        xmlFreeDoc(SceneFile);
     }
 
     LoadingContext->SrcRect.w = BASE_RESOLUTION_X;
@@ -111,9 +185,14 @@ BackgroundContext* InitBackground(DisplayDevice* DDevice, char* ScenePath){
     LoadingContext->PlayingAnimation = -1;
     LoadingContext->Shown = true;
 
-    xmlFreeDoc(SceneFile);
-
     return LoadingContext;
+
+ERROR:
+
+    if (LoadingContext)
+        FreeBackground(LoadingContext);
+
+    return NULL;
 }
 
 void MoveBackground(BackgroundContext* Context, int TileID, char Effect){ /* Change the background tile */
@@ -382,9 +461,15 @@ void parseFlags(DisplayDevice* DDevice, SceneContext* SContext, xmlNode* element
                 (CharBuffer) ? (bool)atoi(CharBuffer) : 0
             );
         } else if (strcmp((char*)element->name, "removeFromLayer") == 0) {
-            DeleteCharacterFromLayer(
+            removeCharacterFromLayer(
                 SContext->CharaLayer,
-                SContext->CharactersIndex[(unsigned int)atoi((char*)xmlGetProp(element, (xmlChar*)"char"))]
+                (unsigned int)atoi((char*)xmlGetProp(element, (xmlChar*)"char"))
+            );
+        } else if (strcmp((char*)element->name, "setCharaVisiblity") == 0) {
+            setCharacterVisiblity(
+                SContext->CharaLayer,
+                (unsigned int)atoi((char*)xmlGetProp(element, (xmlChar*)"char")),
+                (bool)atoi((char*)xmlGetProp(element, (xmlChar*)"value"))
             );
         }
         element = element->next;
@@ -443,7 +528,7 @@ SceneContext* InitScene(DisplayDevice* DDevice, InputDevice* IDevice, DialogueCo
 }
 
 void FreeScene(SceneContext* SceneContext){
-
+    /* FIXME: Please implement this */
 }
 
 size_t parseDiag(SceneContext* SContext, xmlNode* element){
@@ -467,6 +552,7 @@ void parseAnim(SceneContext* SContext, xmlNode* element){
     int animTarget;
     int animationID;
 
+    SContext->CContext->IdleAnimation = -1;
     while (element){
         if (strcmp((char*)element->name, "animTarget") == 0) {
             animTarget = atoi((char*)xmlNodeGetContent(element));
@@ -536,30 +622,4 @@ void SceneForward(SceneContext* SContext){
 void SceneBackward(SceneContext* SContext){
     if (SContext->entry->prev)
         SContext->entry = SContext->entry->prev;
-}
-
-void FreeBGAnimation(BGAnimation* AnimationToFree){
-    if (AnimationToFree->AnimStates)
-        free(AnimationToFree->AnimStates);
-    
-    if (AnimationToFree->AnimRuntime)
-        free(AnimationToFree->AnimRuntime);
-
-    if (AnimationToFree->AnimRange)
-        free(AnimationToFree->AnimRange);
-}
-
-void FreeBackground(BackgroundContext* SceneToFree){
-    if (SceneToFree->Surface)
-    #ifdef _SDL
-        free(SceneToFree->Surface);
-    #else 
-        SDL_DestroyTexture(SceneToFree->Surface);
-    #endif
-
-    if (SceneToFree->Animation)
-        FreeBGAnimation(SceneToFree->Animation);
-
-    free(SceneToFree->ScenesCoordinates);
-    free(SceneToFree);
 }
