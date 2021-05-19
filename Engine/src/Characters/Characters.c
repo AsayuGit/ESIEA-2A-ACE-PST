@@ -113,14 +113,28 @@ void AddCharacterToLayer(CharacterLayer* CharaLayer, Characters* Character, Back
     CharaList = &(CharaLayer->CharaList);
     
     while ((*CharaList) != NULL){
-        if ((*CharaList)->Character == Character)
-            break;
         CharaList = &((*CharaList)->NextCharacter);
     }
-    if (!(*CharaList)){
-        (*CharaList) = (CharacterList*)malloc(sizeof(CharacterList));
-        (*CharaList)->Character = Character;
-        (*CharaList)->NextCharacter = NULL;
+    (*CharaList) = (CharacterList*)malloc(sizeof(CharacterList));
+    (*CharaList)->Character = Character;
+    (*CharaList)->NextCharacter = NULL;
+    (*CharaList)->Coordinates = BGContext->ScenesCoordinates[TileID];
+    (*CharaList)->Flip = Flip;
+}
+
+void MoveCharacterOnLayer(CharacterLayer* CharaLayer, BackgroundContext* BGContext, const unsigned int charaInLayerID, const int TileID, const bool Flip){
+    CharacterList** CharaList;
+    unsigned int i = 0;
+
+    if (!CharaLayer)
+        return; /* error */
+    CharaList = &(CharaLayer->CharaList);
+    
+    while ((*CharaList) != NULL){
+        if (i == charaInLayerID)
+            break;
+        CharaList = &((*CharaList)->NextCharacter);
+        i++;
     }
     (*CharaList)->Coordinates = BGContext->ScenesCoordinates[TileID];
     (*CharaList)->Flip = Flip;

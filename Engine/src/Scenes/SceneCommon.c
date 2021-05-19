@@ -363,12 +363,21 @@ void parseFlags(DisplayDevice* DDevice, SceneContext* SContext, xmlNode* element
             }
         } else if (strcmp((char*)element->name, "return") == 0){
             SContext->next = SContext->returnTarget;
-        } else if (strcmp((char*)element->name, "moveToLayer") == 0) {
+        } else if (strcmp((char*)element->name, "addToLayer") == 0) {
             CharBuffer = (char*)xmlGetProp(element, (xmlChar*)"flip");
             AddCharacterToLayer(
                 SContext->CharaLayer,
                 SContext->CharactersIndex[(unsigned int)atoi((char*)xmlGetProp(element, (xmlChar*)"char"))],
                 SContext->BGContext,
+                (int)atoi((char*)xmlGetProp(element, (xmlChar*)"dest")),
+                (CharBuffer) ? (bool)atoi(CharBuffer) : 0
+            );
+        } else if (strcmp((char*)element->name, "moveOnLayer") == 0) {
+            CharBuffer = (char*)xmlGetProp(element, (xmlChar*)"flip");
+            MoveCharacterOnLayer(
+                SContext->CharaLayer,
+                SContext->BGContext,
+                (unsigned int)atoi((char*)xmlGetProp(element, (xmlChar*)"char")),
                 (int)atoi((char*)xmlGetProp(element, (xmlChar*)"dest")),
                 (CharBuffer) ? (bool)atoi(CharBuffer) : 0
             );

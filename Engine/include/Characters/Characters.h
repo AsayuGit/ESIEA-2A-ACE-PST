@@ -12,6 +12,7 @@
     /* Character Layer Management */
     void InitCharacterLayer(CharacterLayer** CharaLayer, BackgroundContext* SContext);
     void AddCharacterToLayer(CharacterLayer* CharaLayer, Characters* Character, BackgroundContext* BGContext, int TileID, bool Flip);
+    void MoveCharacterOnLayer(CharacterLayer* CharaLayer, BackgroundContext* BGContext, const unsigned int charaInLayerID, const int TileID, const bool Flip);
     void DeleteCharacterFromLayer(CharacterLayer* CharaLayer, Characters* Character);
     void DisplayCharacterLayer(DisplayDevice* DDevice, CharacterLayer* CharaLayer);
 
