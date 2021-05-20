@@ -118,44 +118,46 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                     switch (IDevice->event.type)
                     {
                     case PAD_KEYDOWN:
-                        switch (IDevice->event.PADKEY)
-                        {
-                        case PAD_SELECT:
-                            if (SContext->diagMode > 0){
-                                if (Context->IdleAnimation > -1)
-                                    CharacterPlayAnimation(SContext->CharactersIndex[Context->CurrentCharacter], Context->IdleAnimation); /* Mouaif */
-                                SceneForward(SContext);
-                                parseScene(DDevice, SContext);
-                            }
-                            break;
-
-                        case PAD_BACK:
-                            /* FIXME: We need a nice way to toogle dialogue's booth way mode */
-                            if (SContext->diagMode == 2){
-                                if (Context->IdleAnimation > -1)
-                                    CharacterPlayAnimation(SContext->CharactersIndex[Context->CurrentCharacter], Context->IdleAnimation); /* Mouaif */
-                                SceneBackward(SContext);
-                                parseScene(DDevice, SContext);
-                            }
-                        
-                            break;
-
-                        case PAD_COURTRECORD:
-                            ShowCourtRecord(IDevice);
-                            Context->EventSelect = CREvents;
-                            break;
-
-                        case PAD_PRESS:
-                            if (SContext->diagMode > 0){
-                                if (SContext->press){
-                                    SContext->entry = SContext->press;
-                                    SContext->diagMode = 1;
-                                    setUI(HOLD_IT, 0);
+                        if (!IDevice->event.key.repeat){
+                            switch (IDevice->event.PADKEY)
+                            {
+                            case PAD_SELECT:
+                                if (SContext->diagMode > 0){
+                                    if (Context->IdleAnimation > -1)
+                                        CharacterPlayAnimation(SContext->CharactersIndex[Context->CurrentCharacter], Context->IdleAnimation); /* Mouaif */
+                                    SceneForward(SContext);
+                                    parseScene(DDevice, SContext);
                                 }
+                                break;
+
+                            case PAD_BACK:
+                                /* FIXME: We need a nice way to toogle dialogue's booth way mode */
+                                if (SContext->diagMode == 2){
+                                    if (Context->IdleAnimation > -1)
+                                        CharacterPlayAnimation(SContext->CharactersIndex[Context->CurrentCharacter], Context->IdleAnimation); /* Mouaif */
+                                    SceneBackward(SContext);
+                                    parseScene(DDevice, SContext);
+                                }
+                            
+                                break;
+
+                            case PAD_COURTRECORD:
+                                ShowCourtRecord(IDevice);
+                                Context->EventSelect = CREvents;
+                                break;
+
+                            case PAD_PRESS:
+                                if (SContext->diagMode > 0){
+                                    if (SContext->press){
+                                        SContext->entry = SContext->press;
+                                        SContext->diagMode = 1;
+                                        setUI(HOLD_IT, 0);
+                                    }
+                                }
+                                break;
+                            default:
+                                break;
                             }
-                            break;
-                        default:
-                            break;
                         }
                         break;
                     }
@@ -165,25 +167,29 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                     switch (IDevice->event.type)
                     {
                     case PAD_KEYDOWN:
-                        switch (IDevice->event.PADKEY)
-                        {
-                        case PAD_SELECT:
-                            ButtonInput = GetClkdButtonID(BContext); /* Get the id of the currently selected button */
-                            Context->ButtonActivated = 0;
-                            Context->EventSelect = MainEvents;
-                            SContext->entry = searchNodeLabel(SContext->entry, Context->ButtonJumpLabels[ButtonInput]);
-                            MoveBackground(ButtonLayer, 0, 0);
-                            if (Context->IdleAnimation > -1)
-                                CharacterPlayAnimation(SContext->CharactersIndex[Context->CurrentCharacter], Context->IdleAnimation); /* Mouaif */
-                            parseScene(DDevice, SContext);
-                            break;
-                        case PAD_COURTRECORD:
-                            ShowCourtRecord(IDevice);
-                            Context->EventSelect = CREvents;
-                            break;
-                        default:
-                            break;
+                        if (!IDevice->event.key.repeat){
+                            switch (IDevice->event.PADKEY)
+                            {
+                            case PAD_SELECT:
+                                ButtonInput = GetClkdButtonID(BContext); /* Get the id of the currently selected button */
+                                Context->ButtonActivated = 0;
+                                Context->EventSelect = MainEvents;
+                                SContext->entry = searchNodeLabel(SContext->entry, Context->ButtonJumpLabels[ButtonInput]);
+                                MoveBackground(ButtonLayer, 0, 0);
+                                if (Context->IdleAnimation > -1)
+                                    CharacterPlayAnimation(SContext->CharactersIndex[Context->CurrentCharacter], Context->IdleAnimation); /* Mouaif */
+                                parseScene(DDevice, SContext);
+                                break;
+                            case PAD_COURTRECORD:
+                                ShowCourtRecord(IDevice);
+                                Context->EventSelect = CREvents;
+                                break;
+                            default:
+                                break;
+                            }
                         }
+                        break;
+                    default:
                         break;
                     }
                     break;

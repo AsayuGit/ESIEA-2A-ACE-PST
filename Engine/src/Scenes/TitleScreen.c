@@ -52,37 +52,38 @@ int Scene_TitleScreen(DisplayDevice* DDevice, InputDevice* IDevice){
                 break;
 
             case PAD_KEYDOWN:
-                switch (IDevice->event.PADKEY)
-                {
-                case PAD_SELECT:
-                    if (Slide == 0){
-                        Mix_PlayChannel(-1, ToMenu, 0);
-                        SetSlkdButtonID(BContext, 0);
-                        BackgroundPlayAnimation(SContext, 0, &IDevice->EventEnabled, true);
-                        Slide = 1;
-                    } else {
-                        switch (GetClkdButtonID(BContext))
-                        {
-                        case 0:
-                            ReturnValue = 0;
-                            goto Exit;
-                            break;
-                        case 1:
-                            BackgroundPlayAnimation(SContext, 1, &IDevice->EventEnabled, true);
-                            Slide = 0;
-                            Menu = 0;
-                            break;
-                        
-                        default:
-                            break;
+                if (!IDevice->event.key.repeat){
+                    switch (IDevice->event.PADKEY)
+                    {
+                    case PAD_SELECT:
+                        if (Slide == 0){
+                            Mix_PlayChannel(-1, ToMenu, 0);
+                            SetSlkdButtonID(BContext, 0);
+                            BackgroundPlayAnimation(SContext, 0, &IDevice->EventEnabled, true);
+                            Slide = 1;
+                        } else {
+                            switch (GetClkdButtonID(BContext))
+                            {
+                            case 0:
+                                ReturnValue = 0;
+                                goto Exit;
+                                break;
+                            case 1:
+                                BackgroundPlayAnimation(SContext, 1, &IDevice->EventEnabled, true);
+                                Slide = 0;
+                                Menu = 0;
+                                break;
+                            
+                            default:
+                                break;
+                            }
                         }
+                        break;
+                    
+                    default:
+                        break;
                     }
-                    break;
-                
-                default:
-                    break;
                 }
-
                 break;
             default:
                 break;

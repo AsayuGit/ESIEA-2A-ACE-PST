@@ -171,13 +171,14 @@ SDL_Texture* CreateTargetSurface(DisplayDevice* DDevice, int w, int h){
 }
 
 Mix_Music* LoadMusic(char FilePath[]){
-    Mix_Music* LoadingMusic;
+    Mix_Music* LoadingMusic = NULL;
+
+    if (FilePath){
+        LoadingMusic = Mix_LoadMUS(FilePath);
+        if (LoadingMusic == NULL)
+            fprintf(stderr, "Can't load music %s\n", Mix_GetError());
+    }
     
-    LoadingMusic = NULL;
-    LoadingMusic = Mix_LoadMUS(FilePath);
-    
-    if (LoadingMusic == NULL)
-        fprintf(stderr, "Can't load music %s\n", Mix_GetError());
     return LoadingMusic;
 }
 

@@ -337,37 +337,39 @@ void HandleCourtRecordEvents(SDL_Event* event, SceneContext* SContext){
         switch (event->type)
         {
         case PAD_KEYDOWN:
-            switch (event->PADKEY)
-            {
-            case PAD_UP:
-            case PAD_DOWN:
-                SelectedSlot = (SelectedSlot + 4) % 8;
-                Mix_PlayChannel(-1, MoveCursor, 0);
-                break;
-            case PAD_LEFT:
-                SelectedSlot = ((SelectedSlot + 3) % 4) + ((SelectedSlot / 4) * 4);
-                Mix_PlayChannel(-1, MoveCursor, 0);
-                break;
-            case PAD_RIGHT:
-                SelectedSlot = ((SelectedSlot + 1) % 4) + ((SelectedSlot / 4) * 4);
-                Mix_PlayChannel(-1, MoveCursor, 0);
-                break;
-            case PAD_SELECT:
-                SelectedItem = GetSelectedItem(SelectedSlot);
-                if (SelectedItem >= 0) {
-                    MenuSelect = DetailsMenu;
-                    UpdateItemDetails(SelectedItem);
+            if (!event->key.repeat){
+                switch (event->PADKEY)
+                {
+                case PAD_UP:
+                case PAD_DOWN:
+                    SelectedSlot = (SelectedSlot + 4) % 8;
                     Mix_PlayChannel(-1, MoveCursor, 0);
+                    break;
+                case PAD_LEFT:
+                    SelectedSlot = ((SelectedSlot + 3) % 4) + ((SelectedSlot / 4) * 4);
+                    Mix_PlayChannel(-1, MoveCursor, 0);
+                    break;
+                case PAD_RIGHT:
+                    SelectedSlot = ((SelectedSlot + 1) % 4) + ((SelectedSlot / 4) * 4);
+                    Mix_PlayChannel(-1, MoveCursor, 0);
+                    break;
+                case PAD_SELECT:
+                    SelectedItem = GetSelectedItem(SelectedSlot);
+                    if (SelectedItem >= 0) {
+                        MenuSelect = DetailsMenu;
+                        UpdateItemDetails(SelectedItem);
+                        Mix_PlayChannel(-1, MoveCursor, 0);
+                    }
+                    break;
+                case PAD_COURTRECORD:
+                    /* Dissable the court reccord */
+                    BackgroundPlayAnimation(courtRecordLayer, 1, &courtRecordShown, false);
+                    SContext->IDevice->EventEnabled = true;
+                    SContext->CContext->EventSelect = (SContext->CContext->ButtonActivated) ? 1 : 0;
+                    break;
+                default:
+                    break;
                 }
-                break;
-            case PAD_COURTRECORD:
-                /* Dissable the court reccord */
-                BackgroundPlayAnimation(courtRecordLayer, 1, &courtRecordShown, false);
-                SContext->IDevice->EventEnabled = true;
-                SContext->CContext->EventSelect = (SContext->CContext->ButtonActivated) ? 1 : 0;
-                break;
-            default:
-                break;
             }
             break;
         default:
@@ -378,58 +380,60 @@ void HandleCourtRecordEvents(SDL_Event* event, SceneContext* SContext){
         switch (event->type)
         {
         case PAD_KEYDOWN:
-            switch (event->PADKEY)
-            {
-            case PAD_LEFT:
-                SlotSearch = GetSelectedItem(SelectedSlot - 1);
-                if (SlotSearch >= 0) {
-                    SelectedItem = SlotSearch;
-                    SelectedSlot--;
-                    MenuSelect = DetailsMenu;
-                    UpdateItemDetails(SelectedItem);
-                    Mix_PlayChannel(-1, MoveCursor, 0);
-                }
-                break;
-
-            case PAD_RIGHT:
-                SlotSearch = GetSelectedItem(SelectedSlot + 1);
-                if (SlotSearch >= 0) {
-                    SelectedItem = SlotSearch;
-                    SelectedSlot++;
-                    MenuSelect = DetailsMenu;
-                    UpdateItemDetails(SelectedItem);
-                    Mix_PlayChannel(-1, MoveCursor, 0);
-                }
-                break;
-
-            case PAD_BACK:
-                MenuSelect = MainCRMenu;
-                Mix_PlayChannel(-1, MoveCursor, 0);
-                break;
-            case PAD_PRESS:
-                if (SContext->presentDefault){
-                    courtRecordShown = false;
-                    SContext->CContext->EventSelect = 0;
-                    SContext->diagMode = 1;
-                    if (SContext->presentItem == SelectedItem){
-                        setUI(OBJECTION, 0);
-                        if (SContext->presentMatch)
-                            SContext->entry = SContext->presentMatch;
-                    } else {
-                        setUI(OBJECTION, 1);
-                        if (SContext->presentDefault)
-                            SContext->entry = SContext->presentDefault;
+            if (!event->key.repeat){
+                switch (event->PADKEY)
+                {
+                case PAD_LEFT:
+                    SlotSearch = GetSelectedItem(SelectedSlot - 1);
+                    if (SlotSearch >= 0) {
+                        SelectedItem = SlotSearch;
+                        SelectedSlot--;
+                        MenuSelect = DetailsMenu;
+                        UpdateItemDetails(SelectedItem);
+                        Mix_PlayChannel(-1, MoveCursor, 0);
                     }
+                    break;
+
+                case PAD_RIGHT:
+                    SlotSearch = GetSelectedItem(SelectedSlot + 1);
+                    if (SlotSearch >= 0) {
+                        SelectedItem = SlotSearch;
+                        SelectedSlot++;
+                        MenuSelect = DetailsMenu;
+                        UpdateItemDetails(SelectedItem);
+                        Mix_PlayChannel(-1, MoveCursor, 0);
+                    }
+                    break;
+
+                case PAD_BACK:
+                    MenuSelect = MainCRMenu;
+                    Mix_PlayChannel(-1, MoveCursor, 0);
+                    break;
+                case PAD_PRESS:
+                    if (SContext->presentDefault){
+                        courtRecordShown = false;
+                        SContext->CContext->EventSelect = 0;
+                        SContext->diagMode = 1;
+                        if (SContext->presentItem == SelectedItem){
+                            setUI(OBJECTION, 0);
+                            if (SContext->presentMatch)
+                                SContext->entry = SContext->presentMatch;
+                        } else {
+                            setUI(OBJECTION, 1);
+                            if (SContext->presentDefault)
+                                SContext->entry = SContext->presentDefault;
+                        }
+                    }
+                    break;
+                case PAD_COURTRECORD:
+                    /* Dissable the court reccord */
+                    BackgroundPlayAnimation(courtRecordLayer, 1, &courtRecordShown, false);
+                    SContext->IDevice->EventEnabled = true;
+                    SContext->CContext->EventSelect = (SContext->CContext->ButtonActivated) ? 1 : 0;
+                    break;
+                default:
+                    break;
                 }
-                break;
-            case PAD_COURTRECORD:
-                /* Dissable the court reccord */
-                BackgroundPlayAnimation(courtRecordLayer, 1, &courtRecordShown, false);
-                SContext->IDevice->EventEnabled = true;
-                SContext->CContext->EventSelect = (SContext->CContext->ButtonActivated) ? 1 : 0;
-                break;
-            default:
-                break;
             }
             break;
         default:
