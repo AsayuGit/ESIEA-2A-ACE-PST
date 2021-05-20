@@ -2,36 +2,22 @@
 <character colorKey="0xb5a5d5" texture="./Assets/Textures/Characters/Policier.bmp">
     <name>Policier</name>
     <animArray>
-        <anim framerate="125" nbOfFrames="3"> <!-- Talk 1-->
-            <src H="191" W="167" Y="242" X="667"/> 		
-            <dst H="191" W="165" Y="20" X="0"/>
+        <anim framerate="125" nbOfFrames="4"> <!-- Talk 1-->
+            <src H="192" W="166" Y="242" X="631"/> 		
+            <dst H="192" W="166" Y="20" X="0"/>
         </anim>
         <anim framerate="125" nbOfFrames="4"> <!-- Talk 2-->
             
-            <src H="192" W="112" Y="464" X="794"/> 
-			<dst H="192" W="112" Y="20" X="15"/>
+            <src H="192" W="113" Y="464" X="844"/> 
+			<dst H="192" W="113" Y="20" X="15"/>
         </anim>
         <anim framerate="125" nbOfFrames="4"> <!-- Talk 3-->
-            <src H="174" W="128" Y="882" X="527"/> 
-            <dst H="174" W="128" Y="20" X="0"/>
+            <src H="174" W="127" Y="882" X="569"/> 
+            <dst H="174" W="127" Y="20" X="0"/>
         </anim>
         <anim framerate="125" nbOfFrames="4"> <!-- Talk 4-->
-            <src H="190" W="144" Y="1087" X="586"/> 
-			<dst H="190" W="144" Y="20" X="0"/>
-        </anim>
-
-        <anim framerate="125" nbOfFrames="4"> <!-- Talk 5-->
-            <src H="192" W="195" Y="1507" X="422"/> 
-            <dst H="192" W="195" Y="20" X="0"/>
-        </anim>
-
-        <anim framerate="125" nbOfFrames="7"> <!-- Enerver -->
-            <src H="192" W="156" Y="667" X="13"/> 		
-            <dst H="192" W="156" Y="15" X="0"/>
-        </anim>
-        <anim framerate="125" nbOfFrames="2"> <!-- Etranglement -->
-            <src H="187" W="158" Y="1733" X="163"/>
-            <dst H="187" W="158" Y="20" X="0"/>
+            <src H="190" W="143" Y="1087" X="647"/> 
+			<dst H="190" W="143" Y="20" X="0"/>
         </anim>
     </animArray>
 </character>

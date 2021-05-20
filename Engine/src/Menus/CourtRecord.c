@@ -541,6 +541,7 @@ void DrawCourtRecord(DisplayDevice* DDevice, BitmapFont* Font){
 
 void ShowCourtRecord(InputDevice* IDevice){
     courtRecordShown = true;
+    MenuSelect = MainCRMenu;
     BackgroundPlayAnimation(courtRecordLayer, 0, &IDevice->EventEnabled, true);
 }
 

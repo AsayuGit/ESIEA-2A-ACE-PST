@@ -161,6 +161,8 @@ void Dialogue(DialogueContext* Context, unsigned char mode){
             } else {
                 Context->DstLetter.x = InLayerTextBounds.x;
                 Context->DstLetter.y += Context->MainFont->Rects[0].h;
+                if (Context->Text[Context->progress] != '\n')
+                    Context->progress--;
             }
             
             Context->progress++;

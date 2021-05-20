@@ -507,7 +507,7 @@ SceneContext* InitScene(DisplayDevice* DDevice, InputDevice* IDevice, DialogueCo
     LoadingScene->CharaLayer = NULL;
     InitCharacterLayer(&LoadingScene->CharaLayer, LoadingScene->BGContext);
 
-    LoadingScene->entry = searchNode(rootNode->children, "entry");
+    LoadingScene->next = LoadingScene->entry = searchNode(rootNode->children, "entry");
     LoadingScene->returnTarget = LoadingScene->entry;
     LoadingScene->next = LoadingScene->entry->next;
 
@@ -590,7 +590,15 @@ void parseScene(DisplayDevice* DDevice, SceneContext* SContext){
     size_t lineSize = 0; /* Hold the size of the dialog who is about to be played */
 
     /* Logic */
-    SContext->next = SContext->entry->next;
+    property = SContext->entry->next;
+    while (property){
+        if (strcmp((char*)property->name, "entry") == 0){
+            SContext->next = property;
+            break;
+        }
+        property = property->next;
+    }
+    
     property = SContext->entry->children;
     while (property){
         if (strcmp((char*)property->name, "diag") == 0){
@@ -613,8 +621,8 @@ void parseScene(DisplayDevice* DDevice, SceneContext* SContext){
 void SceneForward(SceneContext* SContext){
     if (SContext->Jump) {
         SContext->Jump = false;
-    } else if (SContext->entry->next){
-        SContext->entry = SContext->next;
+    } else {
+        SContext->entry = SContext->next; 
     }
 }
 

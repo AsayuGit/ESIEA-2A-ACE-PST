@@ -2,28 +2,28 @@
     <name>Billy</name>
     <animArray>
         <anim framerate="125" nbOfFrames="4"> <!-- Talk 1 blasée-->
-            <src H="177" W="151" Y="657" X="257"/> 		
-            <dst H="177" W="151" Y="26" X="158"/>
+            <src H="177" W="152" Y="80" X="657"/> 		
+            <dst H="177" W="152" Y="0" X="50"/>
         </anim>
         <anim framerate="125" nbOfFrames="4"> <!-- Talk 2 sur de lui-->
-            <src H="183" W="158" Y="20" X="655"/> 
-            <dst H="183" W="158" Y="26" X="158"/>
+            <src H="183" W="159" Y="473" X="20"/> 
+            <dst H="183" W="159" Y="0" X="50"/>
         </anim>
         <anim framerate="125" nbOfFrames="4"> <!-- Talk 3 chiale avec menottes-->
-            <src H="177" W="97" Y="465" X="1244"/> 
-			<dst H="177" W="97" Y="26" X="158"/>
+            <src H="177" W="98" Y="1067" X="465"/> 
+			<dst H="177" W="98" Y="0" X="80"/>
         </anim>
         <anim framerate="125" nbOfFrames="4"> <!-- Talk 4 heureux-->
-            <src H="177" W="146" Y="4" X="2020"/> 
-			<dst H="177" W="146" Y="26" X="158"/>
+            <src H="178" W="147" Y="1843" X="4"/> 
+			<dst H="178" W="147" Y="0" X="50"/>
         </anim>
 		<anim framerate="125" nbOfFrames="4"> <!-- Talk 5 un peu géné-->
-            <src H="177" W="174" Y="401" X="2221"/> 
-			<dst H="177" W="174" Y="26" X="158"/>
+            <src H="177" W="175" Y="2044" X="401"/> 
+			<dst H="177" W="175" Y="0" X="30"/>
         </anim>
 		<anim framerate="125" nbOfFrames="4"> <!-- Talk 6 penseur-->
-            <src H="171" W="112" Y="579" X="2102"/> 
-			<dst H="171" W="112" Y="26" X="158"/>
+            <src H="171" W="113" Y="2250" X="579"/> 
+			<dst H="171" W="113" Y="10" X="70"/>
         </anim>
     </animArray>
 </character>

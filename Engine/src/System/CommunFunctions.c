@@ -38,7 +38,8 @@ Vector2i gstrlen(BitmapFont* Font, char* text, int intCharSpce){
     return gprintf(NULL, Font, text, intCharSpce, NULL);
 }
 
-
+/* Could use the same engine as dialogue for bonds checking */
+/* Or a letter by letter mode */
 Vector2i gprintf(DisplayDevice* DDevice, BitmapFont* Font, char* text, int intCharSpce, const SDL_Rect* Bounds){
     /* Declaration */
     unsigned int CharID, sizeTmp, DimX;
