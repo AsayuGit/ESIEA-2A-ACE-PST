@@ -14,7 +14,7 @@
     void AddCharacterToLayer(CharacterLayer* CharaLayer, Characters* Character, BackgroundContext* BGContext, int TileID, bool Flip);
     void MoveCharacterOnLayer(CharacterLayer* CharaLayer, BackgroundContext* BGContext, const unsigned int charaInLayerID, const int TileID, const bool Flip);
     void removeCharacterFromLayer(CharacterLayer* CharaLayer, const unsigned int charaInLayerID);
-    void setCharacterVisiblity(CharacterLayer* CharaLayer, const unsigned int charaInLayerID, bool Shown);
+    void setCharacterVisibility(CharacterLayer* CharaLayer, const unsigned int charaInLayerID, bool Shown);
     void DisplayCharacterLayer(DisplayDevice* DDevice, CharacterLayer* CharaLayer);
 
 #endif

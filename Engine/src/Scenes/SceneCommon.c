@@ -465,8 +465,8 @@ void parseFlags(DisplayDevice* DDevice, SceneContext* SContext, xmlNode* element
                 SContext->CharaLayer,
                 (unsigned int)atoi((char*)xmlGetProp(element, (xmlChar*)"char"))
             );
-        } else if (strcmp((char*)element->name, "setCharaVisiblity") == 0) {
-            setCharacterVisiblity(
+        } else if (strcmp((char*)element->name, "setCharaVisibility") == 0) {
+            setCharacterVisibility(
                 SContext->CharaLayer,
                 (unsigned int)atoi((char*)xmlGetProp(element, (xmlChar*)"char")),
                 (bool)atoi((char*)xmlGetProp(element, (xmlChar*)"value"))

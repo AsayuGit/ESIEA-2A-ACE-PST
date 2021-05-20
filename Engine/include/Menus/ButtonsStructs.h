@@ -5,7 +5,7 @@
     #include "SceneCommonStructs.h"
 
     typedef struct{
-        SDL_Texture* ButtonsSurface;        /* Store the button's spritesheet */
+        SDL_Texture* ButtonsSurface;    /* Store the button's spritesheet */
         char* Label[4];                 /* Text printed on the buttons */
         BitmapFont* Font;               /* Font used to display the text */
         Mix_Chunk* ButtonUpDown;        /* Sound effect played when moving the cursor */
@@ -33,9 +33,9 @@
         int CenterPartLength;
         #endif
 
-        SDL_Rect* Viewport;             /* Scene viewport */
+        SDL_Rect* Viewport;             /* Scene viewport (Reference) */
         
-        DisplayDevice* DDevice;         /* The Engine's display device */
+        DisplayDevice* DDevice;         /* The Engine's display device (Reference) */
     } ButtonsContext;
 
     typedef struct{

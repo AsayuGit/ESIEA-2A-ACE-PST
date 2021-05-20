@@ -165,7 +165,7 @@ void removeCharacterFromLayer(CharacterLayer* CharaLayer, const unsigned int cha
     }
 }
 
-void setCharacterVisiblity(CharacterLayer* CharaLayer, const unsigned int charaInLayerID, bool Shown){
+void setCharacterVisibility(CharacterLayer* CharaLayer, const unsigned int charaInLayerID, bool Shown){
     CharacterList** CharaList;
     unsigned int i = 0;
 

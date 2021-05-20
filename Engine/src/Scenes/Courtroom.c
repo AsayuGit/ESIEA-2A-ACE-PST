@@ -19,6 +19,7 @@ CourtroomContext* InitCourtroom(DisplayDevice* DDevice){
 
     CourtContext->MainFont = LoadBitmapFont(ROOT""FONTS"AceAttorneyFont"TEX_EXT, DDevice, 0xff00ff);
     CourtContext->NameFont = LoadBitmapFont(ROOT""FONTS"NameFont"TEX_EXT, DDevice, 0xff00ff);
+    CourtContext->ButtonFont = LoadBitmapFont(ROOT""FONTS"MainMenuFont"TEX_EXT, DDevice, 0xff00ff);
     if (!CourtContext->MainFont || !CourtContext->NameFont){
         printf("ERROR: Couldn't load in fonts or not enough memory!\n");
         goto ERROR;

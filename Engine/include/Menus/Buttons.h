@@ -5,6 +5,7 @@
     #include "SceneCommonStructs.h"
     #include "ButtonsStructs.h"
 
+    void FreeButtons(ButtonsContext* BContext);
     ButtonsContext* InitButtons(DisplayDevice* DDevice, BackgroundContext* SContext, BitmapFont* Font, int buttonLength, SDL_Rect* ButtonObjectDimensions);
     
     void AddButton(ButtonsContext* ButtonObject, const char* Label);

@@ -2,20 +2,70 @@
 
 #define NBOFBUTTONS 4
 
+void FreeButtons(ButtonsContext* BContext){
+    unsigned int i;
+
+    if (BContext->ButtonsSurface)
+        SDL_DestroyTexture(BContext->ButtonsSurface);
+    if (BContext->ButtonUpDown)
+        Mix_FreeChunk(BContext->ButtonUpDown);
+    if (BContext->ButtonClicked)
+        Mix_FreeChunk(BContext->ButtonClicked);
+    
+
+    for (i = 0; i < 4; i++){
+        if (BContext->ClickedSndEffect[i]){
+            Mix_FreeChunk(BContext->ClickedSndEffect[i]);
+        }
+    }
+    
+    free(BContext);
+}
+
 ButtonsContext* InitButtons(DisplayDevice* DDevice, BackgroundContext* SContext, BitmapFont* Font, int buttonLength, SDL_Rect* ButtonObjectDimensions){
-    ButtonsContext* BContext;
+    ButtonsContext* BContext = NULL;
     unsigned char i;
 
     /* Buttons Texture */
     BContext = (ButtonsContext*)malloc(sizeof(ButtonsContext));
-    BContext->ButtonsSurface = LoadSurface(ROOT""TEXTURES"Menus"SL"Buttons"TEX_EXT, DDevice, 0xff00ff, SURFACE_KEYED);
+    if (!BContext){
+        printf("ERROR: Not enough memory:\n");
+        goto ERROR;
+    }
+
+    /* System Display device */
+    if (!DDevice){
+        printf("ERROR: DisplayDevice not privided!\n");
+        goto ERROR;
+    }
+    BContext->DDevice = DDevice;
 
     /* Buttons Font */
+    if (!Font){
+        printf("ERROR: No font provided!\n");
+        goto ERROR;
+    }
     BContext->Font = Font;
+    
+    BContext->ButtonsSurface = LoadSurface(ROOT""TEXTURES"Menus"SL"Buttons"TEX_EXT, DDevice, 0xff00ff, SURFACE_KEYED);
+    if (!BContext->ButtonsSurface){
+        printf("ERROR: Couldn't load \"%s\", file not found or not enough memory:\n", ROOT""TEXTURES"Menus"SL"Buttons"TEX_EXT);
+        goto ERROR;
+    }
 
     /* Buttons Sound effects */
     BContext->ButtonUpDown = LoadSoundEffect(EffectPath[CHK_ButtonUpDown]);
+    if (!BContext->ButtonUpDown){
+        printf("ERROR: Couldn't load \"%s\", file not found or not enough memory:\n", EffectPath[CHK_ButtonUpDown]);
+        goto ERROR;
+    }
+    
     BContext->ButtonClicked = LoadSoundEffect(EffectPath[CHK_ButtonClicked]);
+    if (!BContext->ButtonClicked){
+        printf("ERROR: Couldn't load \"%s\", file not found or not enough memory:\n", EffectPath[CHK_ButtonClicked]);
+        goto ERROR;
+    }
+
     for (i = 0; i < 4; i++){
         BContext->ClickedSndEffect[i] = BContext->ButtonClicked;
     }
@@ -67,10 +117,13 @@ ButtonsContext* InitButtons(DisplayDevice* DDevice, BackgroundContext* SContext,
     /* Buttons Viewport */
     BContext->Viewport = &(SContext->SrcRect);
 
-    /* System Display device */
-    BContext->DDevice = DDevice;
-
     return BContext;
+
+ERROR:
+
+    FreeButtons(BContext);
+
+    return NULL;
 }
 
 void AddButton(ButtonsContext* ButtonObject, const char* Label){
