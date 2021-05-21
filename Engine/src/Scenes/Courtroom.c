@@ -123,7 +123,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                             {
                             case PAD_SELECT:
                                 if (SContext->diagMode > 0){
-                                    if (Context->IdleAnimation > -1)
+                                    if ((Context->IdleAnimation > -1) && (Context->CurrentCharacter >= 0))
                                         CharacterPlayAnimation(SContext->CharactersIndex[Context->CurrentCharacter], Context->IdleAnimation); /* Mouaif */
                                     SceneForward(SContext);
                                     parseScene(DDevice, SContext);
@@ -133,7 +133,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                             case PAD_BACK:
                                 /* FIXME: We need a nice way to toogle dialogue's booth way mode */
                                 if (SContext->diagMode == 2){
-                                    if (Context->IdleAnimation > -1)
+                                    if ((Context->IdleAnimation > -1) && (Context->CurrentCharacter >= 0))
                                         CharacterPlayAnimation(SContext->CharactersIndex[Context->CurrentCharacter], Context->IdleAnimation); /* Mouaif */
                                     SceneBackward(SContext);
                                     parseScene(DDevice, SContext);
@@ -176,7 +176,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                                 Context->EventSelect = MainEvents;
                                 SContext->entry = searchNodeLabel(SContext->entry, Context->ButtonJumpLabels[ButtonInput]);
                                 MoveBackground(ButtonLayer, 0, 0);
-                                if (Context->IdleAnimation > -1)
+                                if ((Context->IdleAnimation > -1) && (Context->CurrentCharacter >= 0))
                                     CharacterPlayAnimation(SContext->CharactersIndex[Context->CurrentCharacter], Context->IdleAnimation); /* Mouaif */
                                 parseScene(DDevice, SContext);
                                 break;
@@ -205,7 +205,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
 
         /* Logic */ /* FIXME: There may be a way to optimize this further */ 
         if ((DiagContext->progress >= Context->ReturnToDefault) && (Context->ReturnToDefault != -1)){
-            if (Context->IdleAnimation >= 0)
+            if ((Context->IdleAnimation >= 0) && (Context->CurrentCharacter >= 0))
                 CharacterPlayAnimation(SContext->CharactersIndex[Context->CurrentCharacter], Context->IdleAnimation);
             Context->ReturnToDefault = -1;
             if (Context->ButtonActivated){ /* We do that here because we want to wait for the dialogue to end before showing the buttons */

@@ -532,8 +532,8 @@ void FreeScene(SceneContext* SceneContext){
 }
 
 size_t parseDiag(SceneContext* SContext, xmlNode* element){
-    int CurrentCharacterID; /* Hold the name of the character who is talking during the dialog */
-    char* DialogueText; /* Hold the text of the dialogue itself */
+    int CurrentCharacterID = -1; /* Hold the name of the character who is talking during the dialog */
+    char* DialogueText = NULL; /* Hold the text of the dialogue itself */
 
     while (element){
         if (strcmp((char*)element->name, "char") == 0) {
@@ -545,7 +545,7 @@ size_t parseDiag(SceneContext* SContext, xmlNode* element){
     }
     SContext->CContext->CurrentCharacter = CurrentCharacterID;
 
-    return SetDialogueText(SContext->DiagContext, SContext->CharactersIndex[CurrentCharacterID]->DisplayName, DialogueText, 1);
+    return SetDialogueText(SContext->DiagContext, (CurrentCharacterID >= 0) ? SContext->CharactersIndex[CurrentCharacterID]->DisplayName : "", DialogueText, 1);
 }
 
 void parseAnim(SceneContext* SContext, xmlNode* element){
