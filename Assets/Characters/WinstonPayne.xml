@@ -10,5 +10,14 @@
             <src X="111" Y="26" W="85" H="134"/>
             <dst X="158" Y="26" W="85" H="134"/>
         </anim>
+        <anim nbOfFrames="4" framerate="125"> <!-- choqué-->
+            <src X="31" Y="329" W="110" H="118"/>
+            <dst X="158" Y="26" W="110" H="118"/>
+        </anim>
+        <anim nbOfFrames="4" framerate="125"> <!-- Talk choqué-->
+            <src X="534" Y="328" W="110" H="118"/>
+            <dst X="158" Y="26" W="110" H="118"/>
+        </anim>
+        
     </animArray>
 </character>

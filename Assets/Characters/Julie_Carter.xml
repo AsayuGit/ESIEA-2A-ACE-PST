@@ -1,21 +1,46 @@
 <character colorKey="0x546d8e" texture="./Assets/Textures/Characters/Julie_Carter.bmp">
     <name>Julie</name>
     <animArray>
-        <anim framerate="125" nbOfFrames="3"> <!-- Talk 1 en regardant dans ses pensées-->
-            <src H="192" W="116" Y="427" X="40"/> 		
+        <anim framerate="250" nbOfFrames="16"> <!-- Idle fume -->
+            <src H="193" W="116" Y="5" X="0"/> 		
+            <dst H="193" W="116" Y="0" X="75"/>
+        </anim>
+        <anim framerate="125" nbOfFrames="4"> <!-- Talk 2  -->
+            <src H="192" W="116" Y="230" X="9"/> 
             <dst H="192" W="116" Y="0" X="75"/>
         </anim>
-        <anim framerate="125" nbOfFrames="4"> <!-- Talk 2 sur d'elle-->
-            <src H="191" W="116" Y="631" X="583"/> 
-            <dst H="191" W="116" Y="0" X="75"/>
+		<anim framerate="125" nbOfFrames="4"> <!-- Talk 3   -->
+            <src H="192" W="116" Y="227" X="491"/> 
+            <dst H="192" W="116" Y="0" X="75"/>
         </anim>
-        <anim framerate="125" nbOfFrames="4"> <!-- Talk 3 inquiet-->
-            <src H="191" W="95" Y="1048" X="39"/> 
+        <anim framerate="125" nbOfFrames="4"> <!-- Talk 4  -->
+            <src H="192" W="116" Y="228" X="976"/> 
+			<dst H="192" W="116" Y="0" X="80"/>
+        </anim>
+        <anim framerate="125" nbOfFrames="4"> <!-- Talk 5 -->
+            <src H="191" W="95" Y="227" X="1445"/> 
 			<dst H="191" W="95" Y="0" X="80"/>
         </anim>
-        <anim framerate="125" nbOfFrames="4"> <!-- Talk 4 drague-->
-            <src H="139" W="85" Y="1459" X="477"/> 
-			<dst H="139" W="85" Y="20" X="80"/>
+		<anim framerate="125" nbOfFrames="10"> <!-- Talk 6 -->
+            <src H="193" W="95" Y="433" X="21"/> 
+            <dst H="193" W="95" Y="0" X="80"/>
+        </anim>
+		
+        <anim framerate="125" nbOfFrames="2"> <!-- Talk 7 -->
+            <src H="168" W="116" Y="447" X="973"/> 
+			<dst H="168" W="116" Y="0" X="80"/>
+        </anim>
+        <anim framerate="125" nbOfFrames="4"> <!-- Talk 8 -->
+            <src H="140" W="85" Y="460" X="1407"/> 
+			<dst H="140" W="85" Y="25" X="80"/>
+        </anim>
+		<anim framerate="125" nbOfFrames="6"> <!-- Talk 9 -->
+            <src H="168" W="96" Y="650" X="15"/> 
+			<dst H="168" W="96" Y="0" X="30"/>
+        </anim>
+		<anim framerate="125" nbOfFrames="4"> <!-- Talk 10-->
+            <src H="140" W="85" Y="671" X="757"/> 
+			<dst H="140" W="85" Y="25" X="80"/>
         </anim>
     </animArray>
 </character>

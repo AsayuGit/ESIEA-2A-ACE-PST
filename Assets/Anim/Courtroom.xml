@@ -36,6 +36,7 @@
         <scene X="0" Y="192"/>    <!-- Court View       -->
         <scene X="256" Y="192"/>  <!-- Judge Side       -->
         <scene X="512" Y="192"/>  <!-- Assistant Side   -->
-        <scene X="1024" Y="192"/> <!-- Courtroom Lobby  -->
+        <scene X="768" Y="192"/>  <!-- Courtroom Lobby  -->
+        <scene X="1024" Y="192"/> <!-- Black void       -->
     </sceneArray>
 </background>

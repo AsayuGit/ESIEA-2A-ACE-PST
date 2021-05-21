@@ -4,7 +4,8 @@ char* MusicPath[NumberOfMusicTracks][2] = {
     {NULL, ROOT""MUSIC"Courtroom"MUS_EXT},
     {NULL, ROOT""MUSIC"Moderato"MUS_EXT},
     {NULL, ROOT""MUSIC"Telling_the_Thuth"MUS_EXT},
-    {ROOT""MUSIC"Objection!_INTRO"MUS_EXT, ROOT""MUSIC"Objection!_LOOP"MUS_EXT}
+    {ROOT""MUSIC"Objection!_INTRO"MUS_EXT, ROOT""MUSIC"Objection!_LOOP"MUS_EXT},
+    {NULL, ROOT""MUSIC"Courtroom Lobby The First Prelude"MUS_EXT}
 };
 
 char* EffectPath[NumberOfEffectTracks] = {

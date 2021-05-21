@@ -2,22 +2,25 @@
 <character colorKey="0xb5a5d5" texture="./Assets/Textures/Characters/Policier.bmp">
     <name>Policier</name>
     <animArray>
-        <anim framerate="125" nbOfFrames="4"> <!-- Talk 1-->
-            <src H="192" W="166" Y="242" X="631"/> 		
-            <dst H="192" W="166" Y="20" X="0"/>
+        <anim framerate="125" nbOfFrames="4"> <!-- Salute Talk [0]-->
+            <src H="192" W="165" Y="242" X="660"/>
+            <dst H="192" W="165" Y="0" X="50"/>
         </anim>
         <anim framerate="125" nbOfFrames="4"> <!-- Talk 2-->
-            
             <src H="192" W="113" Y="464" X="844"/> 
-			<dst H="192" W="113" Y="20" X="15"/>
+			<dst H="192" W="113" Y="20" X="75"/>
         </anim>
         <anim framerate="125" nbOfFrames="4"> <!-- Talk 3-->
             <src H="174" W="127" Y="882" X="569"/> 
-            <dst H="174" W="127" Y="20" X="0"/>
+            <dst H="174" W="127" Y="20" X="75"/>
         </anim>
         <anim framerate="125" nbOfFrames="4"> <!-- Talk 4-->
             <src H="190" W="143" Y="1087" X="647"/> 
-			<dst H="190" W="143" Y="20" X="0"/>
+			<dst H="190" W="143" Y="20" X="75"/>
+        </anim>
+        <anim framerate="125" nbOfFrames="4"> <!-- Salute idle [4] -->
+            <src H="192" W="165" Y="242" X="0"/> 		
+            <dst H="192" W="165" Y="0" X="50"/>
         </anim>
     </animArray>
 </character>

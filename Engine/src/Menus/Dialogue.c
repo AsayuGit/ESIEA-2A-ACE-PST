@@ -148,13 +148,14 @@ void Dialogue(DialogueContext* Context, unsigned char mode){
 			#ifndef _XBOX
 				ACE_SetRenderTarget(Context->DDevice, Context->textLayer);
 			#endif
-            if (!Context->letterLag){
-                Mix_PlayChannel(-1, Context->Letter, 0);
-                Context->letterLag = 1;
-            }else{
-                Context->letterLag--;
+            if (Context->Text[Context->progress] != ' ') {
+                if (!Context->letterLag){
+                    Mix_PlayChannel(-1, Context->Letter, 0);
+                    Context->letterLag = 1;
+                }else{
+                    Context->letterLag = 0;
+                }
             }
-
             /* Print the next letter */
             if ((Context->DstLetter.x + Context->MainFont->Rects[MAX(Context->Text[Context->progress] - 32, 0)].w < InLayerTextBounds.x + InLayerTextBounds.w) && (Context->Text[Context->progress] != '\n')){
                 Context->DstLetter.x += gputc(Context->DDevice, Context->MainFont, Context->Text[Context->progress], Context->DstLetter.x, Context->DstLetter.y) + 2;

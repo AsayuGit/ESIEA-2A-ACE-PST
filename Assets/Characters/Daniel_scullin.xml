@@ -2,34 +2,44 @@
 <character colorKey="0xb5a5d5" texture="./Assets/Textures/Characters/Danielscullin.bmp">
     <name>Daniel</name>
     <animArray>
+        <anim framerate="500" nbOfFrames="8"> <!-- parle pas 1-->
+            <src H="164" W="112" Y="14" X="8"/> 
+            <dst H="164" W="112" Y="28" X="75"/>
+        </anim>
         <anim framerate="125" nbOfFrames="4"> <!-- Talk 1-->
             <src H="163" W="108" Y="204" X="8"/> 
-            <dst H="163" W="108" Y="20" X="75"/>
+            <dst H="163" W="108" Y="28" X="75"/>
         </anim>
         <anim framerate="125" nbOfFrames="4"> <!-- Talk 2-->
             <src H="162" W="108" Y="206" X="526"/> 
-            <dst H="162" W="108" Y="20" X="75"/>
+            <dst H="162" W="108" Y="28" X="75"/>
         </anim>
         <anim framerate="125" nbOfFrames="4"> <!-- Talk 3-->
             <src H="163" W="108" Y="745" X="18"/> 
-			<dst H="163" W="108" Y="20" X="75"/>
+			<dst H="163" W="108" Y="28" X="75"/>
         </anim>
         <anim framerate="125" nbOfFrames="4"> <!-- Talk 4-->
             <src H="163" W="131" Y="1305" X="364"/> 
-			<dst H="163" W="131" Y="20" X="75"/>
+			<dst H="163" W="131" Y="28" X="75"/>
         </anim>
         <anim framerate="125" nbOfFrames="4"> <!-- Talk 5 -->
             <src H="152" W="126" Y="1661" X="15"/> 		
-            <dst H="152" W="126" Y="20" X="75"/>
+            <dst H="152" W="126" Y="28" X="75"/>
         </anim>
         <anim framerate="125" nbOfFrames="4"> <!-- Talk 6 -->
             <src H="148" W="126" Y="1847" X="6"/>
-            <dst H="148" W="126" Y="20" X="75"/>
+            <dst H="148" W="126" Y="28" X="75"/>
+        </anim>
+
+        <anim framerate="125" nbOfFrames="4"> <!-- parle pas enerver -->
+            <src H="131" W="164" Y="1112" X="541"/>
+            <dst H="131" W="126" Y="28" X="75"/>
         </anim>
 
         <anim framerate="500" nbOfFrames="4"> <!-- Sleep -->
             <src H="160" W="108" Y="926" X="584"/>
-            <dst H="160" W="108" Y="20" X="75"/>
+            <dst H="160" W="108" Y="28" X="75"/>
         </anim>
+
     </animArray>
 </character>

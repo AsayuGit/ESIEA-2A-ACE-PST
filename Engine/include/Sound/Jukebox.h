@@ -8,6 +8,7 @@
         TRK_Moderato,
         TRK_Telling_the_Truth,
         TRK_Objection,
+        TRK_CourtLobby,
         NumberOfMusicTracks
     } MusicPlaylistID;
 
