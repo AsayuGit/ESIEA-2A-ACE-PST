@@ -42,7 +42,9 @@ char* EffectPath[NumberOfEffectTracks] = {
     ROOT""EFFECTS"TestimonySwoosh"MUS_EXT,
     ROOT""EFFECTS"HoldIt"MUS_EXT,
     ROOT""EFFECTS"Objection"MUS_EXT,
-    ROOT""EFFECTS"TakeThat"MUS_EXT
+    ROOT""EFFECTS"TakeThat"MUS_EXT,
+    ROOT""EFFECTS"sfx-scroll"MUS_EXT,
+    ROOT""EFFECTS"sfx-evidenceshoop"MUS_EXT
 };
 
 static Mix_Music* Track_INTRO = NULL;

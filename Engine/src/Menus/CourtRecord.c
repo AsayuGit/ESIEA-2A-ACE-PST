@@ -74,7 +74,7 @@ static const SDL_Rect ItemDescription = {28, 117, 238, 46};
 static const SDL_Rect ItemOrigin = {102, 61, 123, 39};
 
 /* Sound Effects */
-static Mix_Chunk* MoveCursor;
+static Mix_Chunk *MoveCursor = NULL, *Back = NULL, *Open = NULL, *Click = NULL; 
 
 /* Fonts */
 static BitmapFont* ItemNameFont;
@@ -135,6 +135,9 @@ void InitCourtRecord(DisplayDevice* DDevice, Items* ItemBankPointer){
 
     /* Load Sound Effects */
     MoveCursor = LoadSoundEffect(EffectPath[CHK_ButtonUpDown]);
+    Back = LoadSoundEffect(EffectPath[CHK_ButtonBack]);
+    Open = LoadSoundEffect(EffectPath[CHK_CourtRecordOpen]);
+    Click = LoadSoundEffect(EffectPath[CHK_EvidenceClick]);
 
     /* Set rects */
     CourtRecordBackground[0].x = 0; CourtRecordBackground[1].x = 24;
@@ -377,14 +380,34 @@ void HandleCourtRecordEvents(SDL_Event* event, SceneContext* SContext){
                     if (SelectedItem >= 0) {
                         MenuSelect = DetailsMenu;
                         UpdateItemDetails(SelectedItem);
-                        Mix_PlayChannel(-1, MoveCursor, 0);
+                        Mix_PlayChannel(-1, Click, 0);
                     }
                     break;
+                case PAD_BACK:
                 case PAD_COURTRECORD:
                     /* Dissable the court reccord */
                     BackgroundPlayAnimation(courtRecordLayer, 1, &courtRecordAnimationOver, false);
                     SContext->IDevice->EventEnabled = true;
                     SContext->CContext->EventSelect = (SContext->CContext->ButtonActivated) ? 1 : 0;
+                    Mix_PlayChannel(-1, Back, 0);
+                    break;
+                
+                case PAD_PRESS:
+                    if (SContext->presentDefault){
+                        courtRecordAnimationOver = false;
+                        controlsMode = 0;
+                        SContext->CContext->EventSelect = 0;
+                        SContext->diagMode = 1;
+                        if (SContext->presentItem == GetSelectedItem(SelectedSlot)){
+                            setUI(OBJECTION, 0);
+                            if (SContext->presentMatch)
+                                SContext->entry = SContext->presentMatch;
+                        } else {
+                            setUI(OBJECTION, 1);
+                            if (SContext->presentDefault)
+                                SContext->entry = SContext->presentDefault;
+                        }
+                    }
                     break;
                 default:
                     break;
@@ -426,7 +449,7 @@ void HandleCourtRecordEvents(SDL_Event* event, SceneContext* SContext){
 
                 case PAD_BACK:
                     MenuSelect = MainCRMenu;
-                    Mix_PlayChannel(-1, MoveCursor, 0);
+                    Mix_PlayChannel(-1, Back, 0);
                     break;
                 case PAD_PRESS:
                     if (SContext->presentDefault){
@@ -450,6 +473,7 @@ void HandleCourtRecordEvents(SDL_Event* event, SceneContext* SContext){
                     BackgroundPlayAnimation(courtRecordLayer, 1, &courtRecordAnimationOver, false);
                     SContext->IDevice->EventEnabled = true;
                     SContext->CContext->EventSelect = (SContext->CContext->ButtonActivated) ? 1 : 0;
+                    Mix_PlayChannel(-1, Back, 0);
                     break;
                 default:
                     break;
@@ -602,6 +626,7 @@ void ShowCourtRecord(InputDevice* IDevice){
     courtRecordAnimationOver = true;
     MenuSelect = MainCRMenu;
     BackgroundPlayAnimation(courtRecordLayer, 0, &IDevice->EventEnabled, true);
+    Mix_PlayChannel(-1, Open, 0);
 }
 
 void ShowCourtRecordXUI(Uint8 newControlsMode){

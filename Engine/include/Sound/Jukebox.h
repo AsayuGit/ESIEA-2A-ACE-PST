@@ -47,6 +47,8 @@
         CHK_HoldIt,
         CHK_Objection,
         CHK_TakeThat,
+        CHK_CourtRecordOpen,
+        CHK_EvidenceClick,
         NumberOfEffectTracks
     } EffectsPlaylistID;
 
