@@ -374,6 +374,7 @@ Characters** initCharArray(DisplayDevice* DDevice, xmlNode* array){
 void parseFlags(DisplayDevice* DDevice, SceneContext* SContext, xmlNode* element){
     char* CharBuffer;
     int IntBuffer;
+    Uint8 courtRecordControlsMode = 0;
     xmlNode *searchNode;
 
     SContext->press = NULL;
@@ -417,8 +418,10 @@ void parseFlags(DisplayDevice* DDevice, SceneContext* SContext, xmlNode* element
         } else if (strcmp((char*)element->name, "press") == 0) {
             CharBuffer = (char*)xmlNodeGetContent(element);
             searchNode = searchNodeLabel(SContext->entry, CharBuffer);
-            if (searchNode)
+            if (searchNode){
                 SContext->press = searchNode;
+                courtRecordControlsMode |= 1;
+            }
         } else if (strcmp((char*)element->name, "present") == 0) {
             CharBuffer = (char*)xmlGetProp(element, (xmlChar*)"item");
             if (CharBuffer){
@@ -431,6 +434,7 @@ void parseFlags(DisplayDevice* DDevice, SceneContext* SContext, xmlNode* element
             if (searchNode)
                 SContext->presentDefault = searchNode;
             SContext->returnTarget = SContext->entry;
+            courtRecordControlsMode |= 2;
         } else if (strcmp((char*)element->name, "giveItem") == 0){
             AddItemToCourtRecord(atoi((char*)xmlNodeGetContent(element)));
         } else if (strcmp((char*)element->name, "removeItem") == 0){
@@ -474,6 +478,7 @@ void parseFlags(DisplayDevice* DDevice, SceneContext* SContext, xmlNode* element
         }
         element = element->next;
     }
+    ShowCourtRecordXUI(courtRecordControlsMode);
 }
 
 SceneContext* InitScene(DisplayDevice* DDevice, InputDevice* IDevice, DialogueContext* DiagContext, ButtonsContext* BContext, CourtroomContext* CContext, char* ScenePath){

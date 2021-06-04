@@ -27,6 +27,7 @@
     void RemoveItemFromCourtRecord(int ItemID);                                /* Remove an Item from the court record */
     void EmptyCourtRecord();                                                   /* Empty out the court record */
     void ShowCourtRecord(InputDevice* IDevice);
+    void ShowCourtRecordXUI(Uint8 newControlsMode);
     void ResetCourtRecordPos();
 
 #endif

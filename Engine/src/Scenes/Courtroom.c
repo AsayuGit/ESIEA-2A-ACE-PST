@@ -151,6 +151,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                                     if (SContext->press){
                                         SContext->entry = SContext->press;
                                         SContext->diagMode = 1;
+                                        ShowCourtRecordXUI(0);
                                         setUI(HOLD_IT, 0);
                                     }
                                 }

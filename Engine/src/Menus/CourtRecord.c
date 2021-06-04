@@ -18,6 +18,7 @@ typedef struct ItemList_t{
 }ItemList;
 
 enum {
+    PressUI,
     MainCRMenu,
     DetailsMenu
 };
@@ -45,6 +46,7 @@ static SDL_Rect DstArrows[NBOFBARS][2]; /* [0] Left; [1] Right || [0] CR; [1] CD
 static SDL_Rect ItemName;
 static SDL_Rect DetailItemName;
 
+static const SDL_Rect Hide[2] = {{44, 140, 80, 16}, {24, 160, 80, 16}};
 static const SDL_Rect DetailItemPos = {19, 38, 68, 68};
 static const SDL_Rect ItemDescription = {28, 117, 238, 46};
 static const SDL_Rect ItemOrigin = {102, 61, 123, 39};
@@ -72,7 +74,8 @@ static char* ItemTypes[3] = {
     "Weapons"
 };
 
-static bool courtRecordShown = false;
+static bool courtRecordAnimationOver = false;
+static Uint8 controlsMode;
 
 void InitCourtDetails(DisplayDevice* DDevice){
     /* Load textures */
@@ -124,7 +127,7 @@ void InitCourtRecord(DisplayDevice* DDevice, Items* ItemBankPointer){
     SrcBars.w = DstBars[0].w = DstBars[1].w = 16;
     SrcBars.h = DstBars[0].h = DstBars[1].h = 96;
 
-    SrcArrows = InitRect(125, 141, 7, 13);
+    SrcArrows = InitRect(209, 111, 7, 13);
     DstArrows[0][0] = InitRect(4, DstBars[0].y + (DstBars[0].h >> 1) - (13/2), 7, 13);
     DstArrows[1][0] = InitRect(DstBars[1].x + 5, DstBars[1].y + (DstBars[1].h >> 1) - (13/2), 7, 13);
 
@@ -144,7 +147,7 @@ void InitCourtRecord(DisplayDevice* DDevice, Items* ItemBankPointer){
 
     ItemName = InitRect(0, 40, BASE_RESOLUTION_X, BASE_RESOLUTION_Y);
     
-    MenuSelect = MainCRMenu;
+    MenuSelect = PressUI;
     SelectedSlot = 0;
     SelectedItem = 0;
     StoredItemList = NULL;
@@ -153,6 +156,7 @@ void InitCourtRecord(DisplayDevice* DDevice, Items* ItemBankPointer){
 
     courtRecordLayer = InitBackground(DDevice, ROOT"Assets"SL"Anim"SL"CourtRecord.xml");
     CRViewport = &(courtRecordLayer->SrcRect); /* FIXME */
+    controlsMode = 0;
 
     InitCourtDetails(DDevice); /* Once done with the court Record init, we init the court details */
 }
@@ -356,7 +360,7 @@ void HandleCourtRecordEvents(SDL_Event* event, SceneContext* SContext){
                     break;
                 case PAD_COURTRECORD:
                     /* Dissable the court reccord */
-                    BackgroundPlayAnimation(courtRecordLayer, 1, &courtRecordShown, false);
+                    BackgroundPlayAnimation(courtRecordLayer, 1, &courtRecordAnimationOver, false);
                     SContext->IDevice->EventEnabled = true;
                     SContext->CContext->EventSelect = (SContext->CContext->ButtonActivated) ? 1 : 0;
                     break;
@@ -404,7 +408,8 @@ void HandleCourtRecordEvents(SDL_Event* event, SceneContext* SContext){
                     break;
                 case PAD_PRESS:
                     if (SContext->presentDefault){
-                        courtRecordShown = false;
+                        courtRecordAnimationOver = false;
+                        controlsMode = 0;
                         SContext->CContext->EventSelect = 0;
                         SContext->diagMode = 1;
                         if (SContext->presentItem == SelectedItem){
@@ -420,7 +425,7 @@ void HandleCourtRecordEvents(SDL_Event* event, SceneContext* SContext){
                     break;
                 case PAD_COURTRECORD:
                     /* Dissable the court reccord */
-                    BackgroundPlayAnimation(courtRecordLayer, 1, &courtRecordShown, false);
+                    BackgroundPlayAnimation(courtRecordLayer, 1, &courtRecordAnimationOver, false);
                     SContext->IDevice->EventEnabled = true;
                     SContext->CContext->EventSelect = (SContext->CContext->ButtonActivated) ? 1 : 0;
                     break;
@@ -436,6 +441,16 @@ void HandleCourtRecordEvents(SDL_Event* event, SceneContext* SContext){
     }
 }
 
+void DrawCourtRecordPressUI(DisplayDevice* DDevice){
+    const SDL_Rect Press[2] = {{44, 124, 80, 16}, {0, 0, 80, 16}};
+    const SDL_Rect Present[2] = {{124, 124, 80, 16}, {176, 0, 80, 16}};
+    
+    if (controlsMode & 1)
+        ScaledDraw(DDevice, CourtRecordSpriteSheet, Press, Press + 1);     /* Draw the press button */
+    if (controlsMode & 2)
+        ScaledDraw(DDevice, CourtRecordSpriteSheet, Present, Present + 1);   /* Draw the present button */
+}
+
 /* Display the main court Record menu on scren */
 void DrawMainCourtRecordMenu(DisplayDevice* DDevice, BitmapFont* Font){
     int i;
@@ -443,6 +458,7 @@ void DrawMainCourtRecordMenu(DisplayDevice* DDevice, BitmapFont* Font){
     SDL_Rect RightArrowAfterAnim, LeftArrowAfterAnim;
     SDL_Rect CRDstRect;
     ItemList* StoredItemListIterator;
+    const SDL_Rect Present[2] = {{124, 140, 80, 16}, {88, 0, 80, 16}};
 
     /* Arrow wiggle */
     ArrowAnim = sin((double)SDL_GetTicks() / 50) * 2;
@@ -484,12 +500,19 @@ void DrawMainCourtRecordMenu(DisplayDevice* DDevice, BitmapFont* Font){
 
     CRDstRect = RectToVieport(&(SelectedSlotPos[SelectedSlot]), CRViewport, &CRPosition);
     ScaledDraw(DDevice, CourtRecordSpriteSheet, &SelectedSlotSrc, &CRDstRect); /* Draw the cursor */
+
+    CRDstRect = RectToVieport(Hide + 1, CRViewport, &CRPosition);
+    ScaledDraw(DDevice, CourtRecordSpriteSheet, Hide, &CRDstRect);   /* Draw the hide button */
+
+    if (controlsMode & 2)
+        ScaledDraw(DDevice, CourtRecordSpriteSheet, Present, Present + 1);   /* Draw the present button */
 }
 
 void DrawCourtDetails(DisplayDevice* DDevice, BitmapFont* Font, int ItemID){
     int ArrowAnim;
     SDL_Rect RightArrowAfterAnim, LeftArrowAfterAnim;
     SDL_Rect CRDstRect;
+    const SDL_Rect Present[2] = {{124, 140, 80, 16}, {88, 0, 80, 16}};
 
     /* Arrow wiggle */
     ArrowAnim = sin((double)SDL_GetTicks() / 50) * 2;
@@ -519,14 +542,23 @@ void DrawCourtDetails(DisplayDevice* DDevice, BitmapFont* Font, int ItemID){
     gprintf(DDevice, DetailsFont, ItemDetails, 1, &CRDstRect);                                          /* Draw the item's origin */
     CRDstRect = RectToVieport(&ItemDescription, CRViewport, &CRPosition);
     gprintf(DDevice, Font, ItemBank->DescriptionArray[ItemID], 1, &CRDstRect);                          /* Draw the item's description */
+
+    CRDstRect = RectToVieport(Hide + 1, CRViewport, &CRPosition);
+    ScaledDraw(DDevice, CourtRecordSpriteSheet, Hide, &CRDstRect);   /* Draw the hide button */
+
+    if (controlsMode & 2)
+        ScaledDraw(DDevice, CourtRecordSpriteSheet, Present, Present + 1);   /* Draw the present button */
 }
 
 
 void DrawCourtRecord(DisplayDevice* DDevice, BitmapFont* Font){
     DisplayBackground(DDevice, courtRecordLayer);
-    if (courtRecordShown){
+    if (courtRecordAnimationOver){
         switch (MenuSelect)
         {
+        case PressUI:
+            DrawCourtRecordPressUI(DDevice);
+            break;
         case MainCRMenu:
             DrawMainCourtRecordMenu(DDevice, Font); /* Draw the main menu */
             break;
@@ -534,14 +566,26 @@ void DrawCourtRecord(DisplayDevice* DDevice, BitmapFont* Font){
         case DetailsMenu:
             DrawCourtDetails(DDevice, Font, SelectedItem); /* Draw the CourtDetails menu */
             break;
+
+        default:
+            break;
         }
+    } else {
+        courtRecordAnimationOver = true;
+        MenuSelect = PressUI;
     }
 }
 
 void ShowCourtRecord(InputDevice* IDevice){
-    courtRecordShown = true;
+    courtRecordAnimationOver = true;
     MenuSelect = MainCRMenu;
     BackgroundPlayAnimation(courtRecordLayer, 0, &IDevice->EventEnabled, true);
+}
+
+void ShowCourtRecordXUI(Uint8 newControlsMode){
+    controlsMode = newControlsMode;
+    courtRecordAnimationOver = true;
+    MenuSelect = PressUI;
 }
 
 void ResetCourtRecordPos(){
