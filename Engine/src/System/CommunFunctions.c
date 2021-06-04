@@ -1,8 +1,30 @@
+/*
+    Mia's Legacy is a Ace Attorney fangame taking place directly
+    after the first game in the serie. All code in this repo have
+    been written from scratch in ANSI C using SDL and libxml2.
+    This game is designed to run on Linux Windows and the og Xbox
+
+    Copyright (C) 2021 Killian RAIMBAUD (killian.rai@gmail.com)
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; version 2 of the License.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+*/
+
 #include "CommunFunctions.h"
 
-int gputc(DisplayDevice* DDevice, BitmapFont* Font, char c, unsigned int x, unsigned int y){
+int gputc(DisplayDevice* DDevice, BitmapFont* Font, char c, unsigned int color, unsigned int x, unsigned int y){
     /* Declaration */
-    SDL_Rect DstLetter;
+    SDL_Rect DstLetter, SrcLetter;
 
     /* Init */
     if (!DDevice){ /* DDevice check */
@@ -23,11 +45,14 @@ int gputc(DisplayDevice* DDevice, BitmapFont* Font, char c, unsigned int x, unsi
     DstLetter.h = Font->Rects[(int)c].h;
     DstLetter.w = Font->Rects[(int)c].w;
 
+    SrcLetter = Font->Rects[(int)c];
+    SrcLetter.y += (SrcLetter.h + 1) * color;
+
     /* Logic */
     if (DDevice->OffScreenRender){
-        Draw(DDevice, Font->FontSurface, &Font->Rects[(int)c], &DstLetter);
+        Draw(DDevice, Font->FontSurface, &SrcLetter, &DstLetter);
     } else {
-        ScaledDraw(DDevice, Font->FontSurface, &Font->Rects[(int)c], &DstLetter);
+        ScaledDraw(DDevice, Font->FontSurface, &SrcLetter, &DstLetter);
     }
 
 Exit:
@@ -42,7 +67,9 @@ Vector2i gstrlen(BitmapFont* Font, char* text, int intCharSpce){
 /* Or a letter by letter mode */
 Vector2i gprintf(DisplayDevice* DDevice, BitmapFont* Font, char* text, int intCharSpce, const SDL_Rect* Bounds){
     /* Declaration */
-    unsigned int CharID, sizeTmp, DimX;
+    unsigned int CharID, sizeTmp, DimX, textColor = 0;
+    size_t BufferLen = 0;
+    char* Buffer;
     Vector2i CharCoords;
     Vector2i Dimensions;
  
@@ -61,10 +88,21 @@ Vector2i gprintf(DisplayDevice* DDevice, BitmapFont* Font, char* text, int intCh
     CharID = 0;
 
     /* Logic */
+
+    if (text[CharID] == '\\') {
+        /*printf("ColorChange\n");*/
+        BufferLen = strcspn(&text[CharID + 1], ";");
+        Buffer = malloc(sizeof(char)*BufferLen);
+        strncpy(Buffer, &text[CharID + 1], BufferLen);
+        textColor = atoi(Buffer);
+        free(Buffer);
+        CharID += BufferLen + 2;
+    }
+
     while (text[CharID] != '\0'){
         if (text[CharID] != '\n'){
             if (DDevice){
-                sizeTmp = gputc(DDevice, Font, text[CharID], CharCoords.x, CharCoords.y) + intCharSpce;
+                sizeTmp = gputc(DDevice, Font, text[CharID], textColor, CharCoords.x, CharCoords.y) + intCharSpce;
             } else {
                 sizeTmp = Font->Rects[MAX(text[CharID] - 32, 0)].w + intCharSpce;
             }

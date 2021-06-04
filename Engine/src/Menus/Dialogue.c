@@ -1,3 +1,25 @@
+/*
+    Mia's Legacy is a Ace Attorney fangame taking place directly
+    after the first game in the serie. All code in this repo have
+    been written from scratch in ANSI C using SDL and libxml2.
+    This game is designed to run on Linux Windows and the og Xbox
+
+    Copyright (C) 2021 Killian RAIMBAUD (killian.rai@gmail.com)
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; version 2 of the License.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+*/
+
 #include "Dialogue.h"
 #include "math.h"
 
@@ -25,6 +47,7 @@ size_t SetDialogueText(DialogueContext* Context, char* Name, char* Text, char Sn
     Context->progress = 0;
     Context->DstLetter.x = 0;
     Context->DstLetter.y = 0;
+    Context->textColor = 0;
     ClearDialogueText(Context);
 	
 	#ifndef _XBOX
@@ -64,6 +87,7 @@ DialogueContext* InitDialog(DisplayDevice* DDevice, BitmapFont* MainFont, Bitmap
     DiagContext->TextSpeed = 40;
     DiagContext->LastLetter = 0;
     DiagContext->letterLag = 0;
+    DiagContext->textColor = 0;
 
     DiagContext->DialogBox = NULL;
     DiagContext->DialogBox = LoadSurface(ROOT""TEXTURES"Menus"SL"Dialog"TEX_EXT, DDevice, 0x0, SURFACE_ALPHA);
@@ -133,6 +157,8 @@ void Dialogue(DialogueContext* Context, unsigned char mode){
     const SDL_Rect ArrowSrcRect[2] = {{256, 0, 9, 9}, {256, 9, 9, 9}};
     SDL_Rect InLayerTextBounds;
     double Wobble;
+    size_t BufferLen = 0;
+    char* Buffer;
 
     InLayerTextBounds = Context->TextBounds;
     InLayerTextBounds.x = InLayerTextBounds.y = 0;
@@ -142,7 +168,19 @@ void Dialogue(DialogueContext* Context, unsigned char mode){
     /* DialogBox Rendering */
     ScaledDraw(Context->DDevice, Context->DialogBox, &(Context->DialogBoxSrcBounds), &(Context->DialogBoxBounds));
 
+
     /* Write text */
+    if (Context->Text[Context->progress] == '\\') {
+        /*printf("ColorChange\n");*/
+        BufferLen = strcspn(&Context->Text[Context->progress + 1], ";");
+        Buffer = malloc(sizeof(char)*BufferLen);
+        strncpy(Buffer, &Context->Text[Context->progress + 1], BufferLen);
+        Context->textColor = atoi(Buffer);
+        free(Buffer);
+        Context->progress += BufferLen + 2;
+    }
+
+
     if (Context->Text[Context->progress] != '\0') {
         if (SDL_GetTicks() >= Context->LastLetter + Context->TextSpeed){
 			#ifndef _XBOX
@@ -158,7 +196,7 @@ void Dialogue(DialogueContext* Context, unsigned char mode){
             }
             /* Print the next letter */
             if ((Context->DstLetter.x + Context->MainFont->Rects[MAX(Context->Text[Context->progress] - 32, 0)].w < InLayerTextBounds.x + InLayerTextBounds.w) && (Context->Text[Context->progress] != '\n')){
-                Context->DstLetter.x += gputc(Context->DDevice, Context->MainFont, Context->Text[Context->progress], Context->DstLetter.x, Context->DstLetter.y) + 2;
+                Context->DstLetter.x += gputc(Context->DDevice, Context->MainFont, Context->Text[Context->progress], Context->textColor, Context->DstLetter.x, Context->DstLetter.y) + 2;
             } else {
                 Context->DstLetter.x = InLayerTextBounds.x;
                 Context->DstLetter.y += Context->MainFont->Rects[0].h;
