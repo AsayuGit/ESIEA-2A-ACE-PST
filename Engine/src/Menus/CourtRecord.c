@@ -38,8 +38,10 @@ static SDL_Rect CourtRecordBackground[2]; /* [0] Src; [1] Dst */
 static SDL_Rect CourtDetailBackground[2]; /* [0] Src; [1] Dst */
 static SDL_Rect SelectedSlotSrc;
 static SDL_Rect SelectedSlotPos[NBOFITEMS];
-static SDL_Rect Bars[NBOFBARS][2]; /* [0] Src; [1] Dst */
-static SDL_Rect Arrows[NBOFBARS][3]; /* [0] Src; [1] Dst; [2] Dst2 */
+static SDL_Rect SrcBars;
+static SDL_Rect DstBars[2]; /* [0] Left; [1] Right */
+static SDL_Rect SrcArrows;
+static SDL_Rect DstArrows[NBOFBARS][2]; /* [0] Left; [1] Right || [0] CR; [1] CD*/
 static SDL_Rect ItemName;
 static SDL_Rect DetailItemName;
 
@@ -85,14 +87,13 @@ void InitCourtDetails(DisplayDevice* DDevice){
     CourtDetailBackground[0].w = CourtDetailBackground[1].w = 256;
     CourtDetailBackground[0].h = CourtDetailBackground[1].h = 128;
 
+    DstArrows[0][1] = DstArrows[0][0];
+    DstArrows[1][1] = DstArrows[1][0];
+    DstArrows[1][1].y = DstArrows[0][1].y = CourtDetailBackground[1].y + 34;
+
     DetailItemName.y = 43;
     DetailItemName.w = BASE_RESOLUTION_X;
     DetailItemName.h = BASE_RESOLUTION_Y;
-
-    Arrows[0][2] = Arrows[0][1];
-    Arrows[1][2] = Arrows[1][1];
-
-    Arrows[0][2].y = Arrows[1][2].y = 66;
 }
 
 /* Init the court Record menu for further use */
@@ -116,27 +117,19 @@ void InitCourtRecord(DisplayDevice* DDevice, Items* ItemBankPointer){
     CourtRecordBackground[0].w = CourtRecordBackground[1].w = 208;
     CourtRecordBackground[0].h = CourtRecordBackground[1].h = 124;
 
-    Bars[0][0].x = 208;
-    Bars[0][0].y = Bars[1][0].y = 0;
-    Bars[0][0].w = Bars[1][0].w = Bars[0][1].w = Bars[1][1].w = 16;
-    Bars[0][0].h = Bars[1][0].h = Bars[0][1].h = Bars[1][1].h = 96;
-    Bars[1][0].x = Bars[0][0].x + Bars[0][0].w;
+    SrcBars.x = 208;
+    SrcBars.y = 0;
+    DstBars[0].x = 0; DstBars[1].x = 240;
+    DstBars[0].y = DstBars[1].y = 56;
+    SrcBars.w = DstBars[0].w = DstBars[1].w = 16;
+    SrcBars.h = DstBars[0].h = DstBars[1].h = 96;
 
-    Bars[0][1].x = 0;
-    Bars[1][1].x = 240;
-    Bars[0][1].y = Bars[1][1].y = 56;
+    SrcArrows = InitRect(125, 141, 7, 13);
+    DstArrows[0][0] = InitRect(4, DstBars[0].y + (DstBars[0].h >> 1) - (13/2), 7, 13);
+    DstArrows[1][0] = InitRect(DstBars[1].x + 5, DstBars[1].y + (DstBars[1].h >> 1) - (13/2), 7, 13);
 
-    Arrows[0][0].x = Arrows[1][0].x = 240;
-    Arrows[0][0].w = Arrows[1][0].w = Arrows[0][1].w = Arrows[1][1].w = 7;
-    Arrows[0][0].h = Arrows[1][0].h = Arrows[0][0].y = Arrows[0][1].h = Arrows[1][1].h = 13;
-
-    Arrows[0][1].x = Bars[1][1].x + 4;
-    Arrows[1][1].x = Bars[0][1].x + 4;
-
-    Arrows[0][1].y = Arrows[1][1].y = 40 + Bars[0][1].y;
-
-    SelectedSlotSrc.x = 208;
-    SelectedSlotSrc.y = 96;
+    SelectedSlotSrc.x = 0;
+    SelectedSlotSrc.y = 124;
     SelectedSlotSrc.w = SelectedSlotSrc.h = 44;
 
     SlotOrigin.x = CourtRecordBackground[1].x + 10;
@@ -454,24 +447,24 @@ void DrawMainCourtRecordMenu(DisplayDevice* DDevice, BitmapFont* Font){
     /* Arrow wiggle */
     ArrowAnim = sin((double)SDL_GetTicks() / 50) * 2;
     
-    RightArrowAfterAnim = Arrows[0][1];
-    LeftArrowAfterAnim = Arrows[1][1];
+    LeftArrowAfterAnim = DstArrows[0][0];
+    RightArrowAfterAnim = DstArrows[1][0];
 
     RightArrowAfterAnim.x += ArrowAnim;
     LeftArrowAfterAnim.x -= ArrowAnim;
 
     CRDstRect = RectToVieport(CourtRecordBackground + 1, CRViewport, &CRPosition);
-    ScaledDraw(DDevice, CourtRecordSpriteSheet, CourtRecordBackground, &CRDstRect);                 /* Draw the background */
+    ScaledDraw(DDevice, CourtRecordSpriteSheet, CourtRecordBackground, &CRDstRect); /* Draw the background */
 
-    CRDstRect = RectToVieport(&(Bars[0][1]), CRViewport, &CRPosition);
-    ScaledDraw(DDevice, CourtRecordSpriteSheet, &(Bars[0][0]), &CRDstRect);                      /* Draw the bars */
-    CRDstRect = RectToVieport(&(Bars[1][1]), CRViewport, &CRPosition);
-    ScaledDraw(DDevice, CourtRecordSpriteSheet, &(Bars[1][0]), &CRDstRect);
+    CRDstRect = RectToVieport(&(DstBars[0]), CRViewport, &CRPosition);
+    ScaledDraw(DDevice, CourtRecordSpriteSheet, &(SrcBars), &CRDstRect);            /* Draw the Left Bar */
+    CRDstRect = RectToVieport(&(DstBars[1]), CRViewport, &CRPosition);
+    ScaledDrawEx(DDevice, CourtRecordSpriteSheet, &(SrcBars), &CRDstRect, true);    /* Draw the Right Bar */
 
-    CRDstRect = RectToVieport(&(RightArrowAfterAnim), CRViewport, &CRPosition);
-    ScaledDraw(DDevice, CourtRecordSpriteSheet, &(Arrows[0][0]), &CRDstRect);           /* Draw the arrows */
     CRDstRect = RectToVieport(&(LeftArrowAfterAnim), CRViewport, &CRPosition);
-    ScaledDraw(DDevice, CourtRecordSpriteSheet, &(Arrows[1][0]), &CRDstRect);
+    ScaledDrawEx(DDevice, CourtRecordSpriteSheet, &(SrcArrows), &CRDstRect, true);  /* Draw the Left arrow */
+    CRDstRect = RectToVieport(&(RightArrowAfterAnim), CRViewport, &CRPosition);
+    ScaledDraw(DDevice, CourtRecordSpriteSheet, &(SrcArrows), &CRDstRect);          /* Draw the Right arrow */
 
     i = 0;
     StoredItemListIterator = *StoredItemListPointer;
@@ -501,8 +494,8 @@ void DrawCourtDetails(DisplayDevice* DDevice, BitmapFont* Font, int ItemID){
     /* Arrow wiggle */
     ArrowAnim = sin((double)SDL_GetTicks() / 50) * 2;
     
-    RightArrowAfterAnim = Arrows[0][2];
-    LeftArrowAfterAnim = Arrows[1][2];
+    LeftArrowAfterAnim = DstArrows[0][1];
+    RightArrowAfterAnim = DstArrows[1][1];
 
     RightArrowAfterAnim.x += ArrowAnim;
     LeftArrowAfterAnim.x -= ArrowAnim;
@@ -511,10 +504,12 @@ void DrawCourtDetails(DisplayDevice* DDevice, BitmapFont* Font, int ItemID){
 
     CRDstRect = RectToVieport(CourtDetailBackground + 1, CRViewport, &CRPosition);
     ScaledDraw(DDevice, CourtDetailSpriteSheet, CourtDetailBackground, &CRDstRect);                     /* Draw the background */
-    CRDstRect = RectToVieport(&(RightArrowAfterAnim), CRViewport, &CRPosition);
-    ScaledDraw(DDevice, CourtRecordSpriteSheet, &(Arrows[0][0]), &CRDstRect);                           /* Draw the arrows */
+
     CRDstRect = RectToVieport(&(LeftArrowAfterAnim), CRViewport, &CRPosition);
-    ScaledDraw(DDevice, CourtRecordSpriteSheet, &(Arrows[1][0]), &CRDstRect);
+    ScaledDrawEx(DDevice, CourtRecordSpriteSheet, &(SrcArrows), &CRDstRect, true);                      /* Draw the Left arrow */
+    CRDstRect = RectToVieport(&(RightArrowAfterAnim), CRViewport, &CRPosition);
+    ScaledDraw(DDevice, CourtRecordSpriteSheet, &(SrcArrows), &CRDstRect);                              /* Draw the Right arrow */
+    
     CRDstRect = RectToVieport(&(DetailItemPos), CRViewport, &CRPosition);
     ScaledDraw(DDevice, ItemBank->ItemSpritesheet, &(ItemBank->ItemSrcRectArray[ItemID]), &CRDstRect);  /* Draw the item */
 

@@ -1,5 +1,8 @@
 #include "include.h"
 #include "Scenes.h"
+#ifdef _XBOX
+	#include "Xtl.h"
+#endif
 
 int main(int argc, char* argv[]){
 

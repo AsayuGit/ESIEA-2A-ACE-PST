@@ -1,7 +1,7 @@
 #include "System.h"
 
 void InitSDL(){
-    if (SDL_Init(SDL_INIT_EVERYTHING) != 0){
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0){
         fprintf(stderr, "SDL Initialisation failed\n - %s\n", SDL_GetError());
         exit(EXIT_INIT);
     }

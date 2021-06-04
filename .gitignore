@@ -75,3 +75,5 @@ vgcore.*
 Debug/BuildLog.htm
 
 Debug/
+
+*.zip
