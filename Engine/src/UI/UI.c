@@ -85,7 +85,7 @@ void UI_Testimony(DisplayDevice* DDevice, InputDevice* IDevice){
 }
 
 void UI_Lives(DisplayDevice* DDevice, InputDevice* IDevice){
-    const SDL_Rect SrcLives = {0, 197, 10, 16};
+    const SDL_Rect SrcLives = {65, 0, 10, 16};
     SDL_Rect DstLives = {245, 16, 10, 16};
     unsigned int i;
 
@@ -181,7 +181,7 @@ void UI_TeCeIntro(DisplayDevice* DDevice, InputDevice* IDevice){ /* Timings to t
 }
 
 void UI_Exclamation(DisplayDevice* DDevice, InputDevice* IDevice){
-    const SDL_Rect UI_ExclaSrcRect[3] = {{0, 212, 254, 191}, {254, 212, 254, 191}, {510, 212, 254, 191}};
+    const SDL_Rect UI_ExclaSrcRect[3] = {{0, 197, 254, 192}, {254, 197, 254, 192}, {510, 197, 254, 192}};
     SDL_Rect UI_ExclaDstRect = {1, 0, 254, 191};
 
     switch (UIWTState){

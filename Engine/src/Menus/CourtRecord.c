@@ -394,18 +394,21 @@ void HandleCourtRecordEvents(SDL_Event* event, SceneContext* SContext){
                 
                 case PAD_PRESS:
                     if (SContext->presentDefault){
-                        courtRecordAnimationOver = false;
-                        controlsMode = 0;
-                        SContext->CContext->EventSelect = 0;
-                        SContext->diagMode = 1;
-                        if (SContext->presentItem == GetSelectedItem(SelectedSlot)){
-                            setUI(OBJECTION, 0);
-                            if (SContext->presentMatch)
-                                SContext->entry = SContext->presentMatch;
-                        } else {
-                            setUI(OBJECTION, 1);
-                            if (SContext->presentDefault)
-                                SContext->entry = SContext->presentDefault;
+                        SelectedItem = GetSelectedItem(SelectedSlot);
+                        if (SelectedItem >= 0){
+                            courtRecordAnimationOver = false;
+                            controlsMode = 0;
+                            SContext->CContext->EventSelect = 0;
+                            SContext->diagMode = 1;
+                            if (SContext->presentItem == SelectedItem){
+                                setUI(OBJECTION, 0);
+                                if (SContext->presentMatch)
+                                    SContext->entry = SContext->presentMatch;
+                            } else {
+                                setUI(OBJECTION, 1);
+                                if (SContext->presentDefault)
+                                    SContext->entry = SContext->presentDefault;
+                            }
                         }
                     }
                     break;
