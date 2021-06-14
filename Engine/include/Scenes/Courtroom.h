@@ -37,6 +37,8 @@
         size_t ReturnToDefault;
         char EventSelect;
 
+        unsigned int Lives; /* FIXME : Temporary (Player Context)*/
+
         char* ButtonJumpLabels[4];
     } CourtroomContext;
 

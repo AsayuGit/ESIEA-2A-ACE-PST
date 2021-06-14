@@ -47,6 +47,8 @@ CourtroomContext* InitCourtroom(DisplayDevice* DDevice){
         goto ERROR;
     }
 
+    CourtContext->Lives = 5; /* Max lives */
+
     return CourtContext;
 
 ERROR:
@@ -73,6 +75,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
         CREvents
     };
 
+    int returnValue = 0;
     DialogueContext* DiagContext;
 
     /* Button related variables */
@@ -128,7 +131,13 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
             switch (IDevice->event.type)
             {
             case SDL_QUIT:
+                returnValue = 1;
                 goto Exit;
+                break;
+            case PAD_KEYDOWN:
+                if (IDevice->event.PADKEY == PAD_MAINMENU){
+                    goto Exit;
+                }
                 break;
             }
 
@@ -147,8 +156,18 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
                                 if (SContext->diagMode > 0){
                                     if ((Context->IdleAnimation > -1) && (Context->CurrentCharacter >= 0))
                                         CharacterPlayAnimation(SContext->CharactersIndex[Context->CurrentCharacter], Context->IdleAnimation); /* Mouaif */
-                                    SceneForward(SContext);
-                                    parseScene(DDevice, SContext);
+                                    if (Context->Lives){ /* If Alive */
+                                        SceneForward(SContext);
+                                    } else {
+                                        SContext->entry = SContext->gameOver;
+                                        SContext->next = NULL;
+                                        Context->Lives = 1;
+                                    }
+                                    if (SContext->entry){ /* If there are lines remaining */
+                                        parseScene(DDevice, SContext);
+                                    } else {
+                                        goto Exit;
+                                    }
                                 }
                                 break;
 
@@ -262,6 +281,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
 
 
 Exit:
+    StopTrack();
     /* Cleaning memory */
 
     /*free(DiagContext); */
@@ -274,5 +294,5 @@ Exit:
     if (ButtonLayer)
         FreeBackground(ButtonLayer);
 
-    return 0;
+    return returnValue;
 }

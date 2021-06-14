@@ -75,6 +75,7 @@
         xmlNode* presentMatch;
         xmlNode* presentDefault;
         xmlNode* returnTarget;
+        xmlNode* gameOver;
         int presentItem;
         bool Jump;
         bool DiagShown;

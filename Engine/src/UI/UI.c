@@ -46,11 +46,13 @@ static unsigned char UIWTState = 0;
 static unsigned char UIWTAnimFrame;
 
 static unsigned int logoID;
-static unsigned int Lives = 5;
+static bool BlowLife = false;
+static unsigned int* Lives;
 
 /* Sound Effets */
 static Mix_Chunk* Swoosh;
 static Mix_Chunk* Mix_Excla[3];
+static Mix_Chunk* Damage;
 static bool EffectPlaying;
 
 /* Blink delay in miliseconds */
@@ -62,6 +64,8 @@ static bool EffectPlaying;
 #define UI_WT_NBOFFRAMES 5
 #define UI_WT_ANIM_FRAMERATE 125
 #define UI_WT_PAUSE 1000
+
+#define UI_LIFEBLOW_FRAMETIME 64
 
 void UI_ShowToCourt(DisplayDevice* DDevice, InputDevice* IDevice){
     const SDL_Rect ItemPos[2] = {{13, 13, 70, 70}, {173, 13, 70, 70}};
@@ -85,13 +89,42 @@ void UI_Testimony(DisplayDevice* DDevice, InputDevice* IDevice){
 }
 
 void UI_Lives(DisplayDevice* DDevice, InputDevice* IDevice){
-    const SDL_Rect SrcLives = {65, 0, 10, 16};
-    SDL_Rect DstLives = {245, 16, 10, 16};
+    SDL_Rect SrcLives = {65, 0, 16, 16};
+    SDL_Rect DstLives = {239, 16, 16, 16};
     unsigned int i;
 
-    for (i = 0; i < Lives; i++){
+    if (*Lives){
+        for (i = 1; i < *Lives; i++){
+            ScaledDraw(DDevice, UISurface, &SrcLives, &DstLives);
+            DstLives.x -= SrcLives.w;
+        }
+
+        if (BlowLife){
+            switch (UIWTState){
+                case 0: /* Setup */
+                    IDevice->EventEnabled = false;
+                    UIWTAnimFrame = 0;
+                    UIAnimEnd = SDL_GetTicks() + UI_LIFEBLOW_FRAMETIME;
+                    Mix_PlayChannel(-1, Damage, 0);
+                    UIWTState++;
+                case 1: /* Animation */
+                    SrcLives.x += SrcLives.w * UIWTAnimFrame;
+                    if (SDL_GetTicks() > UIAnimEnd){
+                        UIWTAnimFrame++;
+                        if (UIWTAnimFrame == 8){
+                            BlowLife = false;
+                            UIWTState = 0;
+                            (*Lives)--;
+                            IDevice->EventEnabled = true;
+                            break;
+                        }
+                        UIAnimEnd = SDL_GetTicks() + UI_LIFEBLOW_FRAMETIME;
+                    }
+                    break;
+            }
+        }
+
         ScaledDraw(DDevice, UISurface, &SrcLives, &DstLives);
-        DstLives.x -= 6 + SrcLives.w;
     }
 }
 
@@ -248,7 +281,10 @@ void InitUI(DisplayDevice* DDevice, Items* UIItemBankPointer, SceneContext* SCon
     Mix_Excla[0] = LoadSoundEffect(EffectPath[CHK_HoldIt]);
     Mix_Excla[1] = LoadSoundEffect(EffectPath[CHK_Objection]);
     Mix_Excla[2] = LoadSoundEffect(EffectPath[CHK_TakeThat]);
+    Damage = LoadSoundEffect(EffectPath[CHK_Damage]);
     /*Mix_VolumeChunk(HoldIT, 32);*/
+
+    Lives = &SContext->CContext->Lives;
 }
 
 /* Add a ui element */
@@ -256,6 +292,7 @@ void setUI(unsigned int UIType, unsigned int argument){
     switch (UIType){
         case UI_LIVES:
             currentUI = &UI_Lives;
+            BlowLife = argument;
             break;
         case TESTIMONY_ICON:
             currentUI = &UI_TeCeIntro;
@@ -302,4 +339,4 @@ void DrawUI(DisplayDevice* DDevice, InputDevice* IDevice){
         currentUI(DDevice, IDevice);
 }
 
-/* FIXME: Please make a function to free everything after you're done */
+/* FIXME URGENT: Please make a function to free everything after you're done */

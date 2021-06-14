@@ -430,6 +430,12 @@ void parseFlags(DisplayDevice* DDevice, SceneContext* SContext, xmlNode* element
             SContext->activateCourtRecord = true;
             SContext->IDevice->EventEnabled = false;
             SContext->diagMode = 0;
+        }  else if (strcmp((char*)element->name, "setGameOver") == 0) {
+            /*CharBuffer = (char*)xmlNodeGetContent(element);*/
+            searchNode = searchNodeLabel(SContext->entry, (char*)xmlGetProp(element, (xmlChar*)"value"));
+            if (searchNode){
+                SContext->gameOver = searchNode;
+            }
         } else if (strcmp((char*)element->name, "jump") == 0) {
             CharBuffer = (char*)xmlNodeGetContent(element);
             searchNode = searchNodeLabel(SContext->entry, CharBuffer);
@@ -529,6 +535,7 @@ SceneContext* InitScene(DisplayDevice* DDevice, InputDevice* IDevice, DialogueCo
     LoadingScene->DiagShown = true;
     LoadingScene->activateCourtRecord = false;
     LoadingScene->diagMode = 1;
+    LoadingScene->gameOver = NULL;
 
     LoadingScene->CharactersIndex = NULL;
     LoadingScene->CharaLayer = NULL;

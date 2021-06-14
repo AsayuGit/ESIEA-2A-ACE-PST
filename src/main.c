@@ -56,13 +56,10 @@ int main(int argc, char* argv[]){
     }
 
     /* First we start the title screen */
-    if (Scene_TitleScreen(DDevice, IDevice) == 0){
+    while (Scene_TitleScreen(DDevice, IDevice) == 0){
         /* We start the courtroom Scene */
-        if (argc > 1){
-            Scene_Courtroom(DDevice, IDevice, CourtContext, argv[1]);
-        } else {
-            Scene_Courtroom(DDevice, IDevice, CourtContext, ROOT"Assets"SL"Dialogue"SL"default.xml");
-        }
+        if (Scene_Courtroom(DDevice, IDevice, CourtContext, (argc > 1) ? argv[1] : ROOT"Assets"SL"Dialogue"SL"default.xml"))
+            break;
     }
     
     FreeCourtroom(CourtContext);
