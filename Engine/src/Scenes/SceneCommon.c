@@ -430,7 +430,7 @@ void parseFlags(DisplayDevice* DDevice, SceneContext* SContext, xmlNode* element
             SContext->activateCourtRecord = true;
             SContext->IDevice->EventEnabled = false;
             SContext->diagMode = 0;
-        }  else if (strcmp((char*)element->name, "setGameOver") == 0) {
+        } else if (strcmp((char*)element->name, "setGameOver") == 0) {
             /*CharBuffer = (char*)xmlNodeGetContent(element);*/
             searchNode = searchNodeLabel(SContext->entry, (char*)xmlGetProp(element, (xmlChar*)"value"));
             if (searchNode){
@@ -503,7 +503,10 @@ void parseFlags(DisplayDevice* DDevice, SceneContext* SContext, xmlNode* element
                 (unsigned int)atoi((char*)xmlGetProp(element, (xmlChar*)"char")),
                 (bool)atoi((char*)xmlGetProp(element, (xmlChar*)"value"))
             );
-        }
+        }else if (strcmp((char*)element->name, "exit") == 0) {
+            SContext->next = NULL;
+            SContext->entry = NULL;
+        } 
         element = element->next;
     }
     ShowCourtRecordXUI(courtRecordControlsMode);
