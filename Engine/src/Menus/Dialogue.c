@@ -84,7 +84,7 @@ DialogueContext* InitDialog(DisplayDevice* DDevice, BitmapFont* MainFont, Bitmap
     const int TextMargin = 10;
 
     DiagContext = (DialogueContext*)malloc(sizeof(DialogueContext));
-    DiagContext->TextSpeed = 40;
+    DiagContext->TextSpeed = 25;
     DiagContext->LastLetter = 0;
     DiagContext->letterLag = 0;
     DiagContext->textColor = 0;

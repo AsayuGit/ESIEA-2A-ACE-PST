@@ -93,6 +93,7 @@ int Scene_Courtroom(DisplayDevice* DDevice, InputDevice* IDevice, CourtroomConte
         fprintf(stderr, "Courtroom Context non initialised");
         return -1;
     }
+    Context->Lives = 5; /* Max lives */
     DiagContext = InitDialog(DDevice, Context->MainFont, Context->NameFont);
 
     Context->EventSelect = MainEvents;
